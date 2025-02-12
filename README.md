@@ -32,15 +32,28 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 |**12**&nbsp;&nbsp;&nbsp;*Apr 30th* | **Presentation Night! 🎉** | **Presentation Night! 🎉** |
 
 ## 👨‍💻 Tech Stack
-+ [Figma](https://www.youtube.com/watch?v=FTFaQWZBqQ8)
-+ [React](https://youtu.be/SqcY0GlETPk?si=W1IpjfJI0uYrAhpZ)
-+ [NextJS](https://youtu.be/ZVnjOPwW4ZA?si=xvTat-k7UXRQsgyC) 
-+ [Tailwind](https://youtu.be/DenUCuq4G04?si=6W2PICu8smiLmaK-)
-+ [NextAuth](https://youtu.be/md65iBX5Gxg?si=WffEH7THYEEM9Hgc)
-+ [NodeJS](https://youtu.be/TlB_eWDSMt4?si=SR_sp3VxQaE-A-yF)
-+ [ExpressJS](https://youtu.be/SccSCuHhOw0?si=59GUgjRs6cW25cxL)
-+ [AWS EC2 Deployment](https://youtu.be/T-Pum2TraX4?si=ygIIu4QjyV7PNFau)
-+ [AWS RDS](https://youtu.be/I_fTQTsz2nQ?si=mjiaxX4ci3vMTiIt)
++ **Must Watch!!**
+  + [What is a frontend?](https://youtu.be/WG5ikvJ2TKA?si=mBepopDcfIZK37jk)
+  + [What is a backend?](https://youtu.be/XBu54nfzxAQ?si=kuioRqmCAxXhQocA)
+  + [Basic Git & GitHub in VSCode Tutorial](https://youtu.be/z5jZ9lrSpqk?si=51sKMz2JHPklqfnV)
++ **Frontend**
+  + [Designing a Web App](https://youtu.be/W8smyf1eHFk?si=QlgPgMOSFb21KPr7) 
+  + [Figma](https://www.youtube.com/watch?v=FTFaQWZBqQ8)
+  + [React](https://youtu.be/SqcY0GlETPk?si=W1IpjfJI0uYrAhpZ)
+  + [Typescript](https://youtu.be/ahCwqrYpIuM?si=iusDWM0MFk1XvAJ9)
+  + [NextJS](https://youtu.be/ZVnjOPwW4ZA?si=xvTat-k7UXRQsgyC) 
+  + [Tailwind](https://youtu.be/DenUCuq4G04?si=6W2PICu8smiLmaK-)
+  + [NextAuth + GitHub OAuth](https://youtu.be/7PWuIJ-MJgI?si=OgnMs5e0eAzkVC5K)
++ **Backend**
+  + [NodeJS](https://youtu.be/TlB_eWDSMt4?si=SR_sp3VxQaE-A-yF)
+  + [ExpressJS](https://youtu.be/SccSCuHhOw0?si=59GUgjRs6cW25cxL)
+  + [Typescript](https://youtu.be/ahCwqrYpIuM?si=iusDWM0MFk1XvAJ9)
+    + [Node + Express + Typescript pt1](https://youtu.be/NYZKUTGC51g?si=jRpvK_IeWVwChTVi)
+    + [Node + Express + Typescript pt2](https://youtu.be/8Dv9yWAJ6ww?si=Sf4viUZUM2o91fJI)
+    + [Node + Express + Typescript pt3](https://youtu.be/dr8e6Nh1llk?si=MBFk0ATLWFp874E7) 
+  + [AWS EC2 Deployment](https://youtu.be/T-Pum2TraX4?si=ygIIu4QjyV7PNFau)
+  + [Database Design](https://youtu.be/5RpUmDEsn1k?si=3d-UFfpMOjf0T7n4)
+  + [AWS RDS](https://youtu.be/I_fTQTsz2nQ?si=mjiaxX4ci3vMTiIt)
 
 ## 🤝 The Team
 + Frontend
