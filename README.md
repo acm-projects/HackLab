@@ -16,6 +16,7 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 
 ## ⌛ Stretch Goals
 + Real-Time Chatting
++ Multi-Language Support
 + In-Depth GitHub Integration
 + Project Management Tools
 + Extra Gamification Features
