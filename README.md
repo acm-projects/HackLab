@@ -18,7 +18,7 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 ## 📅 Milestones
 | Week | Frontend | Backend |
 |--- | --- | --- |
-|1&nbsp;&nbsp;&nbsp;(Feb 12th - 19th) | Start Initial Wireframes and Mockups| Introduce Backend Stack and APIs|
+|1&nbsp;&nbsp;&nbsp;*Feb 12th - 19th* | Start Initial Wireframes and Mockups| Introduce Backend Stack and APIs|
 |2&nbsp;&nbsp;&nbsp;(Feb 19th - 26th) | **Finalize Design and Style**| Begin work on Bortle Scale API |
 |3&nbsp;&nbsp;&nbsp;(Feb 26th - Mar 5th) | Assign App Sections and Start Authentication | Start Weather + Moon + Celestial Events Data Ingestion|
 |4&nbsp;&nbsp;&nbsp;(Mar 5th - 12th) | ... Coding ... |... Coding ... |
