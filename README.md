@@ -27,7 +27,7 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 |**7**&nbsp;&nbsp;&nbsp;&nbsp;*Mar 24th - 28th* | ... Coding ... | **Finish Data Points Coding** |
 |**8**&nbsp;&nbsp;&nbsp;&nbsp;*Mar 31st - Apr 4th* | **Integrations** | **Integrations** |
 |**9**&nbsp;&nbsp;&nbsp;&nbsp;*Apr 7th - 11th* | Create Presentation Slides | Finish up Remaining Integrations |
-|**10**&nbsp;&nbsp;&nbsp;*Apr 14th - 18th* | **Practice + Present** | **Practice + Present** |
+|**10**&nbsp;&nbsp;&nbsp;*Apr 14th - 18th* | Practice Presentation | Practice Presentation |
 |**11**&nbsp;&nbsp;&nbsp;*Apr 21st - 25th* | Mock Presentations | Mock Presentations |
 |**12**&nbsp;&nbsp;&nbsp;*Apr 30th* | **Presentation Night! 🎉** | **Presentation Night! 🎉** |
 
