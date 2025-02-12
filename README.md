@@ -43,4 +43,7 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 + [AWS RDS](https://youtu.be/I_fTQTsz2nQ?si=mjiaxX4ci3vMTiIt)
 
 ## 🤝 The Team
-TBD
++ Frontend
+  + TBD
++ Backend
+  + TBD
