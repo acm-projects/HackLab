@@ -19,16 +19,16 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 | Week | Frontend | Backend |
 |--- | --- | --- |
 |1&nbsp;&nbsp;&nbsp;*Feb 12th - 19th* | Start Initial Wireframes and Mockups| Introduce Backend Stack and APIs|
-|2&nbsp;&nbsp;&nbsp;(Feb 19th - 26th) | **Finalize Design and Style**| Begin work on Bortle Scale API |
-|3&nbsp;&nbsp;&nbsp;(Feb 26th - Mar 5th) | Assign App Sections and Start Authentication | Start Weather + Moon + Celestial Events Data Ingestion|
-|4&nbsp;&nbsp;&nbsp;(Mar 5th - 12th) | ... Coding ... |... Coding ... |
-|5&nbsp;&nbsp;&nbsp;(Mar 12th - 19th) | ... Coding ... |... Coding ... |
-|6&nbsp;&nbsp;&nbsp;(Mar 19th - 26th) | ... Coding ... |**Finish Bortle Scale API** |
-|7&nbsp;&nbsp;&nbsp;(Mar 26th - Apr 2nd) | ... Coding ... | **Finish Data Points Coding** |
-|8&nbsp;&nbsp;&nbsp;(Apr 2nd - 9th) | **Integrations** | **Integrations** |
-|9&nbsp;&nbsp;&nbsp;(Apr 9th - 16th) | Create Presentation Slides | Finish up Remaining Integrations |
-|10&nbsp;&nbsp;(Apr 16th - 23rd) | **Practice + Present** | **Practice + Present** |
-|11&nbsp;&nbsp;(Apr 23rd - 30th) | **Presentation Night!!!** | **Presentation Night!!!** |
+|2&nbsp;&nbsp;&nbsp;*Feb 19th - 26th* | **Finalize Design and Style**| Begin work on Bortle Scale API |
+|3&nbsp;&nbsp;&nbsp;*Feb 26th - Mar 5th* | Assign App Sections and Start Authentication | Start Weather + Moon + Celestial Events Data Ingestion|
+|4&nbsp;&nbsp;&nbsp;*Mar 5th - 12th* | ... Coding ... |... Coding ... |
+|5&nbsp;&nbsp;&nbsp;*Mar 12th - 19th* | ... Coding ... |... Coding ... |
+|6&nbsp;&nbsp;&nbsp;*Mar 19th - 26th* | ... Coding ... |**Finish Bortle Scale API** |
+|7&nbsp;&nbsp;&nbsp;*Mar 26th - Apr 2nd* | ... Coding ... | **Finish Data Points Coding** |
+|8&nbsp;&nbsp;&nbsp;*Apr 2nd - 9th* | **Integrations** | **Integrations** |
+|9&nbsp;&nbsp;&nbsp;*Apr 9th - 16th* | Create Presentation Slides | Finish up Remaining Integrations |
+|10&nbsp;&nbsp;*Apr 16th - 23rd* | **Practice + Present** | **Practice + Present** |
+|11&nbsp;&nbsp;*Apr 23rd - 30th* | **Presentation Night!!!** | **Presentation Night!!!** |
 
 ## 👨‍💻 Tech Stack
 + [Figma](https://www.youtube.com/watch?v=FTFaQWZBqQ8)
