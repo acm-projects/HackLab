@@ -28,7 +28,8 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 |**8**&nbsp;&nbsp;&nbsp;&nbsp;*Apr 2nd - 9th* | **Integrations** | **Integrations** |
 |**9**&nbsp;&nbsp;&nbsp;&nbsp;*Apr 9th - 16th* | Create Presentation Slides | Finish up Remaining Integrations |
 |**10**&nbsp;&nbsp;&nbsp;*Apr 16th - 23rd* | **Practice + Present** | **Practice + Present** |
-|**11**&nbsp;&nbsp;&nbsp;*Apr 23rd - 30th* | **Presentation Night!!!** | **Presentation Night!!!** |
+|**11**&nbsp;&nbsp;&nbsp;*Apr 21st - 25th* | Mock Presentations | Mock Presentations |
+|**12**&nbsp;&nbsp;&nbsp;*Apr 30th* | **Presentation Night!!!** | **Presentation Night!!!** |
 
 ## 👨‍💻 Tech Stack
 + [Figma](https://www.youtube.com/watch?v=FTFaQWZBqQ8)
