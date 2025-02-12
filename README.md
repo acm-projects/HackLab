@@ -28,6 +28,7 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 |8| **Integrations** | **Integrations** |
 |9| Create Presentation Slides | Finish up Remaining Integrations |
 |10| **Practice + Present** | **Practice + Present** |
+|11| **Presentation Night!!!|
 
 ## 👨‍💻 Tech Stack
 + [Figma](https://www.youtube.com/watch?v=FTFaQWZBqQ8)
