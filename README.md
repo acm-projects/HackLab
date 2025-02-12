@@ -41,3 +41,11 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 + [ExpressJS](https://youtu.be/SccSCuHhOw0?si=59GUgjRs6cW25cxL)
 + [AWS EC2 Deployment](https://youtu.be/T-Pum2TraX4?si=ygIIu4QjyV7PNFau)
 + [AWS RDS](https://youtu.be/I_fTQTsz2nQ?si=mjiaxX4ci3vMTiIt)
+
+## 🤝 The Team
++ Frontend
+  + 
+  +
++ Backend
+  +
+  +
