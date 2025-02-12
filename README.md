@@ -15,7 +15,7 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 + Project Management Tools
 + Extra Gamification Features
 
-## 📅 Milestones
+## 📅 Timeline
 | **Week**&nbsp;(mon-fri)| **Frontend** | **Backend** |
 |--- | --- | --- |
 |**1**&nbsp;&nbsp;&nbsp;&nbsp;*Feb 10th - 14th* | Start Initial Wireframes and Mockups| Introduce Backend Stack and APIs|
