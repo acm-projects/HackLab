@@ -3,13 +3,39 @@
 HackLab is a platform that empowers developers to bring their software ideas to life through meaningful collaboration. Developers can pitch their own project ideas, join exciting projects proposed by others, and connect with like-minded contributors who share their vision. By fostering organic team formation and providing hands-on opportunities, HackLab enables users to showcase their skills and build impressive portfolios. This community-driven environment accelerates practical software engineering experience, making real-world collaboration both accessible and rewarding.
 
 ## 🏆 MVP
-+ User Account Creation, Login, and Authentication
-+ Current Weather and Moon Phase Information Display
-+ Celestial Events Calendar
-+ Nearby Stargazing Sites based on Weather, Moon, and Bortle Scale Information
++ User Authentication
++ Creating and Joining Projects
++ Project Search/Filtering
++ Reputation System
++ User Profiles
 
-+ ## ⌛ Stretch Goals
-+ Fully Built-In Map Highlighting Best Stargazing Locations
-+ Navigation Capabilities to Optimal Sites
-+ Social Features Allowing Users to Plan and Share Trips with Other People
-+ Augemented Reality Viewing
+## ⌛ Stretch Goals
++ Real-Time Chatting
++ GitHub Integration
++ Project Management Tools
++ Extra Gamification Features
+
+## 📅 Milestones
+| Week | Frontend | Backend |
+|--- | --- | --- |
+|1| Start Initial Wireframes and Mockups| Introduce Backend Stack and APIs|
+|2| **Finalize Design and Style**| Begin work on Bortle Scale API |
+|3| Assign App Sections and Start Authentication | Start Weather + Moon + Celestial Events Data Ingestion|
+|4| ... Coding ... |... Coding ... |
+|5| ... Coding ... |... Coding ... |
+|6| ... Coding ... |**Finish Bortle Scale API** |
+|7| ... Coding ... | **Finish Data Points Coding** |
+|8| **Integrations** | **Integrations** |
+|9| Create Presentation Slides | Finish up Remaining Integrations |
+|10| **Practice + Present** | **Practice + Present** |
+
+## 👨‍💻 Tech Stack
++ [Figma](https://www.youtube.com/watch?v=FTFaQWZBqQ8)
++ [React](https://youtu.be/SqcY0GlETPk?si=W1IpjfJI0uYrAhpZ)
++ [NextJS](https://youtu.be/ZVnjOPwW4ZA?si=xvTat-k7UXRQsgyC) 
++ [Tailwind](https://youtu.be/DenUCuq4G04?si=6W2PICu8smiLmaK-)
++ [NextAuth](https://youtu.be/md65iBX5Gxg?si=WffEH7THYEEM9Hgc)
++ [NodeJS](https://youtu.be/TlB_eWDSMt4?si=SR_sp3VxQaE-A-yF)
++ [ExpressJS](https://youtu.be/SccSCuHhOw0?si=59GUgjRs6cW25cxL)
++ [AWS EC2 Deployment](https://youtu.be/T-Pum2TraX4?si=ygIIu4QjyV7PNFau)
++ [AWS RDS](https://youtu.be/I_fTQTsz2nQ?si=mjiaxX4ci3vMTiIt)
