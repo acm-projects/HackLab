@@ -18,17 +18,17 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 ## 📅 Milestones
 | Week | Frontend | Backend |
 |--- | --- | --- |
-|1 (Feb 12th - 19th)| Start Initial Wireframes and Mockups| Introduce Backend Stack and APIs|
-|2| **Finalize Design and Style**| Begin work on Bortle Scale API |
-|3| Assign App Sections and Start Authentication | Start Weather + Moon + Celestial Events Data Ingestion|
-|4| ... Coding ... |... Coding ... |
-|5| ... Coding ... |... Coding ... |
-|6| ... Coding ... |**Finish Bortle Scale API** |
-|7| ... Coding ... | **Finish Data Points Coding** |
-|8| **Integrations** | **Integrations** |
-|9| Create Presentation Slides | Finish up Remaining Integrations |
-|10| **Practice + Present** | **Practice + Present** |
-|11| **Presentation Night!!!** | **Presentation Night!!!** |
+|1  (Feb 12th - 19th) | Start Initial Wireframes and Mockups| Introduce Backend Stack and APIs|
+|2  (Feb 19th - 26th) | **Finalize Design and Style**| Begin work on Bortle Scale API |
+|3  (Feb 26th - Mar 5th) | Assign App Sections and Start Authentication | Start Weather + Moon + Celestial Events Data Ingestion|
+|4  (Mar 5th - 12th) | ... Coding ... |... Coding ... |
+|5  (Mar 12th - 19th) | ... Coding ... |... Coding ... |
+|6  (Mar 19th - 26th) | ... Coding ... |**Finish Bortle Scale API** |
+|7  (Mar 26th - Apr 2nd) | ... Coding ... | **Finish Data Points Coding** |
+|8  (Apr 2nd - 9th) | **Integrations** | **Integrations** |
+|9  (Apr 9th - 16th) | Create Presentation Slides | Finish up Remaining Integrations |
+|10 (Apr 16th - 23rd) | **Practice + Present** | **Practice + Present** |
+|11 (Apr 23rd - 30th) | **Presentation Night!!!** | **Presentation Night!!!** |
 
 ## 👨‍💻 Tech Stack
 + [Figma](https://www.youtube.com/watch?v=FTFaQWZBqQ8)
