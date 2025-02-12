@@ -24,7 +24,7 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 |**4**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Mar 3rd - 7th* | Build User Profile Page | Develop User/Profile CRUD APIs |
 |**5**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Mar 10th - 14th* | Create Project Flows | Implement Project Management APIs |
 |**6**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Mar 17th - 21st* | Build Home Page + Search Functionality | Develop Reputation Calculation APIs |
-|**7**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Mar 24th - 28th* | Implement Reputation System UI | Deployment + Testing |
+|**7**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Mar 24th - 28th* | Implement Reputation System UI | EC2 Deployment + Testing |
 |**8**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Mar 31st - Apr 4th* | **Integrations** | **Integrations** |
 |**9**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Apr 7th - 11th* | Create Presentation Slides | Finish up Remaining Integrations |
 |**10**&nbsp;&nbsp;&nbsp;*Apr 14th - 18th* | Practice Presentation | Practice Presentation |
