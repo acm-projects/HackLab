@@ -5,13 +5,18 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 ## 🏆 MVP
 + User Authentication
 + Creating and Joining Projects
+  + Role System
+  + Skills + Topics Tagging
 + Project Search/Filtering
 + Reputation System
 + User Profiles
+  + Skills
+  + Topics
+  + Experience 
 
 ## ⌛ Stretch Goals
 + Real-Time Chatting
-+ GitHub Integration
++ In-Depth GitHub Integration
 + Project Management Tools
 + Extra Gamification Features
 
@@ -35,6 +40,7 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 + **Must Watch!!**
   + [What is a frontend?](https://youtu.be/WG5ikvJ2TKA?si=mBepopDcfIZK37jk)
   + [What is a backend?](https://youtu.be/XBu54nfzxAQ?si=kuioRqmCAxXhQocA)
+  + [REST APIs](https://youtu.be/LooL6_chvN4?si=amF2wvhjfx1-UiaM)
   + [Basic Git & GitHub in VSCode Tutorial](https://youtu.be/z5jZ9lrSpqk?si=51sKMz2JHPklqfnV)
 + **Frontend**
   + [Designing a Web App](https://youtu.be/W8smyf1eHFk?si=QlgPgMOSFb21KPr7) 
