@@ -18,15 +18,15 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 ## 📅 Timeline
 | **Week**&nbsp;(mon-fri)| **Frontend** | **Backend** |
 |--- | --- | --- |
-|**1**&nbsp;&nbsp;&nbsp;&nbsp;*Feb 10th - 14th* | Start Initial Wireframes and Mockups| Introduce Backend Stack and APIs|
-|**2**&nbsp;&nbsp;&nbsp;&nbsp;*Feb 17th - 21st* | **Finalize Design and Style**| Begin work on Bortle Scale API |
-|**3**&nbsp;&nbsp;&nbsp;&nbsp;*Feb 24th - 28th* | Assign App Sections and Start Authentication | Start Weather + Moon + Celestial Events Data Ingestion|
-|**4**&nbsp;&nbsp;&nbsp;&nbsp;*Mar 3rd - 7th* | ... Coding ... |... Coding ... |
-|**5**&nbsp;&nbsp;&nbsp;&nbsp;*Mar 10th - 14th* | ... Coding ... |... Coding ... |
-|**6**&nbsp;&nbsp;&nbsp;&nbsp;*Mar 17th - 21st* | ... Coding ... |**Finish Bortle Scale API** |
-|**7**&nbsp;&nbsp;&nbsp;&nbsp;*Mar 24th - 28th* | ... Coding ... | **Finish Data Points Coding** |
-|**8**&nbsp;&nbsp;&nbsp;&nbsp;*Mar 31st - Apr 4th* | **Integrations** | **Integrations** |
-|**9**&nbsp;&nbsp;&nbsp;&nbsp;*Apr 7th - 11th* | Create Presentation Slides | Finish up Remaining Integrations |
+|**1**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Feb 10th - 14th* | Start Initial Wireframes and Mockups| Introduce Backend Stack and APIs|
+|**2**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Feb 17th - 21st* | **Finalize Design and Style**| Begin work on Bortle Scale API |
+|**3**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Feb 24th - 28th* | Assign App Sections and Start Authentication | Start Weather + Moon + Celestial Events Data Ingestion|
+|**4**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Mar 3rd - 7th* | ... Coding ... |... Coding ... |
+|**5**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Mar 10th - 14th* | ... Coding ... |... Coding ... |
+|**6**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Mar 17th - 21st* | ... Coding ... |**Finish Bortle Scale API** |
+|**7**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Mar 24th - 28th* | ... Coding ... | **Finish Data Points Coding** |
+|**8**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Mar 31st - Apr 4th* | **Integrations** | **Integrations** |
+|**9**&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Apr 7th - 11th* | Create Presentation Slides | Finish up Remaining Integrations |
 |**10**&nbsp;&nbsp;&nbsp;*Apr 14th - 18th* | Practice Presentation | Practice Presentation |
 |**11**&nbsp;&nbsp;&nbsp;*Apr 21st - 25th* | Mock Presentations | Mock Presentations |
 |**12**&nbsp;&nbsp;&nbsp;*Apr 30th* | **Presentation Night! 🎉** | **Presentation Night! 🎉** |
