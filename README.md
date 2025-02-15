@@ -49,7 +49,7 @@ HackLab is a platform that empowers developers to bring their software ideas to 
   + [React High Level Overview](https://youtu.be/BdjAAvBQnQc?si=JoEFSUFok5dki1DZ)
   + [React + Typescript](https://youtu.be/SqcY0GlETPk?si=W1IpjfJI0uYrAhpZ)
   + [Typescript (more in-depth)](https://youtu.be/ahCwqrYpIuM?si=iusDWM0MFk1XvAJ9)
-  + [NextJS](https://youtu.be/ZVnjOPwW4ZA?si=xvTat-k7UXRQsgyC)
+  + [NextJS](https://youtu.be/_EgI9WH8q1A?si=TYqf7AEJRzIA3Vq6)
   + [more NextJS (optional)](https://youtu.be/Sklc_fQBmcs?si=-lpaCdKu91lIedqf)
   + [Tailwind](https://youtu.be/DenUCuq4G04?si=6W2PICu8smiLmaK-)
   + [NextAuth + GitHub OAuth](https://youtu.be/7PWuIJ-MJgI?si=OgnMs5e0eAzkVC5K)
