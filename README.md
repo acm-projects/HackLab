@@ -46,6 +46,7 @@ HackLab is a platform that empowers developers to bring their software ideas to 
 + **Frontend**
   + [Designing a Web App](https://youtu.be/W8smyf1eHFk?si=QlgPgMOSFb21KPr7) 
   + [Figma](https://www.youtube.com/watch?v=FTFaQWZBqQ8)
+  + [React High Level Overview](https://youtu.be/BdjAAvBQnQc?si=JoEFSUFok5dki1DZ)
   + [React](https://youtu.be/SqcY0GlETPk?si=W1IpjfJI0uYrAhpZ)
   + [Typescript](https://youtu.be/ahCwqrYpIuM?si=iusDWM0MFk1XvAJ9)
   + [NextJS](https://youtu.be/ZVnjOPwW4ZA?si=xvTat-k7UXRQsgyC) 
