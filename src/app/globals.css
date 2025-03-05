@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global theme colors */
+:root {
+  --background: #ffffff; /* Light theme background */
+  --foreground: #171717; /* Light theme text color */
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* Apply the global background and text color */
+body {
+  @apply bg-[var(--background)] text-[var(--foreground)] font-sans;
+  overflow: hidden; /* Prevents unwanted scrolling when particles move */
+}
+
+/* Ensure the canvas properly covers the entire screen */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Keeps canvas behind other content */
+}
