@@ -12,7 +12,7 @@ interface Particle {
 
 // Constants
 const CONNECTION_DISTANCE = 100;
-const PARTICLE_SPEED = 0.05; // Speed remains constant
+const PARTICLE_SPEED = 0.4; // Speed remains constant
 
 const LowPolyBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -63,7 +63,7 @@ const LowPolyBackground: React.FC = () => {
 
       // Draw connections with increased opacity
       ctx.globalAlpha = 0.3; // 🔥 Threads opacity increased for visibility
-      ctx.strokeStyle = "rgba(74, 74, 74, 0.5)";
+      ctx.strokeStyle = "rgba(0, 32, 192, 0.4)";
       ctx.lineWidth = 0.5;
 
       for (let i = 0; i < particlesRef.current.length; i++) {
