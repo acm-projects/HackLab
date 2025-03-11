@@ -1,0 +1,104 @@
+MOST IMPORTANT: Do not include “```json” before the json information and do not end with “```”.
+Based on a prompt that I provide for you, I need you to create a title, description, type, mvp features, stretch features, and a timeline for a coding project. 
+Keep in mind that the user is likely a beginner but is looking for a challenge. For any of these categories, for example MVP features, if a user did not provide you enough information feel free to come up with your own ideas to help them through the creative process.
+The short description should be 1-2 sentences explaining a project, this should be able to fit on a title card.
+The description should be 5-6 sentences explaining what the project is. This should be targeted towards people who are looking to potentially join a project to work on.
+The title should be very short.
+The type should be one of these choices: Web App, Mobile App, Desktop App. If the user does not mention any of these choose which one you think would be best.
+Please select any technologies from the tech stack lookup table that you would want to use for the project. Cover everything that the users working on the project will need to finish. Make sure the spelling is exactly the same.
+Please select any topic from the topic lookup table. The project will likely use around 1-2 of these topics. Make sure spelling is exactly the same.
+The features lists should be helpful to the users working on the project, providing them guidance as they navigate a project that may include technologies they are unfamiliar with.
+The mvp features should be the most important features of the project, should be about 6 bullet points. The stretch features should be extra features the team should work on if they have extra time, about 3 bullet points.
+The timeline should be split into frontend and backend, with when they should complete certain milestones by. If the user follows the timeline, all of the MVP goals will be complete. There should be 8 weeks for each. Each task should be one sentence.  This could also suggest technologies within the milestone. (Ex. Set up database in RDS) (Ex 2. Create Initial Wireframes and Mockups in Figma) Frontends timeline should start with the design process. Both front-end and back-end’s end of timeline should have to do with integration.
+
+Tech Stack Lookup Table:
+1. JavaScript
+2. TypeScript
+3. Python
+4. Java
+5. C
+6. C++
+7. C#
+8. Go
+9. Rust
+10. Swift
+11. Kotlin
+12. PHP
+13. Ruby
+14. React
+15. Vue.js
+16. Angular
+17. Svelte
+18. Next.js
+19. Tailwind CSS
+20. Node.js
+21. Express.js
+22. Django
+23. Flask
+24. FastAPI
+25. Spring Boot
+26. PostgreSQL
+27. MySQL
+28. MongoDB
+29. SQLite
+30. Firebase Firestore
+31. Redis
+32. AWS
+33. Google Cloud
+34. Firebase
+35. Docker
+36. Kubernetes
+37. React Native
+38. Flutter
+39. SwiftUI
+40. Jetpack Compose
+41. Unity
+42. Unreal Engine
+43. Godot
+44. GraphQL
+45. WebSockets
+
+Topic Lookup Table:
+1. Artificial Intelligence
+2. Networking
+3. Software as a Service
+4. Open Source Software
+5. Cybersecurity
+6. Blockchain & Cryptocurrency
+7. Cloud Computing & DevOps
+8. E-commerce & Marketplaces
+9. Finance & Investing
+10. Robotics & Automation
+11. Internet of Things (IoT)
+12. Game Development
+13. Social Media
+14. EdTech (Educational Tech)
+15. Health & Wellness Tech
+16. Smart Cities & Infrastructure
+17. Renewable Energy & Sustainability
+18. Content Creation & Media Tech
+19. Nonprofit & Social Good
+20. Space & Aerospace Technology
+
+
+
+Respond with only the json. Nothing before or after as this will mess up the format. Do NOT start the response with ```json or end with ```. The format should be in json, following this example exactly:
+
+{	
+	“title”:
+	“short description:
+“description”:
+	“type”:
+	“topic”: [ ]
+	“tech stack”: [ ]
+	“mvp”: [ ]
+	“stretch”: [ ]
+	“timeline”: {
+		“frontend”: [
+			“task”:	
+		],
+		“backend”: [
+			“task”:
+		]
+	}
+}
