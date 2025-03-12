@@ -1,10 +1,10 @@
 const pool = require('../db');
 
 const createProject = async (projectData) => {
-    const { title, description, short_description, thumbnail, type, mvp, stretch, timeline, team_lead_id, github_repo_url } = projectData;
+    const { title, description, short_description, type, mvp, stretch, timeline, team_lead_id, github_repo_url, thumbnail } = projectData;
     const result = await pool.query(
-        'INSERT INTO project (title, description, short_description, thumbnail, type, mvp, stretch, timeline, team_lead_id, github_repo_url) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
-        [title, description, short_description, thumbnail, type, mvp, stretch, timeline, team_lead_id, github_repo_url]
+        'INSERT INTO project (title, description, short_description, type, mvp, stretch, timeline, team_lead_id, github_repo_url, thumbnail) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+        [title, description, short_description, type, mvp, stretch, timeline, team_lead_id, github_repo_url, thumbnail]
     );
     return result.rows[0];
 };
