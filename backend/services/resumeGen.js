@@ -5,16 +5,10 @@ const fs = require('fs/promises');
 
 dotenv.config();
 
-const octokit = new Octokit({ 
-//auth: process.env.GITHUB_API_KEY
+const octokit = new Octokit({
 });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-let response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
-  owner: 'ladybirdbrowser',
-  repo: 'ladybird',
-})
 
 /*
 let response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
@@ -33,34 +27,52 @@ let response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
 
 async function getContext() {
     try {
-        return await fs.readFile("context.txt", "utf-8");
+        return await fs.readFile("data/resumeContext.txt", "utf-8");
     } catch (error) {
         console.error("Error reading context file:", error);
         return ""; // Return empty string if file read fails
     }
 }
 
+function extractOwnerAndRepo(github_repo_link) {
+  const regex = /https:\/\/github\.com\/([^\/]+)\/([^\/]+)/;
+  const match = github_repo_link.match(regex);
+  if (match) {
+    return { owner: match[1].toLowerCase(), repo: match[2].toLowerCase() };
+  } else {
+      throw new Error('Invalid GitHub repository link');
+  }
+}
+
+
+
 let commitHistory = [];
 
-response.data.forEach(commit => {
+const commitHistoryText = JSON.stringify(commitHistory);
+//example link :https://github.com/LadybirdBrowser/ladybird
+async function generateResume(github_repo_link) {
+  github_repo_link = 'https://github.com/LadybirdBrowser/ladybird';
+  const { owner, repo } = extractOwnerAndRepo(github_repo_link);
+  let response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+    owner: owner,
+    repo: repo
+  });
+  let commitHistory = [];
+  response.data.forEach(commit => {
     const author = commit.commit.author.name;
     const message = commit.commit.message;
     const commitText = `Author: ${author}\nMessage: ${message}`;
     commitHistory.push(commitText);
 });
-
-console.log(commitHistory);
-
-const commitHistoryText = JSON.stringify(commitHistory);
-
-async function generateResume() {
+  const commitHistoryText = JSON.stringify(commitHistory);
   const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
   const context = await getContext();
   const fullPrompt = `${context}\n\nCommit history: ${commitHistoryText}`;
   const result = await model.generateContent(fullPrompt);
-  const response = await result.response;
-  const text = response.text();
+  const genResponse = await result.response;
+  const text = genResponse.text();
   console.log(text);
+  return text;
 };
 
 module.exports = {

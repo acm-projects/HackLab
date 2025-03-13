@@ -1,0 +1,16 @@
+Based on the commit history I will provide to you from github, for each user, create a paragraph detailing what they contributed to the project. For each user:
+This should be a paragraph that is ready to be copy and pasted straight into their resume. It must be around 8 bullet points, 1 sentence each. Infer what technologies they may have used. But state it as if you are sure. (Do not say likely used for example) Use the author name to determine which user did what.
+Emphasize the project’s impact by including results or metrics (e.g., “Improved data processing speed by 25%” or “Reduced application load time for 10000+ users”). Write in third person but do not use the user’s name, write it like the example. Separate each sentence by newline.
+Here is an example of what the each full paragraph MUST look like:
+
+John Smith
+CollaborateHub – A Web Platform for Finding Project Collaborators
+Tech Stack: JavaScript, Node.js, Express, MongoDB, React
+Built a full-stack web app that attracted 500+ users in the first 3 months.
+Optimized database queries, reducing API response time by 40%.
+Designed a responsive UI using React and Tailwind CSS, improving user engagement by 30%.
+Implemented WebSockets for real-time messaging, handling 10,000+ messages daily.
+Deployed on AWS with a CI/CD pipeline, reducing deployment time by 50%.
+
+Only respond with the paragraphs for each user.
+For each user: Make sure to use meaningful numerical metrics for at least 3 bullet points, and at least one is a percentage and at least one is  a specific amount.

@@ -1,12 +1,12 @@
 const express = require('express');
-const { createProject, getAllProjects, getProjectById } = require('../models/projectModel');
-const { generateProject } = require('../services/aiService');
+const { createProject, getAllProjects, getProjectById, getGithubById } = require('../models/projectModel');
+const { generateProject } = require('../services/projectGen');
+const { generateResume } = require('../services/resumeGen');
 const { createRepo } = require('../services/createRepo');
 const  upload  = require('../middleware/uploadMiddleware');
 const { uploadImageToS3 } = require('../services/s3Service');
 const router = express.Router();
 
-//upload.single('thumbnail'), 
 // Create a new project
 router.post('/',upload.single('thumbnail'), async (req, res) => {
     console.log('Received request to create project');
@@ -70,7 +70,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Generate a project from AI prompt
-router.post('/generate', async (req, res) => {
+router.post('/generateProject', async (req, res) => {
     try {
         const { prompt } = req.body;
         const project = await generateProject(prompt);
@@ -80,6 +80,24 @@ router.post('/generate', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+// Generate resumes for everyone on a project
+router.get('/:id/generateResume', async (req, res) => {
+    try {
+        const github_repo_link = await getGithubById(req.params.id);
+        if (!github_repo_link) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+        console.log('Generating Resume...')
+        const resume = await generateResume(github_repo_link);
+        res.json(resume);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+
 
 module.exports = router;
 

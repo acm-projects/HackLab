@@ -16,7 +16,6 @@ const createProject = async (projectData) => {
   "title": "AI-Powered Task Manager",
   "description": "A task manager that uses AI to suggest priorities.",
   "short_description": "AI helps prioritize tasks.",
-  "thumbnail": "https://yourwebsite.com/images/ai-task.jpg",
   "type": "Web App",
   "mvp": { "features": ["AI task prioritization", "Basic task management"] },
   "stretch": { "features": ["Team collaboration", "Voice input", "Calendar sync"] },
@@ -36,8 +35,14 @@ const getProjectById = async (id) => {
     return result.rows[0];
 };
 
+const getGithubById = async (id) => {
+    const result = await pool.query('SELECT github_repo_url FROM project WHERE id = $1', [id]);
+    return result.rows[0]?.github_repo_url;
+};
+
 module.exports = {
     createProject,
     getAllProjects,
-    getProjectById
+    getProjectById,
+    getGithubById
 };
