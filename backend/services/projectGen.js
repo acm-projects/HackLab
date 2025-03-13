@@ -17,12 +17,14 @@ async function getContext() {
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function generateProject(prompt) {
+    userPrompt = prompt;
+    console.log(userPrompt);
     const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
 
-    const userPrompt = "A coding project called HackLab that lets you create projects and find other peoples projects to collaborate on. With gamifying features.";
+    //const userPrompt = "A coding project called HackLab that lets you create projects and find other peoples projects to collaborate on. With gamifying features.";
     const context = await getContext();
-    const fullPrompt = `${context}\n\nUser Query: ${prompt}`;
-    const result = await model.generateContent(fullPrompt);
+    const fullPrompt = `${context}\n\nUser Query: ${userPrompt}`;
+    const result = await model.generateContent(fullPrompt, {response_format: "json"});
     const response = await result.response;
     const text = response.text();
     console.log(text);
@@ -35,7 +37,7 @@ async function generateProject(prompt) {
 
     const fullImagePrompt = `${imageContext} ${imagePrompt}`;
 
-    //image_gen(fullImagePrompt);
+    //imageGen(fullImagePrompt);
 }
 
 module.exports = {

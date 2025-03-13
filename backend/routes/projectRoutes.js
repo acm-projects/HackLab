@@ -119,6 +119,7 @@ router.get('/:id', async (req, res) => {
 router.post('/generateProject', async (req, res) => {
     try {
         const { prompt } = req.body;
+        console.log(prompt);
         const project = await generateProject(prompt);
         res.status(200).json(project);
     } catch (error) {
@@ -142,6 +143,21 @@ router.get('/:id/generateResume', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+// add skill to project
+router.post('/:projectId/skills/:skillId', async (req, res) => {
+    console.log('Received request to add skill to project');
+    const { projectId, skillId } = req.params;
+    try {
+        const result = await addSkillToProject(projectId, skillId);
+        res.status(201).json(result);
+    } catch (error) {
+        console.error('Error adding skill to project:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// add topic to project
 
 
 

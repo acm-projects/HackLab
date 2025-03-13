@@ -54,6 +54,14 @@ const deleteProject = async (id) => {
     return result.rows[0];
 };
 
+const addSkillToProject = async (projectId, skillId) => {
+    const result = await pool.query(
+        'INSERT INTO project_skill (project_id, skill_id) VALUES ($1, $2) RETURNING *',
+        [projectId, skillId]
+    );
+    return result.rows[0];
+};
+
 module.exports = {
     createProject,
     getAllProjects,
