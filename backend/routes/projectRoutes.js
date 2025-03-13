@@ -1,5 +1,5 @@
 const express = require('express');
-const { createProject, getAllProjects, getProjectById, getGithubById } = require('../models/projectModel');
+const { createProject, getAllProjects, getProjectById, getGithubById, updateProject, deleteProject } = require('../models/projectModel');
 const { generateProject } = require('../services/projectGen');
 const { generateResume } = require('../services/resumeGen');
 const { createRepo } = require('../services/createRepo');
@@ -40,6 +40,52 @@ router.post('/',upload.single('thumbnail'), async (req, res) => {
         res.status(201).json(project);
     } catch (error) {
         console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+// update a project
+router.put('/:id', upload.single('thumbnail'), async (req, res) => {
+    console.log('Received request to update project');
+    const { accessToken, ...projectData } = req.body;
+    const image = req.file;
+    try {
+        // Get the existing project
+        const existingProject = await getProjectById(req.params.id);
+        if (!existingProject) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+        // Store image file if user uploads a thumbnail
+        if (image) {
+            console.log('Uploading image to S3');
+            const image_url = await uploadImageToS3(image);
+            projectData.thumbnail = image_url;
+        }
+        else {
+            projectData.thumbnail = existingProject.thumbnail;
+        }
+
+        // Update project in database
+        console.log('Updating project in database');
+        const updatedProject = await updateProject(req.params.id, projectData);
+        res.status(200).json(updatedProject);
+    } catch (error) {
+        console.error('Error updating project:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Delete a project
+router.delete('/:id', async (req, res) => {
+    console.log('Received request to delete project');
+    try {
+        const deletedProject = await deleteProject(req.params.id);
+        if (!deletedProject) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+        res.status(200).json(deletedProject);
+    } catch (error) {
+        console.error('Error deleting project:', error);
         res.status(500).send('Server error');
     }
 });

@@ -25,6 +25,15 @@ const createProject = async (projectData) => {
 
 */
 
+const updateProject = async (id, projectData) => {
+    const { title, description, short_description, type, mvp, stretch, timeline, team_lead_id, thumbnail } = projectData;
+    const result = await pool.query(
+        'UPDATE project SET title = $1, description = $2, short_description = $3, type = $4, mvp = $5, stretch = $6, timeline = $7, team_lead_id = $8, thumbnail = $9 WHERE id = $10 RETURNING *',
+        [title, description, short_description, type, mvp, stretch, timeline, team_lead_id, thumbnail, id]
+    );
+    return result.rows[0];
+};
+
 const getAllProjects = async () => {
     const result = await pool.query('SELECT * FROM project');
     return result.rows;
@@ -40,9 +49,16 @@ const getGithubById = async (id) => {
     return result.rows[0]?.github_repo_url;
 };
 
+const deleteProject = async (id) => {
+    const result = await pool.query('DELETE FROM project WHERE id = $1 RETURNING *', [id]);
+    return result.rows[0];
+};
+
 module.exports = {
     createProject,
     getAllProjects,
     getProjectById,
-    getGithubById
+    getGithubById,
+    updateProject,
+    deleteProject
 };
