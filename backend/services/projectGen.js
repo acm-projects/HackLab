@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs/promises');
-// const { image_gen } = require('./gen-test.mjs');
+const { imageGen } = require('./imageGen');
 
 dotenv.config();
 
@@ -26,18 +26,24 @@ async function generateProject(prompt) {
     const fullPrompt = `${context}\n\nUser Query: ${userPrompt}`;
     const result = await model.generateContent(fullPrompt, {response_format: "json"});
     const response = await result.response;
-    const text = response.text();
+    let text = response.text();
     console.log(text);
-    return JSON.parse(text);
 
-    const imageContext = "Create a logo for a website/app that is called: "
+    // Remove ```json from the response if present
+    if (text.startsWith('```json')) {
+        text = text.slice(7); // Remove the first 7 characters (```json)
+    }
+    // Remove trailing ``` if present
+    if (text.endsWith('```')) {
+        text = text.slice(0, -3); // Remove the last 3 characters (```)
+    }
 
     let myText = JSON.parse(text);
     let imagePrompt = myText.title;
+    
+    imageGen(imagePrompt);
 
-    const fullImagePrompt = `${imageContext} ${imagePrompt}`;
-
-    //imageGen(fullImagePrompt);
+    return JSON.parse(text);
 }
 
 module.exports = {
