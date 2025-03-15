@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 // Define particle properties
 interface Particle {
@@ -12,12 +12,12 @@ interface Particle {
 
 // Constants
 const CONNECTION_DISTANCE = 100;
-const PARTICLE_SPEED = 0.4; // Speed remains constant
+const PARTICLE_SPEED = 0.3; // Speed remains constant
+const MAX_PARTICLE_COUNT = 150; // Cap particle count at 150
 
 const LowPolyBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
-  const [particleCount, setParticleCount] = useState(150); // Start with 150 for large screens
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -26,24 +26,14 @@ const LowPolyBackground: React.FC = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Function to update particle count based on screen size
-    const updateParticleCount = () => {
-      const width = window.innerWidth;
-
-      if (width > 1200) setParticleCount(150); // Large screens
-      else if (width > 768) setParticleCount(100); // Medium screens
-      else setParticleCount(50); // Small screens
-    };
-
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      updateParticleCount();
       initializeParticles();
     };
 
     const initializeParticles = () => {
-      particlesRef.current = Array.from({ length: particleCount }, () => ({
+      particlesRef.current = Array.from({ length: MAX_PARTICLE_COUNT }, () => ({
         position: {
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -61,9 +51,9 @@ const LowPolyBackground: React.FC = () => {
       if (!ctx) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw connections with increased opacity
-      ctx.globalAlpha = 0.3; // 🔥 Threads opacity increased for visibility
-      ctx.strokeStyle = "rgba(0, 32, 192, 0.4)";
+      // Draw connections with reduced opacity
+      ctx.globalAlpha = 0.2; // Reduced opacity for connections
+      ctx.strokeStyle = "rgba(0, 32, 192, 0.3)";
       ctx.lineWidth = 0.5;
 
       for (let i = 0; i < particlesRef.current.length; i++) {
@@ -83,8 +73,8 @@ const LowPolyBackground: React.FC = () => {
         }
       }
 
-      // Draw particles (bars)
-      ctx.globalAlpha = 0.2; // 🔥 Particles opacity remains lower for subtle effect
+      // Draw particles (bars) with reduced opacity
+      ctx.globalAlpha = 0.05; // Reduced opacity for particles
       ctx.strokeStyle = "gray";
       ctx.lineWidth = 0.5;
 
@@ -129,7 +119,7 @@ const LowPolyBackground: React.FC = () => {
     return () => {
       window.removeEventListener("resize", resizeCanvas);
     };
-  }, [particleCount]); // Reacts to particle count changes when screen size updates
+  }, []); // No dependencies, runs once on mount
 
   return (
     <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full bg-white" />
