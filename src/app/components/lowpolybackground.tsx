@@ -52,8 +52,8 @@ const LowPolyBackground: React.FC = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw connections with reduced opacity
-      ctx.globalAlpha = 0.2; // Reduced opacity for connections
-      ctx.strokeStyle = "rgba(0, 32, 192, 0.3)";
+      ctx.globalAlpha = 0.4; // Reduced opacity for connections
+      ctx.strokeStyle = "rgba(0, 32, 192, 0.2)";
       ctx.lineWidth = 0.5;
 
       for (let i = 0; i < particlesRef.current.length; i++) {

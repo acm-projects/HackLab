@@ -97,7 +97,7 @@ export default function NavBar() {
           className="w-full bg-[#385773] text-[#fff] hover:bg-gray-900 border-none 
                     focus:ring-4 focus:outline-none focus:ring-blue-300 
                     font-nunito rounded-[10px] text-[30px]
-                    text-start flex items-center gap-2 justify-start mt-[15px] px-[50px] py-[10px]"
+                    text-start flex items-center gap-2 justify-start mt-[15px] px-[50px]"
           onClick={() => router.push("/homeScreen")} // Navigate to the home screen
         >
           HackLab
@@ -106,9 +106,9 @@ export default function NavBar() {
         <div className="w-full flex flex-col mt-[130px] space-y-4 items-start ml-[30px]">
           {/* Dashboard Link */}
           <button
-            className="mt-auto mb-[50px] bg-[#385773] text-primary hover:text-white border-none 
+            className="mb-[20px] bg-[#385773] text-primary hover:text-white border-none 
                     hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
-                    font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-50 lex flex items-center gap-2"
+                    font-nunito rounded-[10px] text-[15px] px-[20px] text-center flex items-center"
             onClick={() => router.push("/my-projects")}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
@@ -120,7 +120,7 @@ export default function NavBar() {
 
           {/* FindProjects Link */}
           <button
-            className="mt-auto mb-[50px] bg-[#385773] text-primary hover:text-white border-none 
+            className="mb-[20px] bg-[#385773] text-primary hover:text-white border-none 
                     hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
                     font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-50 lex flex items-center gap-2"
             onClick={() => router.push("/find-projects")}
@@ -145,7 +145,7 @@ export default function NavBar() {
 
           {/* CreateProject Link */}
           <button
-            className="mt-auto mb-[50px] bg-[#385773] text-primary hover:text-white border-none 
+            className="mt-auto bg-[#385773] text-primary hover:text-white border-none 
                     hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
                     font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-50 flex items-center gap-2"
             onClick={() => router.push("/CreateProject")}
@@ -159,12 +159,25 @@ export default function NavBar() {
           </button>
         </div>
 
-        {/* Logout Button */}
+        {/* Profile Button */}
         <button
-          className="mt-auto mb-[50px] bg-[#385773] text-primary hover:text-white border-none 
+          className="mt-auto bg-[#385773] text-primary hover:text-white border-none 
                     hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
                     font-nunito rounded-[10px] text-[15px] px-[20px] py-[12px] text-center z-50 flex items-center gap-2 ml-[30px]"
-          onClick={() => setShowLogoutPopup(true)}
+          onClick={() => router.push("/Profile")}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          </svg>
+          &nbsp; Profile
+        </button>
+
+        {/* Logout Button */}
+        <button
+          className="mb-[50px] bg-[#385773] text-primary hover:text-white border-none 
+                    hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
+                    font-nunito rounded-[10px] text-[15px] px-[20px] py-[12px] text-center z-50 flex items-center gap-2 ml-[30px]"
+          onClick={() => router.push("/")}
         >
           {/* Logout Icon */}
           <svg
@@ -185,36 +198,7 @@ export default function NavBar() {
           &nbsp; Logout
         </button>
       </div>
-
-      {/* Logout Confirmation Popup */}
-      {showLogoutPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
-          {/* Popup Box */}
-          <div className="bg-white p-8 rounded-lg shadow-xl text-center font-nunito max-w-md w-full mx-4">
-            {/* Popup Text */}
-            <p className="text-lg font-semibold mb-6 text-black">
-              Are you sure you want to logout?
-            </p>
-            {/* Buttons Container */}
-            <div className="flex justify-center space-x-4">
-              {/* Logout Button */}
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300"
-              >
-                Logout
-              </button>
-              {/* Back Button */}
-              <button
-                onClick={() => setShowLogoutPopup(false)}
-                className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-6 rounded-lg transition duration-300"
-              >
-                Back
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 }
