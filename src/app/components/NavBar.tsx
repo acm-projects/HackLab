@@ -4,11 +4,9 @@ import { useRouter } from "next/navigation";
 
 export default function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const router = useRouter();
 
   const handleLogout = () => {
-    setShowLogoutPopup(false);
     router.push("/"); // Redirect to landing page
   };
 
@@ -88,9 +86,20 @@ export default function NavBar() {
         </button>
       </div>
 
+      {/* Black Overlay */}
+      {isMenuOpen && (
+        <div
+          className="fixed inset-0 bg-[#000] bg-opacity-[50%] z-40"
+          style={{ top: "60px", height: "calc(100vh - 60px)" }}
+          onClick={() => setIsMenuOpen(false)} // Close sidebar when clicking the overlay
+        />
+      )}
+
+
+
       {/* Expanding Box Below Navigation */}
       <div
-        className={`fixed top-[0px] w-[270px] h-screen bg-[#385773] rounded-br-[65px] text-white flex flex-col items-start transition-transform duration-500 ${isMenuOpen ? "translate-x-0" : "-translate-x-[270px]"}`}
+        className={`fixed top-[0px] w-[270px] h-screen bg-[#385773] rounded-br-[65px] text-[#fff] flex flex-col items-start transition-transform duration-500 ${isMenuOpen ? "translate-x-0" : "-translate-x-[270px]"}`}
         style={{ zIndex: 40 }} // Ensure the expanding box is below the menu button
       >
         <button
@@ -177,7 +186,7 @@ export default function NavBar() {
           className="mb-[50px] bg-[#385773] text-primary hover:text-white border-none 
                     hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
                     font-nunito rounded-[10px] text-[15px] px-[20px] py-[12px] text-center z-50 flex items-center gap-2 ml-[30px]"
-          onClick={() => router.push("/")}
+          onClick={handleLogout}
         >
           {/* Logout Icon */}
           <svg
@@ -198,7 +207,6 @@ export default function NavBar() {
           &nbsp; Logout
         </button>
       </div>
-      
     </div>
   );
 }
