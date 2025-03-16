@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const slugify = require('slugify');
 const fs = require('fs');
+const { uploadGenImageToS3 } = require('./s3Service');
 
 dotenv.config();
 
@@ -19,8 +20,10 @@ async function imageGen (imagePrompt) {
 			{ prompt },
 		],
 		parameters: {
-			aspectRatio:'4:3'
+			aspectRatio:'4:3',
+            sampleCount: 1
 		}
+        
 	};
 
 	let model_name = 'imagen-3.0-generate-002';
@@ -36,7 +39,9 @@ async function imageGen (imagePrompt) {
 	let result = await resp.json();
 
 	console.log(result);
-
+    
+    let image_url;
+    
 	for(let i=0; i<result.predictions.length; i++) {
 		let ext = '.png';
 		if(result.predictions[i].mimeType == 'image/jpeg') {
@@ -44,14 +49,14 @@ async function imageGen (imagePrompt) {
 		}
 
 		let filename = `output/${slugify(imagePrompt)}_${i+1}${ext}`;
-        //filename = `output/test_${i+1}${ext}`;
 		let buffer = Buffer.from(result.predictions[i].bytesBase64Encoded, 'base64');
-		fs.writeFileSync(filename, buffer);
-		console.log(`Saving ${filename}`);
+        image_url = await uploadGenImageToS3(buffer, filename);
+        console.log(`Uploaded to S3: ${image_url}`);
+		//fs.writeFileSync(filename, buffer);
+		//console.log(`Saving ${filename}`);
 	}
 
-    // return link to image in s3
-
+    return image_url;
 };
 
 module.exports = {

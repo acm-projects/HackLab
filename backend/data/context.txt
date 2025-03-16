@@ -90,11 +90,20 @@ Topic Lookup Table:
 	“stretch”: [ ]
 	“timeline”: {
 		“frontend”: [
-			“task”:	
+			{ “task”: },
+{ “task”: },
+{ “task”: },
+{ “task”: },
+{ “task”: }	
 		],
 		“backend”: [
-			“task”:
+			{ “task”: },
+{ “task”: },
+{ “task”: },
+{ “task”: },
+{ “task”: }
 		]
 	}
 }
+
 

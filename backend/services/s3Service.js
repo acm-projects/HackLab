@@ -16,7 +16,6 @@ const uploadImageToS3 = async (file) => {
         Key: `project-thumbnails/${Date.now()}_${file.originalname}`, // Unique file name
         Body: file.buffer, // The file content (buffer stored in memory by Multer)
         ContentType: file.mimetype // Content type
-        //ACL: 'public-read', // Set permissions to public read
     };
 
     try {
@@ -28,4 +27,22 @@ const uploadImageToS3 = async (file) => {
     }
 };
 
-module.exports = { uploadImageToS3 };
+async function uploadGenImageToS3(buffer, filename) {
+    const params = {
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
+        Key: filename,
+        Body: buffer,
+        ContentType: 'image/png', // Adjust the content type as needed
+    };
+
+    try {
+        const s3Response = await s3.upload(params).promise();
+        return s3Response.Location; // Return the URL of the uploaded image
+    } catch (error) {
+        console.error('Error uploading image to S3:', error);
+        throw error;
+    }
+}
+
+module.exports = { uploadImageToS3, uploadGenImageToS3
+ };

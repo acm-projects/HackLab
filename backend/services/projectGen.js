@@ -18,7 +18,6 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function generateProject(prompt) {
     userPrompt = prompt;
-    console.log(userPrompt);
     const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
 
     //const userPrompt = "A coding project called HackLab that lets you create projects and find other peoples projects to collaborate on. With gamifying features.";
@@ -38,12 +37,14 @@ async function generateProject(prompt) {
         text = text.slice(0, -3); // Remove the last 3 characters (```)
     }
 
-    let myText = JSON.parse(text);
-    let imagePrompt = myText.title;
+    let projectData = JSON.parse(text);
+    let imagePrompt = projectData.title;
     
-    imageGen(imagePrompt);
+    let image_url = await imageGen(imagePrompt);
 
-    return JSON.parse(text);
+    projectData.thumbnail = image_url;
+
+    return projectData;
 }
 
 module.exports = {
