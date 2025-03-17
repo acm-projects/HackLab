@@ -62,11 +62,84 @@ const addSkillToProject = async (projectId, skillId) => {
     return result.rows[0];
 };
 
+const getSkillsFromProject = async (projectId) => {
+    const result = await pool.query(
+        'SELECT skill_id FROM project_skill WHERE project_id = $1',
+        [projectId]
+    );
+    return result.rows;
+};
+
+const deleteSkillFromProject = async (projectId, skillId) => {
+    const result = await pool.query(
+        'DELETE FROM project_skill WHERE project_id = $1 AND skill_id = $2 RETURNING *',
+        [projectId, skillId]
+    );
+    return result.rows[0];
+};
+
+const addTopicToProject = async (projectId, topicId) => {
+    const result = await pool.query(
+        'INSERT INTO project_topic (project_id, topic_id) VALUES ($1, $2) RETURNING *',
+        [projectId, topicId]
+    );
+    return result.rows[0];
+};
+
+const getTopicsFromProject = async (projectId) => {
+    const result = await pool.query(
+        'SELECT topic_id FROM project_topic WHERE project_id = $1',
+        [projectId]
+    );
+    return result.rows;
+};
+
+const deleteTopicFromProject = async (projectId, topicId) => {
+    const result = await pool.query(
+        'DELETE FROM project_topic WHERE project_id = $1 AND topic_id = $2 RETURNING *',
+        [projectId, topicId]
+    );
+    return result.rows[0];
+};
+
+const addTeamPreferenceToProject = async (projectId, rolePreferenceId, xp) => {
+    const result = await pool.query(
+        'INSERT INTO project_team_preference (project_id, role_preference_id, xp) VALUES ($1, $2, $3) RETURNING *',
+        [projectId, rolePreferenceId, xp]
+    );
+    return result.rows[0];
+};
+
+const getTeamPreferencesFromProject = async (projectId) => {
+    const result = await pool.query(
+        'SELECT * FROM project_team_preference WHERE project_id = $1',
+        [projectId]
+    );
+    return result.rows;
+};
+
+const deleteTeamPreferenceFromProject = async (projectId, preferenceId) => {
+    const result = await pool.query(
+        'DELETE FROM project_team_preference WHERE project_id = $1 AND id = $2 RETURNING *',
+        [projectId, preferenceId]
+    );
+    return result.rows[0];
+};
+
 module.exports = {
     createProject,
     getAllProjects,
     getProjectById,
     getGithubById,
     updateProject,
-    deleteProject
+    deleteProject,
+    addSkillToProject,
+    addTopicToProject,
+    addTeamPreferenceToProject,
+    getTeamPreferencesFromProject,
+    deleteTeamPreferenceFromProject,
+    getSkillsFromProject,
+    deleteSkillFromProject,
+    getTopicsFromProject,
+    deleteTopicFromProject
 };
