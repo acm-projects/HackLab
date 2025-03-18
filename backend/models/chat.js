@@ -57,6 +57,22 @@ const Chat = {
             throw error;
         }
     },
+
+    getUsersByProject: async (project_id) => {
+        try {
+            const query = `
+                SELECT u.id, u.name 
+                FROM users u
+                JOIN user_project up ON u.id = up.user_id
+                WHERE up.project_id = $1;
+            `;
+            const result = await db.query(query, [project_id]);
+            return result.rows; // Returns an array of users with their id and name
+        } catch (error) {
+            console.error('Error fetching users by project:', error);
+            throw error;
+        }
+    },
     
     saveMessage: async (user_id, project_id, message, is_dm) => {
         if (!is_dm){ // project chat
@@ -76,20 +92,26 @@ const Chat = {
         const result = await db.query(query, [project_id]);
         return result.rows.map((message) => ({
             ...message,
-            time: formatTime(message.time), // format time
+            time: Chat.formatTime(message.time), // format time
         }));
     },
     getDMs: async (user_id) => {
         console.log(user_id)
         const query = 'SELECT * FROM dm_chat WHERE receiver_id = $1'; // gets all DM projects where user is initial recipient
         const result = await db.query(query, [user_id]);
-        return result.rows;
+        return result.rows.map((message) => ({
+            ...message,
+            time: Chat.formatTime(message.time), // format time
+        }));
     },
     
     getSentDMs: async (user_id) => {
         const query = 'SELECT * FROM dm_chat WHERE sender_id = $1'; // gets all DM projects where the user initially sent DM
         const result = await db.query(query, [user_id]);
-        return result.rows;
+        return result.rows.map((message) => ({
+            ...message,
+            time: Chat.formatTime(message.time), // format time
+        }));
     },
     
     formatTime: (timestamp) => { // converts PostgreSQL timestamp to pretty time format

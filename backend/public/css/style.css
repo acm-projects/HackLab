@@ -1,0 +1,425 @@
+/* this code is a fucking mess just ctrl+f
+to find anything otherwise you'll be 
+stuck in purgatory cuz i aint commenting this*/
+
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+:root {
+	--dark-color-a: #667aff;
+	--dark-color-b: #7386ff;
+	--light-color: #e6e9ff;
+	--success-color: #5cb85c;
+	--error-color: #d9534f;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: 'Roboto', sans-serif;
+	font-size: 16px;
+	background: #cfcfcf;
+	margin: 20px;
+}
+
+ul {
+	list-style: none;
+}
+
+a {
+	text-decoration: none;
+}
+
+nav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+	height: 7vh;
+}
+
+nav h2 {
+    position: absolute;
+    left: 2vw;
+	font-size: min(3vw, 36px);
+	background: -webkit-linear-gradient(#202020, #01a30e);
+  				-webkit-background-clip: text;
+  				-webkit-text-fill-color: transparent;
+}
+
+nav ul {
+    position: absolute;
+    right: 5vw;
+    display: flex;
+    gap: 4vw;
+}
+
+nav button {
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 1.1rem;
+    text-align: center;
+    background-color: #3f3f3f;
+    border: none;
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+	color: white
+}
+
+nav button:hover {
+    background-color: #0f5f0f;
+    transform: scale(1.1);
+    font-style: bold;
+    cursor: pointer;
+}
+
+.btn {
+	cursor: pointer;
+	padding: 2%;
+	background: #01a30e;
+	color: white;
+	border: 0;
+	font-size: 17px;
+	width: 50%;
+	height: 25%;
+}
+
+
+.user-list-bar {
+    background: #3a753f;
+    color: #ffffff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid black;
+}
+
+.user-list-bar h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.user-list-bar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 10px;
+}
+
+/* .user-list-bar ul li {
+    background: #94da9a;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+} */
+.user-list-bar ul button {
+    background: #94da9a;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+}
+
+#on {
+    background: #67996c;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+}
+
+.chat-main {
+	display: grid;
+	grid-template-columns: 1fr 3fr;
+}
+
+.chat-messages {
+	padding: 30px;
+	height: 80%;
+	overflow-y: scroll;
+}
+
+.chat-messages .message {
+	padding: 10px;
+	margin-bottom: 15px;
+	background-color: #bfcfc0;
+	border-radius: 5px;
+	width: 100%;
+	height: 20%;
+}
+
+.chat-messages .bot-alert{
+	text-align: center;
+	display:flex;
+	flex-direction: column;
+	justify-content: center;
+	color: white;
+	margin-bottom: 10px;
+}
+
+.chat-messages .bot-alert .meta {
+	font-size: 11px;
+	font-weight: bold;
+	opacity: 0.85;
+	margin-bottom: 7px;
+}
+
+.chat-messages .bot-alert .text {
+	font-size: 13px;
+	font-weight: bold;
+	color: rgb(205, 255, 213);
+	opacity: 0.9;
+	margin-bottom: 7px;
+}
+
+
+.chat-messages .message .meta {
+	font-size: 15px;
+	font-weight: bold;
+	color: rgb(0, 133, 22);
+	opacity: 0.7;
+	margin-bottom: 7px;
+}
+
+.chat-messages .message .meta span {
+	color: #4b4b4b;
+}
+
+.chat-form-container {
+	height: 20%;
+	padding: 5%;
+	background-color: #3a753f;
+}
+
+.chat-form-container form {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	vertical-align: center;
+}
+
+.chat-form-container input[type='text'] {
+	font-size: 16px;
+	padding: 5px;
+	height: 100%;
+	width: 100%;
+}
+
+.join-container {
+	max-width: 500px;
+	margin: 80px auto;
+	color: #fff;
+}
+
+.join-header {
+	text-align: center;
+	padding: 20px;
+	background: #295e29;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+.join-main {
+	padding: 30px 40px;
+	background: #3f3f3f;
+}
+
+.join-main p {
+	margin-bottom: 20px;
+}
+
+.join-main .form-control {
+	margin-bottom: 20px;
+}
+
+.join-main label {
+	display: block;
+	margin-bottom: 5px;
+}
+
+.join-main input[type='text'] {
+	font-size: 16px;
+	padding: 5px;
+	height: 40px;
+	width: 100%;
+}
+
+
+.popup-container {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; 
+    opacity: 0;
+	bottom: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.popup-container.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+.popup {
+    width: 20vw;
+	margin-left: 66vw;
+    background: white;
+    border-top: 3px solid #000000;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+    position: relative;
+    bottom: -100%;
+    transition: bottom 0.4s ease-out;
+}
+
+.popup.active {
+    bottom: 0;
+}
+
+.popup ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.popup .room-item {
+    padding: 12px;
+    background: #e6e9ff;
+    margin: 6px 0;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.2s ease-in-out;
+}
+
+.popup .room-item:hover {
+    background: #7386ff;
+    color: white;
+}
+
+.text-and-close-wrapper {
+    display: flex;
+    justify-content: center;  
+    align-items: center;
+	vertical-align: center;
+    position: relative;
+	flex-direction: row;
+    width: 100%;
+    padding: 10px;
+}
+
+.project-popup-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    flex: 1;  
+}
+
+
+.popup-close {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: #d9534f;
+    color: rgb(255, 255, 255);
+    border: none;
+	width: 2vw;
+	min-width: 20px;
+	min-height: 20px;
+	height: 2vw;
+	padding-bottom: 3px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.2s ease-in-out;
+}
+
+.popup-close:hover {
+    background: #b52b27;
+}
+
+.draggable-popup {
+    position: absolute;
+    height: 60vh;
+    max-height: 600px;
+    width: 33vw;
+    max-width: 600px;
+    background: white;
+    border: 2px solid #000000;
+    box-shadow: 0px 0px 15px rgb(2, 37, 0);
+    border-radius: 5px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column; 
+    overflow: hidden; 
+}
+
+.popup-header {
+    background: #28572b;
+    color: white;
+    padding: 10px;
+    cursor: grab;
+    display: flex;
+	vertical-align: center;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 6px 6px 0 0;
+    flex-shrink: 0; 
+}
+
+.popup-header .popup-close {
+    background: rgb(248, 85, 85);
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+	top: 6px;
+	right: 6px;
+	text-align: center;
+}
+
+.popup-header .popup-close:hover {
+    background: rgb(250, 40, 40);
+}
+
+.popup-content {
+    background: #555555;
+    flex-grow: 1; 
+    overflow-y: auto; 
+    max-height: calc(100% - 50px); 
+}
+
+.resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    background: #888;
+    cursor: se-resize;
+}
+
+@media (max-width: 700px) {
+	.chat-main {
+		display: block;
+	}
+
+	.chat-sidebar {
+		display: none;
+	}
+}
+

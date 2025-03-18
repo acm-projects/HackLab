@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>HackLab Chat</title>
+</head>
+<body>
+    <nav>
+        <h2 class="hackLab-text">HackLab</h2>
+        <ul>
+            <li><button><a>Projects</a></button></li>
+            <li><button id="chat-button"><a>Chats</a></button></li>
+            <li><button><a>Profile</a></button></li>
+        </ul>
+    </nav>
+    <div class="join-container">
+        <header class="join-header">
+            <h1>HackLab Chat Demo</h1>
+        </header>
+        <main class="join-main">
+            <form id="join-form" onsubmit="return false">
+                <div class="form-control">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" placeholder="Enter username..." required />
+                </div>
+            </form>
+        </main>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/index.js"></script>
+</body>
+</html>
