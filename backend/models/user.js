@@ -80,7 +80,7 @@ const User = {
     // user_project interactions
     getUserProjects: async (userId) => {
         const { rows } = await db.query(
-            'SELECT project.* FROM project JOIN user_project ON project.id = user_project.project_id WHERE user_project.user_id = $1',
+            'SELECT * FROM user_project WHERE user_id = $1',
             [userId]
         );
         return rows;
@@ -105,7 +105,7 @@ const User = {
     // user_likes_project interactions
     getUserLikedProjects: async (userId) => {
         const { rows } = await db.query(
-            'SELECT project.* FROM project JOIN user_likes_project ON project.id = user_likes_project.project_id WHERE user_likes_project.user_id = $1',
+            'SELECT * FROM user_likes_project WHERE user_id = $1',
             [userId]
         );
         return rows;
@@ -130,7 +130,7 @@ const User = {
     // user_bookmarks_project interactions
     getUserBookmarkedProjects: async (userId) => {
         const { rows } = await db.query(
-            'SELECT project.* FROM project JOIN user_bookmarks_project ON project.id = user_bookmarks_project.project_id WHERE user_bookmarks_project.user_id = $1',
+            'SELECT * FROM user_bookmarks_project WHERE user_id = $1',
             [userId]
         );
         return rows;
@@ -155,7 +155,7 @@ const User = {
     // user_project_join_request interactions
     getUserJoinRequests: async (userId) => {
         const { rows } = await db.query(
-            'SELECT project.* FROM project JOIN user_project_join_request ON project.id = user_project_join_request.project_id WHERE user_project_join_request.user_id = $1',
+            'SELECT * FROM user_project_join_request WHERE user_id = $1',
             [userId]
         );
         return rows;

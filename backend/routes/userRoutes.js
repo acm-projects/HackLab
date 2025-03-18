@@ -127,6 +127,7 @@ router.delete('/:id/topics/:topicId', async (req, res) => { // delete topic from
 });
 
 // user_project routes
+// will return project_id and role_id's for the user, not the actual project information and stuff
 router.get('/:id/projects', async (req, res) => { // get projects for a user
     try {
         const projects = await User.getUserProjects(req.params.id);
@@ -136,7 +137,6 @@ router.get('/:id/projects', async (req, res) => { // get projects for a user
     }
 });
 
-// should work but haven't tested cause db has no projects
 router.post('/:id/projects/:projectID/:roleID', async (req, res) => { // add project to user
     try {
         const { id, projectID, roleID } = req.params;
@@ -147,7 +147,6 @@ router.post('/:id/projects/:projectID/:roleID', async (req, res) => { // add pro
     }
 });
 
-// same thing with testing
 router.delete('/:id/projects/:projectId', async (req, res) => { // delete project from user
     try {
         const isDeleted = await User.deleteUserProject(req.params.id, req.params.projectId);
@@ -162,6 +161,7 @@ router.delete('/:id/projects/:projectId', async (req, res) => { // delete projec
 });
 
 // user_likes_project routes
+// will return the project id's not the actual projects
 router.get('/:id/liked-projects', async (req, res) => { // get liked projects from user
     try {
         const likedProjects = await User.getUserLikedProjects(req.params.id);
@@ -171,7 +171,6 @@ router.get('/:id/liked-projects', async (req, res) => { // get liked projects fr
     }
 });
 
-// can't test no projects
 router.post('/:id/liked-projects/:projectID', async (req, res) => { // add liked project to user
     try {
         const { id, projectID } = req.params;
@@ -182,7 +181,6 @@ router.post('/:id/liked-projects/:projectID', async (req, res) => { // add liked
     }
 });
 
-// can't test no projects
 router.delete('/:id/liked-projects/:projectId', async (req, res) => { // remove liked project for user
     try {
         const isDeleted = await User.deleteUserLikedProject(req.params.id, req.params.projectId);
@@ -197,6 +195,7 @@ router.delete('/:id/liked-projects/:projectId', async (req, res) => { // remove 
 });
 
 // user_bookmarks_project routes
+// will return the project id's not the actual projects
 router.get('/:id/bookmarked-projects', async (req, res) => { // get users bookmarked projects
     try {
         const bookmarkedProjects = await User.getUserBookmarkedProjects(req.params.id);
@@ -206,7 +205,6 @@ router.get('/:id/bookmarked-projects', async (req, res) => { // get users bookma
     }
 });
 
-// can't test
 router.post('/:id/bookmarked-projects/:projectID', async (req, res) => { // add a bookmarked project for user
     try {
         const { id, projectID } = req.params;
@@ -217,7 +215,6 @@ router.post('/:id/bookmarked-projects/:projectID', async (req, res) => { // add 
     }
 });
 
-// can't test
 router.delete('/:id/bookmarked-projects/:projectId', async (req, res) => { // remove a bookmarked project for user
     try {
         const isDeleted = await User.deleteUserBookmarkedProject(req.params.id, req.params.projectId);
@@ -232,6 +229,7 @@ router.delete('/:id/bookmarked-projects/:projectId', async (req, res) => { // re
 });
 
 // user_project_join_request routes
+// will return project id's not the actual projects
 router.get('/:id/join-requests', async (req, res) => { // get a user's join requests
     try {
         const joinRequests = await User.getUserJoinRequests(req.params.id);
@@ -241,7 +239,6 @@ router.get('/:id/join-requests', async (req, res) => { // get a user's join requ
     }
 });
 
-// can't test
 router.post('/:id/join-requests/:projectID', async (req, res) => { // add a join request for user
     try {
         const { id, projectID } = req.params;
@@ -252,7 +249,6 @@ router.post('/:id/join-requests/:projectID', async (req, res) => { // add a join
     }
 });
 
-// can't test
 router.delete('/:id/join-requests/:projectId', async (req, res) => { // remove join request for project from user
     try {
         const isDeleted = await User.deleteUserJoinRequest(req.params.id, req.params.projectId);
