@@ -67,12 +67,23 @@ async function generateResume(github_repo_link) {
   const commitHistoryText = JSON.stringify(commitHistory);
   const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
   const context = await getContext();
-  const fullPrompt = `${context}\n\nCommit history: ${commitHistoryText}`;
-  const result = await model.generateContent(fullPrompt);
+  const fullPrompt = `${context}\n\nProject Title: ${repo}\n\nCommit history: ${commitHistoryText}`;
+  const result = await model.generateContent(fullPrompt, {response_format: "json"});
   const genResponse = await result.response;
-  const text = genResponse.text();
+  let text = genResponse.text();
   console.log(text);
-  return text;
+
+  // Remove ```json from the response if present
+  if (text.startsWith('```json')) {
+    text = text.slice(7); // Remove the first 7 characters (```json)
+  }
+  // Remove trailing ``` if present
+  if (text.endsWith('```')) {
+      text = text.slice(0, -3); // Remove the last 3 characters (```)
+  }
+
+  let resumeData = JSON.parse(text);
+  return resumeData;
 };
 
 module.exports = {

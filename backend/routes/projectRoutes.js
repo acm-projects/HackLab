@@ -7,6 +7,7 @@ const  upload  = require('../middleware/uploadMiddleware');
 const { uploadImageToS3 } = require('../services/s3Service');
 const router = express.Router();
 
+
 // Create a new project
 router.post('/',upload.single('thumbnail'), async (req, res) => {
     console.log('Received request to create project');
@@ -44,7 +45,7 @@ router.post('/',upload.single('thumbnail'), async (req, res) => {
     }
 });
 
-// update a project
+// Update a project
 router.put('/:id', upload.single('thumbnail'), async (req, res) => {
     console.log('Received request to update project');
     const { accessToken, ...projectData } = req.body;
@@ -115,7 +116,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Generate a project from AI prompt
+// Generate a project
 router.post('/generateProject', async (req, res) => {
     try {
         const { prompt } = req.body;
@@ -127,6 +128,7 @@ router.post('/generateProject', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
 
 // Generate resumes for everyone on a project
 router.get('/:id/generateResume', async (req, res) => {

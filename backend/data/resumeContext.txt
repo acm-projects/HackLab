@@ -12,5 +12,17 @@ Designed a responsive UI using React and Tailwind CSS, improving user engagement
 Implemented WebSockets for real-time messaging, handling 10,000+ messages daily.
 Deployed on AWS with a CI/CD pipeline, reducing deployment time by 50%.
 
-Only respond with the paragraphs for each user.
+Here is the json format that you must respond with.
+
+{
+  "contributors": [
+    {
+      "name": "",
+      "project": "",
+      "tech_stack": [],
+      "bullet_points": []
+    }
+  ]
+}
+
 For each user: Make sure to use meaningful numerical metrics for at least 3 bullet points, and at least one is a percentage and at least one is  a specific amount.
