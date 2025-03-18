@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swaggerConfig");
 
 const app = express();
 app.use(cors());
@@ -13,6 +15,9 @@ const skillRoutes = require('./routes/skillRoutes');
 const topicRoutes = require('./routes/topicRoutes');
 const roleRoutes = require('./routes/roleRoutes');
 
+
+// Serve Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Use the routes
 //app.use('/users', userRoutes);
 app.use('/projects', projectRoutes);
@@ -24,4 +29,5 @@ app.use('/roles', roleRoutes);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log("Swagger Docs available at http://localhost:3000/api-docs");
 });
