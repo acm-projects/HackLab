@@ -32,6 +32,7 @@ router.get('/:id', async (req, res) => { // gets user given id
     }
 });
 
+// haven't checked but should be good
 router.put('/:id', async (req, res) => { // change info for user given id
     try {
         const updatedUser = await User.updateUser(req.params.id, req.body); // updates user
@@ -45,6 +46,7 @@ router.put('/:id', async (req, res) => { // change info for user given id
     }
 });
 
+// also haven't checked but should be good
 router.delete('/:id', async (req, res) => { // delete user given id
     try {
         const isDeleted = await User.deleteUser(req.params.id); // delete user
@@ -68,13 +70,13 @@ router.get('/:id/skills', async (req, res) => { // get skills for user given id
     }
 });
 
-router.post('/:id/skills', async (req, res) => { // add skills to user given id
+router.post('/:id/skills/:skillID', async (req, res) => {
     try {
-        const { skill_id } = req.body;
-        const newSkill = await User.addUserSkill(req.params.id, skill_id);
-        res.status(201).json(newSkill); // success, send to client
+        const { id, skillID } = req.params; // Get id and skillID from URL parameters
+        const newSkill = await User.addUserSkill(id, skillID); // Add skill to user
+        res.status(201).json(newSkill); // Success, send the new skill to the client
     } catch (error) {
-        res.status(500).json({ error: error.message }); // server error
+        res.status(500).json({ error: error.message }); // Server error
     }
 });
 
@@ -101,10 +103,10 @@ router.get('/:id/topics', async (req, res) => { // get topics for given user id
     }
 });
 
-router.post('/:id/topics', async (req, res) => { // add topic to user
+router.post('/:id/topics/:topicID', async (req, res) => { // add topic to user
     try {
-        const { topic_id } = req.body;
-        const newTopic = await User.addUserTopic(req.params.id, topic_id);
+        const { id, topicID } = req.params;
+        const newTopic = await User.addUserTopic(id, topicID);
         res.status(201).json(newTopic); // success, send to client
     } catch (error) {
         res.status(500).json({ error: error.message }); // server error
@@ -134,16 +136,18 @@ router.get('/:id/projects', async (req, res) => { // get projects for a user
     }
 });
 
-router.post('/:id/projects', async (req, res) => { // add project to user
+// should work but haven't tested cause db has no projects
+router.post('/:id/projects/:projectID/:roleID', async (req, res) => { // add project to user
     try {
-        const { project_id, role_id } = req.body;
-        const newProject = await User.addUserProject(req.params.id, project_id, role_id);
+        const { id, projectID, roleID } = req.params;
+        const newProject = await User.addUserProject(id, projectID, roleID);
         res.status(201).json(newProject); // success, send to client
     } catch (error) {
         res.status(500).json({ error: error.message }); // server error
     }
 });
 
+// same thing with testing
 router.delete('/:id/projects/:projectId', async (req, res) => { // delete project from user
     try {
         const isDeleted = await User.deleteUserProject(req.params.id, req.params.projectId);
@@ -167,16 +171,18 @@ router.get('/:id/liked-projects', async (req, res) => { // get liked projects fr
     }
 });
 
-router.post('/:id/liked-projects', async (req, res) => { // add liked project to user
+// can't test no projects
+router.post('/:id/liked-projects/:projectID', async (req, res) => { // add liked project to user
     try {
-        const { project_id } = req.body;
-        const newLikedProject = await User.addUserLikedProject(req.params.id, project_id);
+        const { id, projectID } = req.params;
+        const newLikedProject = await User.addUserLikedProject(id, projectID);
         res.status(201).json(newLikedProject); // success, send to client
     } catch (error) {
         res.status(500).json({ error: error.message }); // server error
     }
 });
 
+// can't test no projects
 router.delete('/:id/liked-projects/:projectId', async (req, res) => { // remove liked project for user
     try {
         const isDeleted = await User.deleteUserLikedProject(req.params.id, req.params.projectId);
@@ -200,16 +206,18 @@ router.get('/:id/bookmarked-projects', async (req, res) => { // get users bookma
     }
 });
 
-router.post('/:id/bookmarked-projects', async (req, res) => { // add a bookmarked project for user
+// can't test
+router.post('/:id/bookmarked-projects/:projectID', async (req, res) => { // add a bookmarked project for user
     try {
-        const { project_id } = req.body;
-        const newBookmarkedProject = await User.addUserBookmarkedProject(req.params.id, project_id);
+        const { id, projectID } = req.params;
+        const newBookmarkedProject = await User.addUserBookmarkedProject(id, projectID);
         res.status(201).json(newBookmarkedProject); // success, send to client
     } catch (error) {
         res.status(500).json({ error: error.message }); // server error
     }
 });
 
+// can't test
 router.delete('/:id/bookmarked-projects/:projectId', async (req, res) => { // remove a bookmarked project for user
     try {
         const isDeleted = await User.deleteUserBookmarkedProject(req.params.id, req.params.projectId);
@@ -233,16 +241,18 @@ router.get('/:id/join-requests', async (req, res) => { // get a user's join requ
     }
 });
 
-router.post('/:id/join-requests', async (req, res) => { // add a join request for user
+// can't test
+router.post('/:id/join-requests/:projectID', async (req, res) => { // add a join request for user
     try {
-        const { project_id } = req.body;
-        const newJoinRequest = await User.addUserJoinRequest(req.params.id, project_id);
+        const { id, projectID } = req.params;
+        const newJoinRequest = await User.addUserJoinRequest(id, projectID);
         res.status(201).json(newJoinRequest); // success, send to client
     } catch (error) {
         res.status(500).json({ error: error.message }); // server error
     }
 });
 
+// can't test
 router.delete('/:id/join-requests/:projectId', async (req, res) => { // remove join request for project from user
     try {
         const isDeleted = await User.deleteUserJoinRequest(req.params.id, req.params.projectId);
