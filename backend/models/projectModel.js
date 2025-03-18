@@ -9,22 +9,6 @@ const createProject = async (projectData) => {
     return result.rows[0];
 };
 
-/*example post request
-
-{
-  "accessToken": "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",
-  "title": "AI-Powered Task Manager",
-  "description": "A task manager that uses AI to suggest priorities.",
-  "short_description": "AI helps prioritize tasks.",
-  "type": "Web App",
-  "mvp": { "features": ["AI task prioritization", "Basic task management"] },
-  "stretch": { "features": ["Team collaboration", "Voice input", "Calendar sync"] },
-  "timeline": { "phase1": "Q2 2025", "phase2": "Q3 2025" },
-  "team_lead_id": 1
-}
-
-*/
-
 const updateProject = async (id, projectData) => {
     const { title, description, short_description, type, mvp, stretch, timeline, team_lead_id, thumbnail } = projectData;
     const result = await pool.query(

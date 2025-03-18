@@ -240,7 +240,7 @@ router.post('/:projectId/teamPreference', async (req, res) => {
 });
 
 // Get team preferences for a project
-router.get('/:projectId/team-preferences', async (req, res) => {
+router.get('/:projectId/teamPreference', async (req, res) => {
     console.log('Received request to get team preferences for a project');
     const { projectId } = req.params;
     try {
@@ -253,7 +253,7 @@ router.get('/:projectId/team-preferences', async (req, res) => {
 });
 
 // Delete a team preference from a project
-router.delete('/:projectId/team-preferences/:preferenceId', async (req, res) => {
+router.delete('/:projectId/teamPreference/:preferenceId', async (req, res) => {
     console.log('Received request to delete a team preference from a project');
     const { projectId, preferenceId } = req.params;
     try {

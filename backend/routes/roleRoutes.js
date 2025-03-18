@@ -2,7 +2,7 @@ const express = require('express');
 const { getAllRoles } = require('../models/roleModel');
 const router = express.Router();
 
-// Get all skills
+// Get all roles
 router.get('/', async (req, res) => {
     try {
         const roles = await getAllRoles();
