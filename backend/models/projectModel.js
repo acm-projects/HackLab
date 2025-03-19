@@ -48,7 +48,7 @@ const addSkillToProject = async (projectId, skillId) => {
 
 const getSkillsFromProject = async (projectId) => {
     const result = await pool.query(
-        'SELECT skill_id FROM project_skill WHERE project_id = $1',
+        'SELECT skill.* FROM skill JOIN project_skill ON skill.id = project_skill.skill_id WHERE project_skill.project_id = $1',
         [projectId]
     );
     return result.rows;
@@ -72,7 +72,7 @@ const addTopicToProject = async (projectId, topicId) => {
 
 const getTopicsFromProject = async (projectId) => {
     const result = await pool.query(
-        'SELECT topic_id FROM project_topic WHERE project_id = $1',
+        'SELECT topic.* FROM topic JOIN project_topic ON topic.id = project_topic.topic_id WHERE project_topic.project_id = $1',
         [projectId]
     );
     return result.rows;

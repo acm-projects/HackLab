@@ -750,9 +750,12 @@
  *               items:
  *                 type: object
  *                 properties:
- *                   string_id:
+ *                   id:
  *                     type: integer
  *                     description: The ID of the skill.
+ *                   skill:
+ *                      type: string
+ *                      description: The name of the skill.
  *       404:
  *         description: Project not found.
  *       500:
@@ -875,9 +878,12 @@
  *               items:
  *                 type: object
  *                 properties:
- *                   topic_id:
+ *                   id:
  *                     type: integer
  *                     description: The ID of the topic.
+ *                   topic:
+ *                     type: string
+ *                     description: The name of the topic.
  *       404:
  *         description: Project not found.
  *       500:
@@ -1111,7 +1117,7 @@
  *                   id:
  *                     type: integer
  *                     description: The role ID
- *                   role:
+ *                   name:
  *                     type: string
  *                     description: The role name
  *       500:
