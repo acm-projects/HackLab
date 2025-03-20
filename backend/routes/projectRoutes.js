@@ -11,10 +11,9 @@ const router = express.Router();
 // Create a new project
 router.post('/',upload.single('thumbnail'), async (req, res) => {
     console.log('Received request to create project');
-    console.log(req.body);
-    const { accessToken, ...projectData } = req.body;
-    const repoName = projectData.title;
-    const repoDesc = projectData.short_description;
+    const { accessToken, projectDataString } = req.body; // Extract accessToken and projectData
+    const projectData = JSON.parse(projectDataString); // Parse projectData JSON string
+    const { title: repoName, short_description: repoDesc } = projectData;
     const image = req.file;
     try {
         // Create a new repository on GitHub
@@ -24,8 +23,12 @@ router.post('/',upload.single('thumbnail'), async (req, res) => {
         // Add repository information to project data
         projectData.github_repo_url = url;
 
+        // store thumbnail link if user uploads a thumbnail link
+        if (projectData.thumbnail){
+            projectData.thumbnail = projectData.thumbnail;
+        }
         // store image file if user uploads a thumbnail
-        if (image) {
+        else if (image) {
             console.log('Uploading image to S3');
             const image_url = await uploadImageToS3(image);
             projectData.thumbnail = image_url;
@@ -35,8 +38,14 @@ router.post('/',upload.single('thumbnail'), async (req, res) => {
             projectData.thumbnail = "";
         }
 
+        projectData.mvp = JSON.stringify(projectData.mvp);
+        projectData.tech_stack = JSON.stringify(projectData.tech_stack);
+        projectData.stretch = JSON.stringify(projectData.stretch);
+        projectData.timeline = JSON.stringify(projectData.timeline);
+
         //create project in database
         console.log('Creating project in database');
+        console.log(projectData);
         const project = await createProject(projectData);
         res.status(201).json(project);
     } catch (error) {
@@ -46,9 +55,10 @@ router.post('/',upload.single('thumbnail'), async (req, res) => {
 });
 
 // Update a project
-router.put('/:id', upload.single('thumbnail'), async (req, res) => {
+router.put('/:id',upload.single('thumbnail'), async (req, res) => {
     console.log('Received request to update project');
-    const { accessToken, ...projectData } = req.body;
+    const { projectDataString } = req.body;
+    let projectData = JSON.parse(projectDataString);
     const image = req.file;
     try {
         // Get the existing project
@@ -63,8 +73,14 @@ router.put('/:id', upload.single('thumbnail'), async (req, res) => {
             projectData.thumbnail = image_url;
         }
         else {
+            console.log('No image uploaded, using existing thumbnail');
             projectData.thumbnail = existingProject.thumbnail;
         }
+
+        projectData.mvp = JSON.stringify(projectData.mvp);
+        projectData.tech_stack = JSON.stringify(projectData.tech_stack);
+        projectData.stretch = JSON.stringify(projectData.stretch);
+        projectData.timeline = JSON.stringify(projectData.timeline);
 
         // Update project in database
         console.log('Updating project in database');
