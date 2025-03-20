@@ -27,7 +27,7 @@ export default function CreateProject() {
 
           <button className="w-[350px] h-[50px] bg-[#ffffff] text-[#000] hover:bg-gray-900 border-none 
                       focus:ring-4 focus:outline-none focus:ring-blue-300 
-                      font-nunito text-[15px] flex text-center justify-center items-center gap-2 rounded-[10px] ml-[250px]">
+                      font-nunito text-[15px] flex text-center justify-center items-center gap-2 rounded-[10px] ml-[250px]" onClick={() => router.push("/AIProject")}>
               <p>LET AI DO IT FOR YOU</p>
 
           </button>

@@ -12,7 +12,7 @@ export default function LandingPage() {
          
         {/* Top Bar */}
         <div className="fixed left-[50px] right-[50px] z-50 flex justify-between bg-[#ffffff] ">
-          <h1 className="text-hacklab-title font-press">{"<"}H⒜CKLAB{"/>"}</h1> 
+          <h1 className="text-hacklab-title font-press">HACKLAB</h1> 
           <AuthButtons /> {/* Imported Sign In & Sign Up Buttons */}
         </div>
 

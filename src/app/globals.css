@@ -122,3 +122,126 @@ body {
 .animate-fade-in {
   animation: fadeInFromTop 1s ease-out forwards;
 }
+
+
+/*Robot*/
+/* Siri Container */
+.siri-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px; /* Keeps the Siri animation small */
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Outer Glowing Siri Shape (More Extreme Morphing) */
+.siri-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.2) 30%, transparent 70%);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0px 0px 40px rgba(255, 255, 255, 0.3);
+  animation: siri-heartbeat 4s infinite ease-in-out alternate, siri-morph 6s infinite ease-in-out;
+}
+
+/* Siri Waves - Dynamic Colors */
+.siri-wave {
+  position: absolute;
+  width: 160%;
+  height: 160%;
+  top: -30%;
+  left: -30%;
+  border-radius: 50%;
+  opacity: 0.9;
+  filter: blur(30px);
+  animation: siri-flow 10s infinite ease-in-out alternate;
+}
+
+/* Siri Wave Colors */
+.siri-wave-1 {
+  background: radial-gradient(circle, rgba(58, 123, 213, 0.7) 15%, rgba(255, 255, 255, 0.9) 50%, rgba(150, 50, 255, 1) 80%);
+  animation-delay: 0s;
+}
+
+.siri-wave-2 {
+  background: radial-gradient(circle, rgba(150, 50, 255, 1) 20%, rgba(255, 255, 255, 0.9) 50%, rgba(0, 255, 255, 0.8) 85%);
+  animation-delay: 3s;
+}
+
+.siri-wave-3 {
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.8) 10%, rgba(255, 255, 255, 0.9) 50%, rgba(150, 50, 255, 1) 90%);
+  animation-delay: 6s;
+}
+
+/* Siri-Like Organic Fluid Motion */
+@keyframes siri-flow {
+  0% {
+    transform: translate(0%, 0%) rotate(0deg);
+  }
+  25% {
+    transform: translate(5%, -5%) rotate(15deg);
+  }
+  50% {
+    transform: translate(-5%, 5%) rotate(-15deg);
+  }
+  75% {
+    transform: translate(5%, 5%) rotate(15deg);
+  }
+  100% {
+    transform: translate(-5%, -5%) rotate(-15deg);
+  }
+}
+
+/* Heartbeat Effect */
+@keyframes siri-heartbeat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0px 0px 40px rgba(255, 255, 255, 0.3);
+  }
+  30% {
+    transform: scale(1.08);
+    box-shadow: 0px 0px 80px rgba(255, 255, 255, 0.5);
+  }
+  60% {
+    transform: scale(1);
+    box-shadow: 0px 0px 40px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    transform: scale(1.08);
+    box-shadow: 0px 0px 80px rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* More Evident Siri Morphing Effect */
+@keyframes siri-morph {
+  0% {
+    border-radius: 50%;
+  }
+  10% {
+    border-radius: 65% 35% 55% 45% / 45% 55% 35% 65%;
+  }
+  25% {
+    border-radius: 40% 60% 70% 30% / 60% 40% 30% 70%;
+  }
+  40% {
+    border-radius: 70% 30% 50% 50% / 50% 50% 30% 70%;
+  }
+  55% {
+    border-radius: 55% 45% 40% 60% / 60% 40% 45% 55%;
+  }
+  70% {
+    border-radius: 50% 50% 70% 30% / 30% 70% 50% 50%;
+  }
+  85% {
+    border-radius: 35% 65% 45% 55% / 55% 45% 65% 35%;
+  }
+  100% {
+    border-radius: 50%;
+  }
+}
