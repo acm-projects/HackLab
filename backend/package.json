@@ -11,6 +11,10 @@
     "dev": "nodemon server"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "@sindresorhus/slugify": "^2.2.1",
+    "aws-sdk": "^2.1692.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "moment": "^2.30.1",
@@ -18,6 +22,13 @@
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "multer": "^1.4.5-lts.1",
+    "multer-s3": "^3.0.1",
+    "octokit": "^4.1.2",
+    "pg": "^8.13.3",
+    "slugify": "^1.6.6",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }
