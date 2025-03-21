@@ -17,8 +17,6 @@ app.use(express.json()); // Middleware to parse JSON requests
 app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
 
 // Import route files
-//const userRoutes = require('./routes/userRoutes');
-const projectRoutes = require('./routes/projectRoutes');
 const skillRoutes = require('./routes/skillRoutes');
 const topicRoutes = require('./routes/topicRoutes');
 const roleRoutes = require('./routes/roleRoutes');
@@ -31,7 +29,7 @@ const projectRoutes = require('./routes/projectRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 
 // Use the routes
-//app.use('/users', userRoutes);
+app.use('/users', userRoutes);
 app.use('/projects', projectRoutes);
 app.use('/skills', skillRoutes);
 app.use('/topics', topicRoutes);
