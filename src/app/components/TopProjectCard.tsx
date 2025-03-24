@@ -1,31 +1,30 @@
-// components/ProjectCard.tsx
-import React, { useState } from "react";
+"use client";
+import React from "react";
 
 interface ProjectCardProps {
   title: string;
   groupLeader: string;
   likes: number;
   image: string;
+  isLiked: boolean;
+  isBookmarked: boolean;
+  onLike: (e: React.MouseEvent) => void;
+  onBookmark: (e: React.MouseEvent) => void;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ title, groupLeader, likes: initialLikes, image }) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [likes, setLikes] = useState(initialLikes);
-
-  const handleLike = () => {
-    setLikes((prevLikes) => prevLikes + (isLiked ? -1 : 1));
-    setIsLiked((prev) => !prev);
-  };
-
-  const handleBookmark = () => {
-    setIsBookmarked((prev) => !prev);
-  };
-  
-
+const ProjectCard: React.FC<ProjectCardProps> = ({ 
+  title, 
+  groupLeader, 
+  likes, 
+  image,
+  isLiked,
+  isBookmarked,
+  onLike,
+  onBookmark
+}) => {
   return (
     <div
-      className="relative h-[250px] rounded-[15px] border border-black bg-[#ffffff] overflow-hidden"
+      className="relative h-[250px] rounded-[15px] border border-black bg-[#ffffff] overflow-hidden cursor-pointer"
       style={{ boxShadow: '5px 5px 5px rgb(30 40 50/ 40%)' }}
     >
       {/* Top Image Section */}
@@ -42,16 +41,22 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ title, groupLeader, likes: in
         </div>
 
         {/* Like and Bookmark Buttons */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mt-2">
           {/* Like Button */}
           <div className="flex items-center gap-2">
-            <button onClick={handleLike} className="flex items-center outline-none border-none bg-transparent">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onLike(e);
+              }} 
+              className="flex items-center outline-none border-none bg-transparent"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill={isLiked ? "red" : "none"}
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
-                stroke={isLiked ? "#000" : "#000000"}
+                stroke={isLiked ? "red" : "#000000"}
                 className="size-[25px] transition-colors duration-200"
               >
                 <path
@@ -60,18 +65,26 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ title, groupLeader, likes: in
                   d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
                 />
               </svg>
-              <span className="text-sm text-[#000]"> &nbsp;{likes} Likes</span>
+              <span className={`text-sm ${isLiked ? "text-red-500" : "text-[#000]"}`}>
+                &nbsp;{likes} Likes
+              </span>
             </button>
           </div>
 
           {/* Bookmark Button */}
-          <button onClick={handleBookmark} className="outline-none border-none bg-transparent">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onBookmark(e);
+            }} 
+            className="outline-none border-none bg-transparent"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill={isBookmarked ? "#EFD033" : "none"}
               viewBox="0 0 24 24"
               strokeWidth="1.5"
-              stroke={isBookmarked ? "#000" : "#000000"}
+              stroke={isBookmarked ? "#EFD033" : "#000000"}
               className="size-[25px] transition-colors duration-200"
             >
               <path
