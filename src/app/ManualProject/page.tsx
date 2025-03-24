@@ -1,93 +1,84 @@
 "use client";
-import React, { useState } from "react";
-import NavBar from "../components/NavBar";
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ProjectData } from "../shared/types";
 
 export default function ManualProject() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   // State to manage the input values
   const [projectName, setProjectName] = useState<string>("");
   const [projectType, setProjectType] = useState<string>("");
   const [techToBeUsed, setTechToBeUsed] = useState<string>("");
   const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
   const [description, setDescription] = useState<string>("");
-  const [mvpInput, setMvpInput] = useState<string>(""); // Input for MVP's
-  const [mvps, setMvps] = useState<string[]>([]); // List of MVP's
-  const [stretchGoalInput, setStretchGoalInput] = useState<string>(""); // Input for Stretch Goals
-  const [stretchGoals, setStretchGoals] = useState<string[]>([]); // List of Stretch Goals
+  const [mvpInput, setMvpInput] = useState<string>("");
+  const [mvps, setMvps] = useState<string[]>([]);
+  const [stretchGoalInput, setStretchGoalInput] = useState<string>("");
+  const [stretchGoals, setStretchGoals] = useState<string[]>([]);
   const [techOptions, setTechOptions] = useState<string[]>([
-    "Java",
-    "Python",
-    "C++",
-    "HTML",
-    "CSS",
-    "JavaScript",
-    "TypeScript",
-    "React",
-    "Angular",
-    "Vue.js",
-    "Node.js",
-    "Express.js",
-    "Django",
-    "Flask",
-    "Spring Boot",
-    "Ruby on Rails",
-    "PHP",
-    "Laravel",
-    "Swift",
-    "Kotlin",
-    "Go",
-    "Rust",
-    "SQL",
-    "MongoDB",
-    "PostgreSQL",
-    "Firebase",
-    "AWS",
-    "Docker",
-    "Kubernetes",
-    "Git",
-    "GraphQL",
-    "REST API",
-    "Tailwind CSS",
-    "Bootstrap",
-    "SASS",
-    "LESS",
-    "Webpack",
-    "Babel",
-    "Jest",
-    "Cypress",
-    "Selenium",
-    "TensorFlow",
-    "PyTorch",
-    "Pandas",
-    "NumPy",
-    "Unity",
-    "Unreal Engine",
+    "Java", "Python", "C++", "HTML", "CSS", "JavaScript", "TypeScript", 
+    "React", "Angular", "Vue.js", "Node.js", "Express.js", "Django", 
+    "Flask", "Spring Boot", "Ruby on Rails", "PHP", "Laravel", "Swift", 
+    "Kotlin", "Go", "Rust", "SQL", "MongoDB", "PostgreSQL", "Firebase", 
+    "AWS", "Docker", "Kubernetes", "Git", "GraphQL", "REST API", 
+    "Tailwind CSS", "Bootstrap", "SASS", "LESS", "Webpack", "Babel", 
+    "Jest", "Cypress", "Selenium", "TensorFlow", "PyTorch", "Pandas", 
+    "NumPy", "Unity", "Unreal Engine"
   ]);
   const [filteredTechOptions, setFilteredTechOptions] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const [showMvpWarning, setShowMvpWarning] = useState<boolean>(false); // State for MVP warning
-  const [showStretchGoalWarning, setShowStretchGoalWarning] = useState<boolean>(false); // State for Stretch Goal warning
+  const [showMvpWarning, setShowMvpWarning] = useState<boolean>(false);
+  const [showStretchGoalWarning, setShowStretchGoalWarning] = useState<boolean>(false);
+
+  // Load data if coming from review page
+  useEffect(() => {
+    const dataParam = searchParams.get('data');
+    if (dataParam) {
+      try {
+        const data: ProjectData = JSON.parse(decodeURIComponent(dataParam));
+        setProjectName(data.projectName);
+        setProjectType(data.projectType);
+        setSelectedTechs(data.techToBeUsed);
+        setDescription(data.description);
+        setMvps(data.mvps);
+        setStretchGoals(data.stretchGoals);
+      } catch (error) {
+        console.error('Error parsing project data:', error);
+      }
+    }
+  }, [searchParams]);
 
   // Function to handle form submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const projectData = {
-      id: Date.now(), // Generate a unique ID (using timestamp for simplicity)
+    
+    // Basic validation
+    if (!projectName || !projectType || selectedTechs.length === 0) {
+      alert('Please fill in all required fields');
+      return;
+    }
+  
+    const projectData: ProjectData = {
+      id: Date.now(),
       projectName,
       projectType,
-      techToBeUsed: selectedTechs, // Use selectedTechs instead of techToBeUsed
+      techToBeUsed: selectedTechs,
       description,
-      mvps, // Include MVP's in the submitted data
-      stretchGoals, // Include Stretch Goals in the submitted data
+      mvps,
+      stretchGoals,
     };
-    console.log(projectData); // You can replace this with your logic to store the data
+    
+    // Changed from '/review' to '/reviewPage' to match your folder name
+    router.push(`/reviewPage?data=${encodeURIComponent(JSON.stringify(projectData))}`);
   };
 
-  // Function to handle tech input changes
+  // Rest of your existing functions remain the same...
   const handleTechInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setTechToBeUsed(value);
 
-    // Filter options based on input (case-insensitive)
     if (value) {
       const filtered = techOptions.filter((tech) =>
         tech.toLowerCase().includes(value.toLowerCase())
@@ -99,86 +90,75 @@ export default function ManualProject() {
     }
   };
 
-  // Function to handle tech selection from dropdown
   const handleTechSelect = (tech: string) => {
     if (!selectedTechs.includes(tech)) {
-      setSelectedTechs([...selectedTechs, tech]); // Add the selected tech to the list
+      setSelectedTechs([...selectedTechs, tech]);
     }
-    setTechToBeUsed(""); // Clear the input after selection
+    setTechToBeUsed("");
     setShowDropdown(false);
   };
 
-  // Function to add a new tech option
   const handleAddNewTech = () => {
     if (techToBeUsed && !techOptions.includes(techToBeUsed)) {
-      setTechOptions([...techOptions, techToBeUsed]); // Add the new tech to the options list
-      setSelectedTechs([...selectedTechs, techToBeUsed]); // Add the new tech to the selected list
-      setTechToBeUsed(""); // Clear the input after adding
+      setTechOptions([...techOptions, techToBeUsed]);
+      setSelectedTechs([...selectedTechs, techToBeUsed]);
+      setTechToBeUsed("");
     }
     setShowDropdown(false);
   };
 
-  // Function to remove a selected tech
   const handleRemoveTech = (tech: string) => {
     setSelectedTechs(selectedTechs.filter((t) => t !== tech));
   };
 
-  // Function to handle Enter key press
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      e.preventDefault(); // Prevent form submission
-      setShowDropdown(false); // Close the dropdown
+      e.preventDefault();
+      setShowDropdown(false);
     }
   };
 
-  // Function to add an MVP
   const handleAddMvp = () => {
     if (mvpInput && mvps.length < 6) {
-      setMvps([...mvps, mvpInput]); // Add the MVP to the list
-      setMvpInput(""); // Clear the input after adding
+      setMvps([...mvps, mvpInput]);
+      setMvpInput("");
       if (mvps.length === 5) {
-        setShowMvpWarning(true); // Show warning after adding the 6th MVP
+        setShowMvpWarning(true);
       }
     }
   };
 
-  // Function to remove an MVP
   const handleRemoveMvp = (index: number) => {
-    setMvps(mvps.filter((_, i) => i !== index)); // Remove the MVP at the specified index
+    setMvps(mvps.filter((_, i) => i !== index));
     if (mvps.length === 6) {
-      setShowMvpWarning(false); // Hide warning if an MVP is removed
+      setShowMvpWarning(false);
     }
   };
 
-  // Function to add a Stretch Goal
   const handleAddStretchGoal = () => {
     if (stretchGoalInput && stretchGoals.length < 6) {
-      setStretchGoals([...stretchGoals, stretchGoalInput]); // Add the Stretch Goal to the list
-      setStretchGoalInput(""); // Clear the input after adding
+      setStretchGoals([...stretchGoals, stretchGoalInput]);
+      setStretchGoalInput("");
       if (stretchGoals.length === 5) {
-        setShowStretchGoalWarning(true); // Show warning after adding the 6th Stretch Goal
+        setShowStretchGoalWarning(true);
       }
     }
   };
 
-  // Function to remove a Stretch Goal
   const handleRemoveStretchGoal = (index: number) => {
-    setStretchGoals(stretchGoals.filter((_, i) => i !== index)); // Remove the Stretch Goal at the specified index
+    setStretchGoals(stretchGoals.filter((_, i) => i !== index));
     if (stretchGoals.length === 6) {
-      setShowStretchGoalWarning(false); // Hide warning if a Stretch Goal is removed
+      setShowStretchGoalWarning(false);
     }
   };
 
   return (
     <div className="h-screen flex flex-col items-center justify-center bg-blue-900 text-white font-nunito overflow-hidden">
-      {/* Fixed Heading */}
-      <NavBar />
       <h2 className="py-[10px] text-[30px] sticky bg-blue-900 z-10 w-full text-center">
         BRING YOUR IDEAS TO LIFE!
       </h2>
 
-      {/* Form Container (Translated Down) */}
-      <div className="w-[90%] max-w-[780px] mt-[0px]"> {/* Added mt-[80px] to push the form down */}
+      <div className="w-[90%] max-w-[780px] mt-[0px]">
         <form
           onSubmit={handleSubmit}
           className="flex flex-col items-end justify-start space-y-6 pb-8"
@@ -192,9 +172,10 @@ export default function ManualProject() {
                 <input
                   type="text"
                   value={projectName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProjectName(e.target.value)}
+                  onChange={(e) => setProjectName(e.target.value)}
                   placeholder="ex: hacklab"
                   className="bg-transparent border-none focus:outline-none w-full text-[#385773] rounded-[10px]"
+                  required
                 />
               </div>
             </div>
@@ -206,9 +187,10 @@ export default function ManualProject() {
                 <input
                   type="text"
                   value={projectType}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProjectType(e.target.value)}
+                  onChange={(e) => setProjectType(e.target.value)}
                   placeholder="ex: game"
                   className="bg-transparent border-none focus:outline-none w-full text-[#385773] rounded-[10px]"
+                  required
                 />
               </div>
             </div>
@@ -228,7 +210,6 @@ export default function ManualProject() {
                   className="bg-transparent border-none focus:outline-none w-full text-[#385773] rounded-[10px]"
                 />
               </div>
-              {/* Dropdown for tech options */}
               {showDropdown && (
                 <div className="absolute z-10 mt-2 w-full bg-[#385773] text-[#fff] border border-gray-300 rounded-[5px] shadow-lg">
                   {filteredTechOptions.map((tech, index) => (
@@ -240,7 +221,6 @@ export default function ManualProject() {
                       {tech}
                     </div>
                   ))}
-                  {/* Option to add new tech */}
                   {techToBeUsed && !techOptions.includes(techToBeUsed) && (
                     <div
                       className="px-[10px] py-[5px] hover:bg-gray-700 cursor-pointer text-blue-500"
@@ -253,7 +233,6 @@ export default function ManualProject() {
               )}
             </div>
 
-            {/* Display selected techs as tags */}
             <div className="flex flex-wrap gap-[10px] mt-2 py-[10px] justify-start ">
               {selectedTechs.map((tech, index) => (
                 <div
@@ -279,10 +258,10 @@ export default function ManualProject() {
             <div className="bg-[#D9D9D9] text-[#000000] border border-[#D9D9D9] hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 font-nunito rounded-[10px] text-md px-[10px] py-[10px] -ml-[4px] text-center flex items-center justify-start w-full">
               <textarea
                 value={description}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+                onChange={(e) => setDescription(e.target.value)}
                 placeholder="Enter a detailed description of your project..."
                 className="bg-transparent border-none focus:outline-none w-full text-[#385773] resize-none rounded-[10px]"
-                rows={4} // Adjust the number of rows as needed
+                rows={4}
               />
             </div>
           </div>
@@ -301,13 +280,12 @@ export default function ManualProject() {
               <button
                 type="button"
                 onClick={handleAddMvp}
-                disabled={mvps.length >= 6} // Disable if 6 MVP's are added
+                disabled={mvps.length >= 6}
                 className="text-[#385773] hover:text-[#4b4b4b]"
               >
                 Add
               </button>
             </div>
-            {/* Display MVP's as tags */}
             <div className="flex flex-wrap gap-[10px] mt-2 py-[10px] justify-start ">
               {mvps.map((mvp, index) => (
                 <div
@@ -325,7 +303,6 @@ export default function ManualProject() {
                 </div>
               ))}
             </div>
-            {/* Show warning if MVP limit is reached */}
             {showMvpWarning && (
               <p className="text-red-500 text-sm mt-2">
                 You have reached the maximum number of MVPs (6).
@@ -347,13 +324,12 @@ export default function ManualProject() {
               <button
                 type="button"
                 onClick={handleAddStretchGoal}
-                disabled={stretchGoals.length >= 6} // Disable if 6 Stretch Goals are added
+                disabled={stretchGoals.length >= 6}
                 className="text-[#385773] hover:text-[#4b4b4b]"
               >
                 Add
               </button>
             </div>
-            {/* Display Stretch Goals as tags */}
             <div className="flex flex-wrap gap-[10px] mt-2 py-[10px] justify-start ">
               {stretchGoals.map((goal, index) => (
                 <div
@@ -371,7 +347,6 @@ export default function ManualProject() {
                 </div>
               ))}
             </div>
-            {/* Show warning if Stretch Goal limit is reached */}
             {showStretchGoalWarning && (
               <p className="text-red-500 text-sm mt-2">
                 You have reached the maximum number of Stretch Goals (6).
@@ -380,7 +355,10 @@ export default function ManualProject() {
           </div>
 
           {/* Save Button */}
-          <button type="submit" className="mt-[20px] p-[10px] bg-[#fff] text-[#000] rounded-[10px] border-[#000]">
+          <button 
+            type="submit" 
+            className="mt-[20px] p-[10px] bg-[#fff] text-[#000] rounded-[10px] border-[#000] hover:bg-gray-200 transition-colors"
+          >
             Save Project
           </button>
         </form>

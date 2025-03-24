@@ -257,7 +257,7 @@ export default function HomeScreen() {
       </div>
 
       {showModal && selectedIndex !== null && (
-        <div className="fixed inset-0 flex items-start justify-center pt-[150px] z-[40] translate-x-[-25px]">
+        <div className="fixed inset-0 flex items-start justify-center translate-y-[150px] z-[40] translate-x-[-25px]">
           <ExpandedProjectModal
             title={allProjects[selectedIndex].title}
             groupLeader={allProjects[selectedIndex].groupLeader}
