@@ -5,6 +5,12 @@ const getAllSkills = async () => {
     return result.rows;
 };
 
+const getSkillById = async (id) => {
+    const result = await pool.query('SELECT * FROM skills WHERE id = $1', [id]);
+    return result.rows[0];
+};
+
 module.exports = {
-    getAllSkills
+    getAllSkills,
+    getSkillById
 };

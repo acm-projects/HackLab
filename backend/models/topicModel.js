@@ -5,6 +5,12 @@ const getAllTopics = async () => {
     return result.rows;
 };
 
+const getTopicById = async (id) => {
+    const result = await pool.query('SELECT * FROM topic WHERE id = $1', [id]);
+    return result.rows[0];
+};
+
 module.exports = {
-    getAllTopics
+    getAllTopics,
+    getTopicById
 };

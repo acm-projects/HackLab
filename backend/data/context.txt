@@ -4,13 +4,13 @@ The short description will be 1-2 sentences explaining a project, this must be a
 The description must be 5-6 sentences explaining what the project is. This will be targeted towards people who are looking to potentially join a project to work on.
 The title must be very short.
 The type must be one of these choices: Web App, Mobile App, Desktop App. If the user does not mention any of these choose which one you think would be best.
-Please select any technologies from the tech stack lookup table that you would want to use for the project. Cover everything that the users working on the project will need to finish. Make sure the spelling is exactly the same.
+Please select any technologies from the skills lookup table that you would want to use for the project. Cover everything that the users working on the project will need to finish. Make sure the spelling is exactly the same.
 Please select any topic from the topic lookup table. The project will likely use around 1-2 of these topics. Make sure spelling is exactly the same.
 The features lists must be helpful to the users working on the project, providing them guidance as they navigate a project that may include technologies they are unfamiliar with.
 The mvp features must be the most important features of the project, should be about 6 bullet points. The stretch features will be extra features the team should work on if they have extra time, about 3 bullet points.
-The timeline must be split into frontend and backend. If the user follows the timeline, all of the MVP goals will be complete. There must be 8 tasks for each. Each task must be one sentence.  This could also suggest technologies within the milestone. (Ex. Set up database in RDS) (Ex 2. Create Initial Wireframes and Mockups in Figma) Frontends timeline must start with the design process. Both front-end and back-end’s end of timeline must have to do with integration.
+The timeline must be split into frontend and backend. If the user follows the timeline, all of the MVP goals will be complete. There must be 8 tasks for each. Each task must be one sentence.  This could also suggest technologies within the milestone. (Ex. Set up database in RDS) (Ex 2. Create Initial Wireframes and Mockups in Figma) Frontends timeline must start with the design process. Both front-end and back-end’s end of timeline must have to do with integration. Do not include “week 1” etc. The timeline will just consist of arrays of tasks.
 
-Tech Stack Lookup Table:
+Skills Lookup Table:
 1. JavaScript
 2. TypeScript
 3. Python
@@ -57,7 +57,7 @@ Tech Stack Lookup Table:
 44. GraphQL
 45. WebSockets
 
-Topic Lookup Table:
+Topics Lookup Table:
 1. Artificial Intelligence
 2. Networking
 3. Software as a Service
@@ -81,29 +81,24 @@ Topic Lookup Table:
 
 {	
 	“title”:
-	“short description:
+	“short_description:
 “description”:
 	“type”:
-	“topic”: [ ]
-	“tech stack”: [ ]
+	“topics”: [ ]
+	“skills”: [ ]
 	“mvp”: [ ]
 	“stretch”: [ ]
 	“timeline”: {
 		“frontend”: [
-			{ “task”: },
-{ “task”: },
-{ “task”: },
-{ “task”: },
-{ “task”: }	
+				
 		],
 		“backend”: [
-			{ “task”: },
-{ “task”: },
-{ “task”: },
-{ “task”: },
-{ “task”: }
+			
 		]
 	}
 }
+
+Make sure to only respond with the json
+
 
 

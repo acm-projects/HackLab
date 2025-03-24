@@ -14,15 +14,13 @@ Deployed on AWS with a CI/CD pipeline, reducing deployment time by 50%.
 
 Here is the json format that you must respond with.
 
-{
-  "contributors": [
+[
     {
       "name": "",
       "project": "",
       "tech_stack": [],
       "bullet_points": []
     }
-  ]
-}
+]
 
 For each user: Make sure to use meaningful numerical metrics for at least 3 bullet points, and at least one is a percentage and at least one is  a specific amount.
