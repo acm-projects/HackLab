@@ -1,13 +1,39 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import NotificationDropdown from "./NotificationDropdown";
 
 export default function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false); // State for notification dropdown
   const router = useRouter();
 
   const handleLogout = () => {
     router.push("/"); // Redirect to landing page
+  };
+
+  // Dummy notification data
+  const notifications = [
+    {
+      type: "joinRequest",
+      user: {
+        name: "John Doe",
+        profilePic: "../../../images/img2.jpg",
+        project: "Project Alpha",
+      },
+    },
+    {
+      type: "like",
+      user: {
+        name: "Jane Smith",
+        profilePic: "../../../images/img2.jpg",
+        post: "My Awesome Project",
+      },
+    },
+  ];
+
+  const handleNotificationClick = () => {
+    setIsNotificationOpen(!isNotificationOpen);
   };
 
   return (
@@ -18,7 +44,7 @@ export default function NavBar() {
         <button
           className="bg-[#385773] text-primary hover:text-white border-none 
                       hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
-                      font-nunito rounded-[10px] text-md px-[25px] py-[12px] text-center z-50"
+                      font-nunito text-md px-[22px] py-[16px] text-center z-50"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <svg
@@ -41,7 +67,7 @@ export default function NavBar() {
         <div className="flex flex-1 justify-start">
           <div className="bg-[#ffffff] text-[#38577368] border-none 
                         hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
-                        font-nunito rounded-[10px] text-md px-[15px] py-[7px] text-center 
+                        font-nunito rounded-[10px] ml-[20px] text-md px-[20px] py-[7px] text-center 
                         flex items-center justify-start w-[500px]">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -66,41 +92,58 @@ export default function NavBar() {
         </div>
 
         {/* Notification Button */}
-        <button className="bg-[#385773] text-primary hover:text-white border-none 
+        <div className="relative">
+          <button
+            className="bg-[#385773] text-primary hover:text-white border-none 
                         hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
-                        font-nunito rounded-[10px] text-md px-[30px] py-[12px] text-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="size-[30px] text-white"
+                        font-nunito rounded-[10px] text-md px-[30px] py-[12px] text-center"
+            onClick={handleNotificationClick}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="size-[30px] text-white"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
+              />
+            </svg>
+          </button>
+
+          {/* Notification Dropdown */}
+          {isNotificationOpen && (
+            <NotificationDropdown
+              notifications={notifications}
+              onClose={() => setIsNotificationOpen(false)}
             />
-          </svg>
-        </button>
+          )}
+        </div>
       </div>
 
       {/* Black Overlay */}
       {isMenuOpen && (
         <div
-          className="fixed inset-0 bg-[#000] bg-opacity-[50%] z-40"
-          style={{ top: "60px", height: "calc(100vh - 60px)" }}
-          onClick={() => setIsMenuOpen(false)} // Close sidebar when clicking the overlay
+          className="fixed top-0 left-0 w-full h-full bg-[#00000080] z-[1000]"
+          onClick={() => setIsMenuOpen(false)}
+          style={{
+            zIndex: 40,
+          }}
         />
       )}
 
-
-
       {/* Expanding Box Below Navigation */}
       <div
-        className={`fixed top-[0px] w-[270px] h-screen bg-[#385773] rounded-br-[65px] text-[#fff] flex flex-col items-start transition-transform duration-500 ${isMenuOpen ? "translate-x-0" : "-translate-x-[270px]"}`}
-        style={{ zIndex: 40 }} // Ensure the expanding box is below the menu button
+        className={`fixed top-[0px] w-[270px] h-screen bg-[#385773] rounded-br-[65px] text-[#fff] flex flex-col items-start transition-transform duration-500 
+          ${isMenuOpen ? "translate-x-0" : "-translate-x-[270px]"}`}
+        style={{
+          zIndex: 50,
+          boxShadow: isMenuOpen ? "10px 0 30px rgba(0,0,0,0.6)" : "none",
+        }}
       >
         <button
           className="w-full bg-[#385773] text-[#fff] hover:bg-gray-900 border-none 
@@ -132,7 +175,7 @@ export default function NavBar() {
             className="mb-[20px] bg-[#385773] text-primary hover:text-white border-none 
                     hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
                     font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-50 lex flex items-center gap-2"
-            onClick={() => router.push("/find-projects")}
+            onClick={() => router.push("/findProjects")}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

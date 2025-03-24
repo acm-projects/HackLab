@@ -170,10 +170,10 @@ export default function ManualProject() {
   };
 
   return (
-    <div className="h-screen flex flex-col mt-[50px] items-center bg-blue-900 text-white font-nunito overflow-hidden">
+    <div className="h-screen flex flex-col items-center justify-center bg-blue-900 text-white font-nunito overflow-hidden">
       {/* Fixed Heading */}
       <NavBar />
-      <h2 className="py-[40px] text-[30px] translate-y-[20px] sticky bg-blue-900 z-10 w-full text-center">
+      <h2 className="py-[10px] text-[30px] sticky bg-blue-900 z-10 w-full text-center">
         BRING YOUR IDEAS TO LIFE!
       </h2>
 

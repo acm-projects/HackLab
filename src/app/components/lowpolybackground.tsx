@@ -12,7 +12,7 @@ interface Particle {
 
 // Constants
 const CONNECTION_DISTANCE = 100;
-const PARTICLE_SPEED = 0.3; // Speed remains constant
+const PARTICLE_SPEED = 0.4; // Speed remains constant
 const MAX_PARTICLE_COUNT = 150; // Cap particle count at 150
 
 const LowPolyBackground: React.FC = () => {
@@ -52,8 +52,8 @@ const LowPolyBackground: React.FC = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw connections with reduced opacity
-      ctx.globalAlpha = 0.4; // Reduced opacity for connections
-      ctx.strokeStyle = "rgba(0, 32, 192, 0.2)";
+      ctx.globalAlpha = 0.5; // Reduced opacity for connections
+      ctx.strokeStyle = "rgba(0, 32, 192, 0.3)";
       ctx.lineWidth = 0.5;
 
       for (let i = 0; i < particlesRef.current.length; i++) {

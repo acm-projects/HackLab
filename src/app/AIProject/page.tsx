@@ -71,7 +71,7 @@ export default function AIProject() {
             <button
               type="submit"
               disabled={isLoading}
-              className="mt-[20px] py-[10px] px-[50px] text-white rounded-[10px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-end gap-2"
+              className="mt-[20px] py-[10px] px-[50px] text-[#fff] rounded-[10px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-end gap-2 outline-none border-none bg-[#385773]"
             >
               {isLoading ? (
                 <>
