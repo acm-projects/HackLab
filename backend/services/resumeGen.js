@@ -1,29 +1,15 @@
 const dotenv = require('dotenv');
-const { Octokit } = require('octokit');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs/promises');
 
 dotenv.config();
 
-const octokit = new Octokit({
-});
+async function getOctokitInstance() {
+  const { Octokit } = await import('octokit');
+  return new Octokit({});
+}
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-/*
-let response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
-    owner: 'octokit',
-    repo: 'octokit.js',
-  })*/
-
-/*
-let response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
-    owner: 'ehallscherwitz',
-    repo: 'SleptOnVintage.com',
-    headers: {
-      'X-GitHub-Api-Version': '2022-11-28'
-    }
-  })*/
 
 async function getContext() {
     try {
@@ -49,10 +35,10 @@ function extractOwnerAndRepo(github_repo_link) {
 let commitHistory = [];
 
 const commitHistoryText = JSON.stringify(commitHistory);
-//example link :https://github.com/LadybirdBrowser/ladybird
 async function generateResume(github_repo_link) {
-  //github_repo_link = 'https://github.com/LadybirdBrowser/ladybird';
+  //example: github_repo_link = 'https://github.com/LadybirdBrowser/ladybird';
   const { owner, repo } = extractOwnerAndRepo(github_repo_link);
+  const octokit = await getOctokitInstance();
   let response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
     owner: owner,
     repo: repo
