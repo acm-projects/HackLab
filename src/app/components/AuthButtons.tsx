@@ -19,7 +19,7 @@ export default function AuthButtons() {
           <button 
             onClick={() => signIn(undefined, { callbackUrl: "/homeScreen" })}  // ✅ Fixed this line
             className="bg-black text-tertiary hover:text-white border-none 
-                      hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
+                      focus:outline-none
                       font-nunito rounded-[10px] text-md px-[20px] py-[12px] text-center 
                       me-2 mb-2">
             Sign In

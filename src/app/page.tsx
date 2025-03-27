@@ -11,7 +11,7 @@ export default function LandingPage() {
       <div id="landingPage" className="h-screen w-full flex flex-col justify-between bg-black text-tertiary font-nunito snap-start">
          
         {/* Top Bar */}
-        <div className="fixed left-[50px] right-[50px] z-50 flex justify-between bg-[#ffffff] ">
+        <div className="fixed left-[50px] right-[50px] z-50 flex justify-between bg-[#ffffff] mt-[-10px] ">
           <h1 className="text-hacklab-title font-press">HACKLAB</h1> 
           <AuthButtons /> {/* Imported Sign In & Sign Up Buttons */}
         </div>
@@ -55,17 +55,17 @@ export default function LandingPage() {
       </div>
 
       {/* Scrolling Pages */}
-      <div id="scrollingPage1" className="h-screen w-full flex items-center justify-center bg-gray-900 text-white snap-start">
-        <div className="text-center max-w-2xl font-nunito">
+      <div id="scrollingPage1" className="h-screen w-full flex items-center justify-start bg-gray-900 text-white snap-start">
+        <div className="text-center max-w-2xl font-nunito flex flex-col justify-start items-start w-1/4">
           <h1 className="text-4xl font-bold mb-4">FIND A PROJECT</h1>
           <p className="text-lg text-tertiary">Discover exciting projects that match your interests and skills. Jump into ongoing collaborations and make an impact with like-minded creators.</p>
         </div>
       </div>
 
-      <div id="scrollingPage2" className="h-screen w-full flex items-center justify-center bg-gray-900 text-white snap-start">
-        <div className="text-center max-w-2xl font-nunito">
+      <div id="scrollingPage2" className="h-screen w-full flex items-center justify-center snap-start">
+        <div className="text-center max-w-2xl font-nunito ml-[100px]">
           <h1 className="text-4xl font-bold mb-4 ">CREATE A PROJECT</h1>
-          <p className="text-lg text-tertiary">Bring your projects to life effortlessly with our AI-powered checklist and step-by-step walkthrough. From concept to completion, we guide you every step of the way.</p>
+          <p className="text-lg text-tertiary flex items-start">Bring your projects to life effortlessly with our AI-powered checklist and step-by-step walkthrough. From concept to completion, we guide you every step of the way.</p>
         </div>
       </div>
       <div id="scrollingPage3" className="h-screen w-full flex items-center justify-center bg-gray-900 text-white snap-start">

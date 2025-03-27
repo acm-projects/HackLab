@@ -37,14 +37,14 @@ export default function NavBar() {
   };
 
   return (
-    <div className="w-full fixed top-[0px] z-50 flex flex-col">
+    <div className="w-full fixed top-[0px] z-50">
       {/* Top Navigation Bar */}
       <div className={`h-[60px] bg-[#385773] flex items-center justify-between px-4 transition-all duration-500 ${isMenuOpen ? "pl-[200px]" : "pl-4"}`}>
         {/* Menu Button */}
         <button
           className="bg-[#385773] text-primary hover:text-white border-none 
                       hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
-                      font-nunito text-md px-[22px] py-[16px] text-center z-50"
+                      font-nunito text-md px-[35px] py-[16px] text-center z-50 ml-[-10px]"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <svg
@@ -115,13 +115,13 @@ export default function NavBar() {
             </svg>
           </button>
 
-          {/* Notification Dropdown */}
+          {/* Notification Dropdown
           {isNotificationOpen && (
             <NotificationDropdown
               notifications={notifications}
               onClose={() => setIsNotificationOpen(false)}
             />
-          )}
+          )} */}
         </div>
       </div>
 
@@ -138,7 +138,7 @@ export default function NavBar() {
 
       {/* Expanding Box Below Navigation */}
       <div
-        className={`fixed top-[0px] w-[270px] h-screen bg-[#385773] rounded-br-[65px] text-[#fff] flex flex-col items-start transition-transform duration-500 
+        className={`fixed top-[0px] w-[270px] h-screen bg-[#385773] ml-[-10px] rounded-br-[65px] text-[#fff] flex flex-col items-start transition-transform duration-500 
           ${isMenuOpen ? "translate-x-0" : "-translate-x-[270px]"}`}
         style={{
           zIndex: 50,
@@ -161,7 +161,7 @@ export default function NavBar() {
             className="mb-[20px] bg-[#385773] text-primary hover:text-white border-none 
                     hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
                     font-nunito rounded-[10px] text-[15px] px-[20px] text-center flex items-center"
-            onClick={() => router.push("../chat")} 
+            onClick={() => router.push("/myProject")} 
           >        {/* Testing this with the chat page for now */}
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
               <path strokeLinecap="round" strokeLinejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
@@ -216,7 +216,7 @@ export default function NavBar() {
           className="mt-auto bg-[#385773] text-primary hover:text-white border-none 
                     hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
                     font-nunito rounded-[10px] text-[15px] px-[20px] py-[12px] text-center z-50 flex items-center gap-2 ml-[30px]"
-          onClick={() => router.push("/Profile")}
+          onClick={() => router.push("/profile")}
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />

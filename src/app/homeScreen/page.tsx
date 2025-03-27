@@ -149,21 +149,20 @@ export default function HomeScreen() {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito">
+      
       <NavBar />
       <div className="h-screen flex flex-col items-center bg-blue-900 text-white font-nunito overflow-y-scroll">
         {/* Hero Section */}
-        <div className="w-full h-[300px] flex flex-col items-center justify-center text-center mt-[60px]">
+        <div className="w-screen h-[300px] flex flex-col items-center justify-center text-center mt-[60px]">
           <h1 className="text-[#000] bg-[#fff]">WELCOME TO HACKLAB</h1>
           <p className="text-[#000000] translate-y-[-30px] bg-[#fff]">Explore, Build, and Contribute to Open Source Projects</p>
         </div>
         
         {/* Sliding Stats Section */}
-        <div className="w-[85%] h-[350px] bg-[#385773] flex items-center justify-between rounded-[15px] mt-[-20px]">
+        <div className="w-[85%] h-[350px] bg-[#385773] flex items-center justify-center rounded-[15px] mt-[-20px]">
           <button 
             onClick={prevSlide} 
-            className="mb-[20px] bg-[#385773] text-primary hover:text-white border-none 
-                      hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
-                      font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-[40] flex items-center gap-2"
+            className="mb-[20px] bg-[#385773] text-primary hover:text-white border-none focus:outline-none font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-[40] flex items-center gap-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px] text-[#fff]">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -184,9 +183,7 @@ export default function HomeScreen() {
           
           <button 
             onClick={nextSlide} 
-            className="mb-[20px] bg-[#385773] text-primary hover:text-white border-none 
-                      hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
-                      font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-[40] flex items-center gap-2"
+            className="mb-[20px] bg-[#385773] text-primary hover:text-white border-none focus:outline-none font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-[40] flex items-center gap-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px] text-[#fff]">
               <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
