@@ -13,15 +13,15 @@ const ContentSidebar = ({ projectId }: { projectId: string }) => {
   const pathname = usePathname();
 
   return (
-    <div className="bg-[#4A6B8A] text-white w-[200px] h-screen py-8 flex flex-col items-start gap-2 px-4">
+    <div className="bg-[#4A6B8A] text-white w-[200px] h-screen flex flex-col items-start gap-[5px] px-[20px] py-[50px]">
       {tabs.map((tab) => {
         const isActive = pathname?.includes(tab.path);
 
         return (
           <button
             key={tab.name}
-            onClick={() => router.push(`/myproject/${projectId}/${tab.path}`)}
-            className={`px-4 py-2 w-[160px] text-left rounded-l-lg transition-all duration-200 
+            onClick={() => router.push(`/myProject/${projectId}/${tab.path}`)}
+            className={` px-[10px] py-[10px] w-[160px] text-left rounded-[10px] mt-[10px] bg-transparent text-[#fff] text-[15px] border-none outline-none transition-all duration-200 
               ${
                 isActive
                   ? "bg-[#2F4D6A] font-semibold"

@@ -39,11 +39,11 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
 }) => {
   return (
     <div
-      className="fixed inset-0 z-[40] flex items-center justify-center mt-[-40px] ml-[8%]"
+      className="fixed inset-0 z-[40] flex items-center justify-center mt-[-80px] ml-[8%]"
     >
       {/* Modal Container */}
       <div
-        className="relative z-10 rounded-[15px] shadow-[0_0_20px_rgba(0,0,0,1)]"
+        className="relative z-10 rounded-[15px] shadow-[0_0_20px_rgba(0,0,0,1)] py-[40px]"
         style={{
           backgroundColor: "#ffffff",
           width: "70vw",
@@ -55,13 +55,12 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute font-bold z-[20] border-none bg-transparent"
+          className="absolute font-bold z-[20] border-none bg-transparent mt-[-10px]"
           style={{
             top: "16px",
             right: "16px",
             fontSize: "24px",
-            color: "#ffffff",
-            mixBlendMode: "difference", 
+            color: "#000",
           }}
         >
           ✖
@@ -121,46 +120,20 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
           <p style={{ fontSize: "15px", marginBottom: "24px", lineHeight: "1.6" }}>{description}</p>
 
           {/* MVPs Table */}
-          <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "10px" }}>MVPs</h3>
-          <table style={{ width: "100%", marginBottom: "24px", fontSize: "14px", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>Feature</th>
-                <th style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>Login</td>
-                <td style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>Complete</td>
-              </tr>
-              <tr>
-                <td style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>Chat</td>
-                <td style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>In Progress</td>
-              </tr>
-            </tbody>
-          </table>
+          <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "10px" }}>MVPs 🏆</h3>
+            <ul className="list-disc ml-6 text-[14px] mb-6">
+              <li><strong>Login</strong> – Complete</li>
+              <li><strong>Chat</strong> – In Progress</li>
+            </ul>
+
 
           {/* Stretch Goals Table */}
-          <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "10px" }}>Stretch Goals</h3>
-          <table style={{ width: "100%", marginBottom: "24px", fontSize: "14px", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>Goal</th>
-                <th style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>Priority</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>Dark Mode</td>
-                <td style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>Medium</td>
-              </tr>
-              <tr>
-                <td style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>Mobile App</td>
-                <td style={{ border: "1px solid #d1d5db", padding: "8px 12px" }}>High</td>
-              </tr>
-            </tbody>
-          </table>
+          <h3 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "10px" }}>Stretch Goals 🏃</h3>
+            <ul className="list-disc ml-6 text-[14px] mb-6">
+              <li><strong>Dark Mode</strong> – Medium Priority</li>
+              <li><strong>Mobile App</strong> – High Priority</li>
+            </ul>
+
 
           {/* Action Buttons */}
           {/* Book mark button */}

@@ -130,9 +130,9 @@ const FindProjects = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito overflow-y-auto">
+    <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito overflow-y-auto scrollbar-hide">
       <NavBar />
-      <div className="h-screen flex flex-col items-center bg-blue-900 text-white font-nunito overflow-y-scroll w-[90%]">
+      <div className="h-screen flex flex-col items-center bg-blue-900 text-white font-nunito overflow-y-scroll w-[90%] scrollbar-hide">
       <div className="grid grid-cols-2 gap-[50px] w-[85vw] mt-[150px] mx-auto">
         {projects.map((project, index) => (
           <div

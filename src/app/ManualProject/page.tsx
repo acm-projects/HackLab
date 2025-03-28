@@ -153,15 +153,15 @@ export default function ManualProject() {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-blue-900 text-white font-nunito overflow-hidden">
-      <h2 className="py-[10px] text-[30px] sticky bg-blue-900 z-10 w-full text-center">
+    <div className="h-screen flex flex-col items-center justify-center bg-blue-900 text-white font-nunito overflow-y-scroll mt-[50px]">
+      <h2 className="py-[5px] text-[30px] sticky bg-blue-900 z-10 w-full text-center">
         BRING YOUR IDEAS TO LIFE!
       </h2>
 
       <div className="w-[90%] max-w-[780px] mt-[0px]">
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col items-end justify-start space-y-6 pb-8"
+          className="flex flex-col items-end justify-start space-y-6 pb-8" 
         >
           {/* Container for PROJECT NAME and PROJECT TYPE */}
           <div className="flex flex-row justify-between w-full">
@@ -357,7 +357,7 @@ export default function ManualProject() {
           {/* Save Button */}
           <button 
             type="submit" 
-            className="mt-[20px] p-[10px] bg-[#fff] text-[#000] rounded-[10px] border-[#000] hover:bg-gray-200 transition-colors"
+            className="mt-[20px] p-[10px] bg-[#fff] text-[#000] rounded-[10px] border-[#000] hover:bg-gray-200 transition-colors mb-[100px]"
           >
             Save Project
           </button>

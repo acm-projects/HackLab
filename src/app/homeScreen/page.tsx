@@ -151,7 +151,7 @@ export default function HomeScreen() {
     <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito">
       
       <NavBar />
-      <div className="h-screen flex flex-col items-center bg-blue-900 text-white font-nunito overflow-y-scroll">
+      <div className="h-screen flex flex-col items-center bg-blue-900 text-white font-nunito overflow-y-scroll scrollbar-hide">
         {/* Hero Section */}
         <div className="w-screen h-[300px] flex flex-col items-center justify-center text-center mt-[60px]">
           <h1 className="text-[#000] bg-[#fff]">WELCOME TO HACKLAB</h1>

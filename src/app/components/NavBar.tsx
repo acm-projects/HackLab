@@ -2,6 +2,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import NotificationDropdown from "./NotificationDropdown";
+import LogoutButton from "../components/LogoutButton";
+
+interface Notification {
+  type: "joinRequest" | "like";
+  user: {
+    id: string;
+    name: string;
+    profilePic: string;
+    project?: string;
+    post?: string;
+  };
+}
+
 
 export default function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,10 +26,11 @@ export default function NavBar() {
   };
 
   // Dummy notification data
-  const notifications = [
+  const notifications: Notification[] = [
     {
       type: "joinRequest",
       user: {
+        id: "1",
         name: "John Doe",
         profilePic: "../../../images/img2.jpg",
         project: "Project Alpha",
@@ -25,12 +39,15 @@ export default function NavBar() {
     {
       type: "like",
       user: {
+        id: "2",
         name: "Jane Smith",
         profilePic: "../../../images/img2.jpg",
         post: "My Awesome Project",
       },
     },
   ];
+  
+  
 
   const handleNotificationClick = () => {
     setIsNotificationOpen(!isNotificationOpen);
@@ -42,8 +59,7 @@ export default function NavBar() {
       <div className={`h-[60px] bg-[#385773] flex items-center justify-between px-4 transition-all duration-500 ${isMenuOpen ? "pl-[200px]" : "pl-4"}`}>
         {/* Menu Button */}
         <button
-          className="bg-[#385773] text-primary hover:text-white border-none 
-                      hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
+          className="bg-[#385773] text-primary border-transparent border-none outline-none
                       font-nunito text-md px-[35px] py-[16px] text-center z-50 ml-[-10px]"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
@@ -115,13 +131,12 @@ export default function NavBar() {
             </svg>
           </button>
 
-          {/* Notification Dropdown
           {isNotificationOpen && (
             <NotificationDropdown
               notifications={notifications}
               onClose={() => setIsNotificationOpen(false)}
             />
-          )} */}
+          )}
         </div>
       </div>
 
@@ -225,30 +240,7 @@ export default function NavBar() {
         </button>
 
         {/* Logout Button */}
-        <button
-          className="mb-[50px] bg-[#385773] text-primary hover:text-white border-none 
-                    hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
-                    font-nunito rounded-[10px] text-[15px] px-[20px] py-[12px] text-center z-50 flex items-center gap-2 ml-[30px]"
-          onClick={handleLogout}
-        >
-          {/* Logout Icon */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="size-[25px]"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
-            />
-          </svg>
-          {/* Logout Text */}
-          &nbsp; Logout
-        </button>
+        <LogoutButton/>
       </div>
     </div>
   );

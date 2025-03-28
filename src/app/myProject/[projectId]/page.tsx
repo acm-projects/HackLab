@@ -5,37 +5,37 @@ import { useRouter, useParams } from "next/navigation";
 import ProjectSidebar from "../../components/projectsidebar";
 import ContentSidebar from "../../components/contentsidebar";
 
-
 export default function ProjectPage() {
   const router = useRouter();
   const { projectId } = useParams();
-  const [activeTab, setActiveTab] = useState("dashboard"); // Default tab
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
-    // If the user visits `/myproject/[projectId]`, ensure they go to `/dashboard`
     router.push(`/myproject/${projectId}/dashboard`);
   }, [projectId, router]);
 
   return (
-    <div>
-     
-      <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen w-screen bg-gray-100 overflow-hidden">
+      {/* 10% width */}
+      <div className="w-[10%] min-w-[120px] max-w-[160px] bg-white border-r">
         <ProjectSidebar />
-        <div className="flex flex-col w-full">
-          <div className="flex flex-row h-full">
-            <ContentSidebar projectId={projectId as string} />
-            <main className="flex-1 p-6 overflow-y-auto">
-              {activeTab === "dashboard" && <DashboardPage />}
-              {activeTab === "timeline" && <TimelinePage />}
-            </main>
-          </div>
-        </div>
       </div>
+
+      {/* 20% width */}
+      <div className="w-[20%] min-w-[200px] max-w-[300px] border-r bg-gray-50">
+        <ContentSidebar projectId={projectId as string} />
+      </div>
+
+      {/* 70% width - Main Content */}
+      <main className="w-[70%] overflow-y-auto bg-gray-100">
+        {activeTab === "dashboard" && <DashboardPage />}
+        {activeTab === "timeline" && <TimelinePage />}
+      </main>
     </div>
   );
 }
 
-// Simulated Dashboard and Timeline pages (Replace with actual imports if needed)
+// Dummy components for now
 function DashboardPage() {
   return <div>Dashboard Content</div>;
 }

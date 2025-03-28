@@ -32,9 +32,10 @@ const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "database",
-    maxAge: 2 * 60 * 60, // 2-hour session expiration
-    updateAge: 30 * 60, // Update session every 30 minutes
+    maxAge: 10 * 60, // 1 hour
+    updateAge: 5 * 60,
   },
+  
   callbacks: {
     async signIn({ user }) {
       console.log("✅ User Attempting Sign In:", user);

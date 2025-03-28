@@ -42,6 +42,14 @@ body {
 .gaming-font {
   font-family: 'Press Start 2P', cursive;
 }
+/* hide scrollbar utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
 
 
 /* Ensure the canvas properly covers the entire screen */
