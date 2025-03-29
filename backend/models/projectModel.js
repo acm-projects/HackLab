@@ -28,6 +28,17 @@ const getProjectById = async (id) => {
     return result.rows[0];
 };
 
+const getUsersByProjectId = async (projectId) => {
+    const result = await pool.query(
+        `SELECT users.*
+         FROM users
+         INNER JOIN user_project ON users.id = user_project.user_id
+         WHERE user_project.project_id = $1`,
+        [projectId]
+    );
+    return result.rows;
+};
+
 const getGithubById = async (id) => {
     const result = await pool.query('SELECT github_repo_url FROM project WHERE id = $1', [id]);
     return result.rows[0]?.github_repo_url;
@@ -114,6 +125,7 @@ module.exports = {
     createProject,
     getAllProjects,
     getProjectById,
+    getUsersByProjectId,
     getGithubById,
     updateProject,
     deleteProject,

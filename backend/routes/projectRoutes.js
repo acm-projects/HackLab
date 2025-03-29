@@ -1,5 +1,5 @@
 const express = require('express');
-const { createProject, getAllProjects, getProjectById, getGithubById, updateProject, deleteProject, addSkillToProject, addTopicToProject, addTeamPreferenceToProject, getTeamPreferencesFromProject, deleteTeamPreferenceFromProject, getSkillsFromProject, deleteSkillFromProject, getTopicsFromProject, deleteTopicFromProject } = require('../models/projectModel');
+const { createProject, getAllProjects, getProjectById, getUsersByProjectId, getGithubById, updateProject, deleteProject, addSkillToProject, addTopicToProject, addTeamPreferenceToProject, getTeamPreferencesFromProject, deleteTeamPreferenceFromProject, getSkillsFromProject, deleteSkillFromProject, getTopicsFromProject, deleteTopicFromProject } = require('../models/projectModel');
 const { generateProject } = require('../services/projectGen'); 
 const { generateResume } = require('../services/resumeGen');
 const { createRepo } = require('../services/createRepo');
@@ -128,6 +128,22 @@ router.get('/:id', async (req, res) => {
         res.json(project);
     } catch (error) {
         console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Get users on a specific project
+router.get('/:id/users', async (req, res) => {
+    console.log('Received request to get users for a project');
+    const { id: projectId } = req.params;
+    try {
+        const users = await getUsersByProjectId(projectId); // Fetch users from the user_project table
+        if (!users || users.length === 0) {
+            return res.status(404).json({ message: 'No users found for this project' });
+        }
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error fetching users for project:', error);
         res.status(500).send('Server error');
     }
 });
