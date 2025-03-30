@@ -30,7 +30,7 @@ const getProjectById = async (id) => {
 
 const getUsersByProjectId = async (projectId) => {
     const result = await pool.query(
-        `SELECT users.*
+        `SELECT users.*, user_project.role_id
          FROM users
          INNER JOIN user_project ON users.id = user_project.user_id
          WHERE user_project.project_id = $1`,
