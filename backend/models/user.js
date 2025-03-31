@@ -116,6 +116,11 @@ const User = {
             'INSERT INTO user_likes_project (user_id, project_id) VALUES ($1, $2) RETURNING *',
             [userId, projectId]
         );
+
+        await db.query(
+            'UPDATE project SET likes = likes + 1 WHERE id = $1',
+            [projectId]
+        );
         return rows[0];
     },
 
@@ -124,6 +129,14 @@ const User = {
             'DELETE FROM user_likes_project WHERE user_id = $1 AND project_id = $2',
             [userId, projectId]
         );
+
+        if (rowCount > 0) {
+            await db.query(
+                'UPDATE project SET likes = likes - 1 WHERE id = $1',
+                [projectId]
+            );
+        }
+
         return rowCount > 0;
     },
 

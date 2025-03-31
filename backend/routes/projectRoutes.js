@@ -109,6 +109,7 @@ router.delete('/:id', async (req, res) => {
 
 // Get all projects
 router.get('/', async (req, res) => {
+    console.log('Received request to get all projects');
     try {
         const projects = await getAllProjects();
         res.json(projects);
@@ -120,6 +121,7 @@ router.get('/', async (req, res) => {
 
 // Get a specific project
 router.get('/:id', async (req, res) => {
+    console.log('Received request to get project by ID');
     try {
         const project = await getProjectById(req.params.id);
         if (!project) {
