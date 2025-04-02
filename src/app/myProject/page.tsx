@@ -11,7 +11,7 @@ export default function MyProjectsRedirect() {
 
  useEffect(() => {
    // Replace "project-alpha" with the actual first projectId dynamically if needed
-   router.push("/myProject/project-alpha/dashboard");
+   router.push("/myProject/Baboon Tracker/dashboard");
  }, [router]);
 
 
