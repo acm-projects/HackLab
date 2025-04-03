@@ -1,5 +1,5 @@
 const express = require('express');
-const { createProject, getAllProjects, getProjectById, getUsersByProjectId, getGithubById, updateProject, deleteProject, addSkillToProject, addTopicToProject, addTeamPreferenceToProject, getTeamPreferencesFromProject, deleteTeamPreferenceFromProject, getSkillsFromProject, deleteSkillFromProject, getTopicsFromProject, deleteTopicFromProject } = require('../models/projectModel');
+const { createProject, getAllProjects, getProjectById, getUsersByProjectId, getGithubById, updateProject, deleteProject, addSkillToProject, addTopicToProject, addTeamPreferenceToProject, getTeamPreferencesFromProject, deleteTeamPreferenceFromProject, getSkillsFromProject, deleteSkillFromProject, getTopicsFromProject, deleteTopicFromProject, markProjectComplete } = require('../models/projectModel');
 const { generateProject } = require('../services/projectGen'); 
 const { generateResume } = require('../services/resumeGen');
 const { createRepo } = require('../services/createRepo');
@@ -295,6 +295,19 @@ router.delete('/:projectId/teamPreference/:preferenceId', async (req, res) => {
         res.status(200).json(result);
     } catch (error) {
         console.error('Error deleting team preference from project:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Mark a project as completed
+router.patch('/:projectId/complete', async (req, res) => {
+    console.log('Received request to mark project as completed');
+    const { projectId } = req.params;
+    try {
+        const result = await markProjectComplete(projectId);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error('Error marking project as completed:', error);
         res.status(500).send('Server error');
     }
 });

@@ -121,6 +121,14 @@ const deleteTeamPreferenceFromProject = async (projectId, preferenceId) => {
     return result.rows[0];
 };
 
+const markProjectComplete = async (projectId) => {
+    const result = await pool.query(
+        'UPDATE project SET completed = TRUE WHERE id = $1 RETURNING *',
+        [projectId]
+    );
+    return result.rows[0];
+};
+
 module.exports = {
     createProject,
     getAllProjects,
@@ -137,5 +145,6 @@ module.exports = {
     getSkillsFromProject,
     deleteSkillFromProject,
     getTopicsFromProject,
-    deleteTopicFromProject
+    deleteTopicFromProject,
+    markProjectComplete
 };

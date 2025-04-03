@@ -36,7 +36,7 @@ let commitHistory = [];
 
 const commitHistoryText = JSON.stringify(commitHistory);
 async function generateResume(github_repo_link) {
-  //example: github_repo_link = 'https://github.com/LadybirdBrowser/ladybird';
+  // example: github_repo_link = 'https://github.com/LadybirdBrowser/ladybird';
   const { owner, repo } = extractOwnerAndRepo(github_repo_link);
   const octokit = await getOctokitInstance();
   let response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
