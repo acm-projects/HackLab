@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import NotificationDropdown from "./NotificationDropdown";
 import LogoutButton from "../components/LogoutButton";
+import { usePathname } from "next/navigation";
+import FilterBox from "./filterbox"; 
 
 interface Notification {
   type: "joinRequest" | "like";
@@ -15,8 +17,20 @@ interface Notification {
   };
 }
 
+interface NavBarProps {
+  onApplyFilters?: (filters: { topics: string[]; skills: string[] }) => void;
+  onSearchChange?: (query: string) => void;
+  searchInput?: string;
+  setSearchInput?: (value: string) => void;
+  onSearchSubmit?: () => void;
+  onClearFilters?: () => void;
+}
 
-export default function NavBar() {
+
+export default function NavBar({ onClearFilters, onApplyFilters, searchInput, setSearchInput, onSearchSubmit }: NavBarProps) {
+  const [showFilterBox, setShowFilterBox] = useState(false);
+
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false); // State for notification dropdown
   const router = useRouter();
@@ -102,9 +116,49 @@ export default function NavBar() {
             <input
               type="text"
               placeholder="Search"
+              value={searchInput}
+              onChange={(e) => setSearchInput?.(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  onSearchSubmit?.(); 
+                  onClearFilters?.();  
+                }
+              }}
               className="bg-transparent border-none focus:outline-none w-full text-[#385773]"
             />
           </div>
+{pathname === "/findProjects" && (
+  <div className="relative">
+    <button
+      className="ml-8 w-[80px] flex items-center gap-2 px-4 py-1 bg-white text-[#2e2e2e] rounded-[10px] shadow border border-gray-300 text-sm hover:shadow-lg"
+      onClick={() => setShowFilterBox(!showFilterBox)}
+    >
+      Filter
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        className="w-4 h-4"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+
+    {showFilterBox && (
+      <FilterBox
+      onClose={() => setShowFilterBox(false)}
+      onApply={(filters) => {
+        console.log("Apply filters:", filters);
+        onApplyFilters?.(filters);
+        setShowFilterBox(false);
+      }}
+    />
+    )}
+  </div>
+)}
+
         </div>
 
         {/* Notification Button */}
@@ -130,6 +184,7 @@ export default function NavBar() {
               />
             </svg>
           </button>
+          
 
           {isNotificationOpen && (
             <NotificationDropdown

@@ -2,11 +2,15 @@ import React from "react";
 
 interface OngoingProjectCardProps {
   title: string;
-  groupLeader: string;
+  groupLeader: {
+    name: string;
+    image: string;
+  };
   likes: number;
   image: string;
   description: string;
-  tech: string[];
+  topics?: string[];
+  skills?: string[];
   members: string[];
   totalMembers: number;
   moreNeeded: number;
@@ -25,7 +29,8 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
   likes,
   image,
   description,
-  tech,
+  topics = [],
+  skills = [],
   members,
   totalMembers,
   moreNeeded,
@@ -45,9 +50,24 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
 
   const adjustedLikes = likes + (isLiked ? 1 : 0);
 
+  const renderTags = (items: string[] = [], color: string) => {
+    const validItems = items.filter((item) => typeof item === "string" && item.trim() !== "");
+    if (!validItems.length) return null;
+
+    return validItems.slice(0, 3).map((item, index) => (
+      <span
+        key={index}
+        className="text-[11px] px-[8px] py-[4px] rounded-[8px]"
+        style={{ backgroundColor: color, color: "#fff", marginRight: "4px" }}
+      >
+        {item}
+      </span>
+    ));
+  };
+
   return (
     <div
-      className="h-[350px] w-full rounded-[15px] border border-black bg-[#ffffff] overflow-hidden flex flex-col mb-[3px] cursor-pointer"
+      className="h-[370px] w-full rounded-[15px] border border-black bg-[#ffffff] overflow-hidden flex flex-col mb-[3px] cursor-pointer"
       style={{ boxShadow: "5px 5px 5px rgb(30 40 50 / 40%)" }}
     >
       {/* Top Image */}
@@ -59,25 +79,26 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
       <div className="h-[60%] w-full px-[15px] py-[10px] flex mt-[-10px] gap-[4px]">
         {/* Left Side */}
         <div className="flex flex-col w-1/2 pr-[8px] ml-[10px]">
-          <div className="flex flex-col">
-            <h2 className="text-[18px] font-bold text-[#000000]">{title}</h2>
-            <p className="text-[12px] text-[#000000] mt-[-10px]">
-              Led by: {groupLeader}
-            </p>
-          </div>
+        <h2 className="text-[18px] font-bold text-[#000000] mt-[4px]">{title}</h2>
+        {topics.length > 0 && (
+            <div className="flex flex-wrap gap-[4px] mt-[-10px]">
+              {renderTags(topics, "#426c98")}
+            </div>
+          )}
 
-          <div className="flex gap-[4px] mt-[0px] flex-wrap">
-            {tech.slice(0, 3).map((item, index) => (
-              <span
-                key={index}
-                className="text-[12px] px-[10px] py-[5px] bg-[#385773] text-[#fff] border border-transparent rounded-[10px]"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-
-          <div className="flex flex-col mt-[8px]">
+          {skills.length > 0 && (
+            <div className="flex flex-wrap gap-[4px] mt-[4px]">
+              {renderTags(skills, "#5888b5")}
+            </div>
+          )}
+       
+        <div className="flex items-center gap-[6px] mt-[4px]">
+  <p className="text-[13px] text-[#2e2e2e]">
+    Led by: <span className="font-semibold">{groupLeader.name}</span>
+  </p>
+</div>
+          {/* Members */}
+          <div className="flex flex-col mt-[-15px] pb-[8px]">
             <div className="flex items-center gap-[6px]">
               <div className="flex">
                 {members.slice(0, 3).map((url, idx) => (
@@ -102,7 +123,8 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-[1px] mt-[6px] justify-start">
+          {/* Buttons */}
+          <div className="flex items-center gap-[1px] mt-[6px] justify-start ml-[-7px]">
             <button
               className="flex items-center outline-none border-none bg-transparent"
               onClick={(e) => {
@@ -151,8 +173,8 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
           </div>
         </div>
 
-        {/* Right Side - Description */}
-        <div className="w-1/2 flex flex-col justify-between mr-[40px]">
+        {/* Right Side - Description & Join */}
+        <div className="w-1/2 flex flex-col justify-between mr-[40px] mt-[40px]">
           <div className="text-[12px] text-black break-words overflow-hidden pr-[10px]">
             <p>{truncatedDescription}</p>
           </div>

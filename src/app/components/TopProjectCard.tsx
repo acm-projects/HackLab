@@ -3,7 +3,7 @@ import React from "react";
 
 interface ProjectCardProps {
   title: string;
-  groupLeader: string;
+  groupLeaderName: string;
   likes: number;
   image: string;
   isLiked: boolean;
@@ -14,7 +14,7 @@ interface ProjectCardProps {
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ 
   title, 
-  groupLeader, 
+  groupLeaderName, 
   likes, 
   image,
   isLiked,
@@ -27,22 +27,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       className="relative h-[250px] rounded-[15px] border border-black bg-[#ffffff] overflow-hidden cursor-pointer"
       style={{ boxShadow: '5px 5px 5px rgb(30 40 50/ 40%)' }}
     >
-      {/* Top Image Section */}
       <div className="h-[45%] w-full">
         <img src={image} alt={title} className="h-full w-full object-cover" />
       </div>
 
-      {/* Content Section */}
       <div className="px-[15px] flex flex-col h-[55%] py-[10px] mt-[-15px]">
-        {/* Title and Group Leader */}
         <div className="flex flex-col gap-[2px]">
           <h3 className="text-xl font-bold text-[#000000] mb-[-10px]">{title}</h3>
-          <p className="text-sm text-[#000000]">Led by: {groupLeader}</p>
+          <p className="text-sm text-[#000000]">Led by: {groupLeaderName}</p>
         </div>
 
-        {/* Like and Bookmark Buttons */}
         <div className="flex justify-between items-center mt-2">
-          {/* Like Button */}
           <div className="flex items-center gap-2">
             <button 
               onClick={(e) => {
@@ -57,12 +52,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
                 stroke={isLiked ? "red" : "#000000"}
-                className="size-[25px] transition-colors duration-200"
+                className="size-[25px]"
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733C11.285 4.876 9.623 3.75 7.687 3.75 5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
                 />
               </svg>
               <span className={`text-sm ${isLiked ? "text-red-500" : "text-[#000]"}`}>
@@ -71,7 +66,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             </button>
           </div>
 
-          {/* Bookmark Button */}
           <button 
             onClick={(e) => {
               e.stopPropagation();
@@ -85,7 +79,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke={isBookmarked ? "#EFD033" : "#000000"}
-              className="size-[25px] transition-colors duration-200"
+              className="size-[25px]"
             >
               <path
                 strokeLinecap="round"

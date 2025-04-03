@@ -1,109 +1,243 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { Sparkles, Lightbulb, Brain } from "lucide-react";
 import { useRouter } from "next/navigation";
-import NavBar from "../components/NavBar";
 
-export default function AIProject() {
-  const router = useRouter();
 
-  // State to manage the description
-  const [description, setDescription] = useState<string>("");
+export default function CreateProjectWithAI() {
+ const [description, setDescription] = useState("");
+ const [isTyping, setIsTyping] = useState(false);
+ const canvasRef = useRef<HTMLDivElement>(null);
+ const router = useRouter();
 
-  // State to manage loading
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Function to handle form submission
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+ useEffect(() => {
+   const container = canvasRef.current;
+   if (!container) return;
 
-    // Validation: Ensure description is not empty
-    if (!description.trim()) {
-      alert("Please enter a description.");
-      return;
-    }
 
-    // Simulate an API call
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate a 2-second delay
-    console.log("Project Description:", description); // Replace this with your logic to handle the submission
+   const createParticle = () => {
+     const particle = document.createElement("div");
+     particle.style.position = "absolute";
+     particle.style.borderRadius = "50%";
+     particle.style.width = `${Math.random() * 6 + 2}px`;
+     particle.style.height = particle.style.width;
+     particle.style.background = ["#385773", "#4a7296", "#2d4459", "#6a9cc9", "#1e3a5c"][Math.floor(Math.random() * 5)];
+     particle.style.opacity = `${Math.random() * 0.5 + 0.1}`;
+     particle.style.left = `${Math.random() * 100}%`;
+     particle.style.top = `${Math.random() * 100}%`;
 
-    // Redirect to a success page after submission
-    router.push("../successPagePlaceHolder");
 
-    setIsLoading(false);
-  };
+     container.appendChild(particle);
 
-  return (
-    <div className="h-screen flex flex-col items-center justify-center bg-black text-white font-nunito overflow-hidden relative">
-      <NavBar />
-      
-      {/* Siri-Like Animated Circle */}
-      <div className="siri-container mt-[-150px]">
-        <div className="siri-circle">
-          <div className="siri-wave siri-wave-1"></div>
-          <div className="siri-wave siri-wave-2"></div>
-          <div className="siri-wave siri-wave-3"></div>
-        </div>
-      </div>
 
-      {/* Description Section (Now Below the Animation) */}
-      <div className="w-[750px] mt-12 relative z-10 mt-[150px]">
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col items-start justify-start space-y-6 pb-8"
-        >
-          {/* DESCRIPTION */}
-          <div className="flex flex-col w-full">
-            <p className="text-white mb-2 text-center">DESCRIPTION</p>
-            <div className="bg-[#D9D9D9] text-[#000000] border border-[#D9D9D9] hover:bg-[#F3F4F6] focus:ring-4 focus:outline-none focus:ring-[#3B82F6] font-nunito rounded-[10px] text-md px-[10px] py-[10px] text-center flex items-center justify-start w-full">
-              <textarea
-                value={description}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
-                placeholder="Enter a detailed description of your project..."
-                className="bg-transparent border-none focus:outline-none w-full text-[#385773] resize-none rounded-[10px]"
-                rows={8} // Increased height of the textarea
-              />
-            </div>
-          </div>
+     const xSpeed = (Math.random() - 0.5) * 0.5;
+     const ySpeed = (Math.random() - 0.5) * 0.5;
 
-          {/* Submit Button (Aligned to the Right) */}
-          <div className="w-full flex justify-end"> {/* Container to align button to the right */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="mt-[20px] py-[10px] px-[50px] text-[#fff] rounded-[10px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-end gap-2 outline-none border-none bg-[#385773]"
-            >
-              {isLoading ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Submitting...
-                </>
-              ) : (
-                "Submit"
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+
+     const animate = () => {
+       const currentLeft = parseFloat(particle.style.left);
+       const currentTop = parseFloat(particle.style.top);
+       let newLeft = currentLeft + xSpeed;
+       let newTop = currentTop + ySpeed;
+
+
+       if (newLeft < 0 || newLeft > 100) newLeft = currentLeft - xSpeed;
+       if (newTop < 0 || newTop > 100) newTop = currentTop - ySpeed;
+
+
+       particle.style.left = `${newLeft}%`;
+       particle.style.top = `${newTop}%`;
+
+
+       requestAnimationFrame(animate);
+     };
+     animate();
+   };
+
+
+   for (let i = 0; i < 40; i++) createParticle();
+ }, []);
+
+
+ const resolveIDsToLabels = async (ids: number[], type: "skills" | "topics") => {
+   const promises = ids.map(async (id) => {
+     try {
+       const res = await fetch(`http://52.15.58.198:3000/${type}/${id}`);
+       if (!res.ok) throw new Error(`Failed to fetch ${type} with id ${id}`);
+       const data = await res.json();
+       return data;
+     } catch (err) {
+       console.error("Error fetching", type, id, err);
+       return null;
+     }
+   });
+   return Promise.all(promises);
+ };
+
+
+ const handleSubmit = async (e: React.FormEvent) => {
+   e.preventDefault();
+   if (!description.trim()) return;
+    try {
+     const res = await fetch("http://52.15.58.198:3000/projects/generateProject", {
+       method: "POST",
+       headers: {
+         "Content-Type": "application/json",
+       },
+       body: JSON.stringify({ prompt: description }),
+     });
+      if (!res.ok) throw new Error("Failed to generate project");
+      const aiProject = await res.json();
+     console.log("🎯 Raw AI Project Response:", aiProject);
+      alert("✅ Project suggestions generated!");
+     console.log("✅ Alert: Project suggestions generated");
+      const enrichedProject = {
+       projectName: aiProject.title,
+       projectType: aiProject.type,
+       techToBeUsed: aiProject.skills || [],
+       interests: aiProject.topics || [],
+       description: aiProject.description,
+       mvps: aiProject.mvp || [],
+       stretchGoals: aiProject.stretch || [],
+       timeline: {
+         frontend: aiProject.timeline?.frontend || [],
+         backend: aiProject.timeline?.backend || [],
+       },
+       source: "ai",
+     };
+    
+
+
+      console.log("🚀 Final Enriched Project To Pass:", enrichedProject);
+      // Wait for user confirmation
+     const proceed = confirm("📦 Suggestions ready!\n\nDo you want to open them in the project form?");
+     if (proceed) {
+       const encoded = encodeURIComponent(JSON.stringify(enrichedProject));
+       router.push(`/ManualProject?data=${encoded}`);
+     } else {
+       console.log("🛑 User cancelled redirection.");
+     }
+   } catch (err) {
+     console.error("❌ AI generation failed:", err);
+     alert("❌ Something went wrong while generating the project.");
+     console.log("❌ Alert: AI generation failed");
+   }
+ };
+
+
+ const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+   setDescription(e.target.value);
+   setIsTyping(true);
+   setTimeout(() => setIsTyping(false), 1000);
+ };
+
+
+ return (
+   <div
+     className="h-screen w-full translate-[-8px]"
+     style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "16px", position: "relative", overflow: "hidden" }}
+   >
+     <div ref={canvasRef} style={{ position: "absolute", inset: 0, zIndex: 0 }} />
+     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom right, #1a2a3aE6, #385773CC, #1e3a5cE6)", zIndex: 1 }}></div>
+
+
+     <form
+       onSubmit={handleSubmit}
+       style={{
+         width: "800px",
+         backgroundColor: "#ffffff1A",
+         backdropFilter: "blur(16px)",
+         borderRadius: "24px",
+         boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
+         zIndex: 2,
+         overflow: "hidden",
+         position: "relative",
+       }}
+     >
+       <div style={{ height: "4px", width: "100%", background: "linear-gradient(to right, #5fa8e0, #9bbcf0, #5fa8e0)" }}></div>
+
+
+       <div style={{ padding: "32px" }}>
+         <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
+           <div style={{ background: "linear-gradient(to bottom right, #5fa8e0, #9bbcf0)", padding: "8px", borderRadius: "50%" }}>
+             <Brain style={{ height: "24px", width: "24px", color: "#fff" }} />
+           </div>
+           <div>
+             <h2 style={{ fontSize: "28px", fontWeight: "bold", color: "#fff" }}>Create with AI</h2>
+             <p style={{ color: "#cbd5e1", marginTop: "4px" }}>Transform your ideas into reality with AI assistance</p>
+           </div>
+         </div>
+
+
+         <div style={{ position: "relative", marginBottom: "24px" }}>
+           <textarea
+             placeholder="Describe your dream project in detail..."
+             value={description}
+             onChange={handleInputChange}
+             rows={10}
+             style={{
+               width: "94%",
+               padding: "20px",
+               backgroundColor: "#1a2a3aCC",
+               border: "1px solid #7ea3c2",
+               color: "#ffffff",
+               fontSize: "16px",
+               borderRadius: "16px",
+               resize: "none",
+               outline: "none",
+             }}
+           />
+           <div
+             style={{
+               position: "absolute",
+               bottom: "16px",
+               right: "16px",
+               backgroundColor: "#1a2a3a",
+               border: "1px solid #7ea3c2",
+               borderRadius: "12px",
+               padding: "8px",
+               display: "flex",
+               alignItems: "center",
+               gap: "8px",
+               fontSize: "12px",
+               color: "#cbd5e1",
+             }}
+           >
+             <Lightbulb style={{ height: "16px", width: "16px", color: "#9bbcf0" }} />
+             <span>Be specific and imaginative</span>
+           </div>
+         </div>
+
+
+         <button
+           type="submit"
+           style={{
+             width: "100%",
+             height: "56px",
+             background: "linear-gradient(to right, #5fa8e0, #4a7296)",
+             border: "none",
+             borderRadius: "16px",
+             fontSize: "16px",
+             color: "#fff",
+             fontWeight: "500",
+             cursor: "pointer",
+             display: "flex",
+             alignItems: "center",
+             justifyContent: "center",
+             gap: "8px",
+             position: "relative",
+             overflow: "hidden",
+           }}
+         >
+           <Sparkles style={{ height: "20px", width: "20px" }} />
+           Generate Project with AI
+         </button>
+       </div>
+     </form>
+   </div>
+ );
 }
+
+
+
