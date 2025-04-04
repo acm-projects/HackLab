@@ -3,6 +3,8 @@ const { createProject, getAllProjects, getProjectById, getUsersByProjectId, getG
 const { generateProject } = require('../services/projectGen'); 
 const { generateResume } = require('../services/resumeGen');
 const { createRepo } = require('../services/createRepo');
+const { scrapeLinkedIn } = require('../services/linkedin');
+
 const  upload  = require('../middleware/uploadMiddleware');
 const { uploadImageToS3 } = require('../services/s3Service');
 const router = express.Router();
@@ -167,18 +169,40 @@ router.post('/generateProject', async (req, res) => {
 // Generate resumes for everyone on a project
 router.get('/:id/generateResume', async (req, res) => {
     try {
-        const github_repo_link = await getGithubById(req.params.id);
-        if (!github_repo_link) {
-            return res.status(404).json({ message: 'Project not found' });
+        const { linkedin, github, github_username } = req.query;
+
+        if (!github) {
+            return res.status(400).send('GitHub link is required');
         }
-        console.log('Generating Resume...')
-        const resume = await generateResume(github_repo_link);
-        res.json(resume);
+
+        if (!github_username) {
+            return res.status(400).send('GitHub username is required');
+        }
+
+        // const github_repo_link = await getGithubById(req.params.id);
+        // if (!github_repo_link) {
+        //     return res.status(404).send('Project not found');
+        // }
+
+        let userDetails = { github, github_username };
+
+        if (linkedin) {
+            console.log(`Scraping LinkedIn profile: ${linkedin}...`);
+            const scrapedData = await scrapeLinkedIn(linkedin);
+            userDetails = { ...userDetails, ...scrapedData };
+        } else {
+            console.log(`No LinkedIn URL provided. Using default template values.`);
+        }
+
+        const resume = await generateResume(github, userDetails);
+        res.type('text/plain').send(resume); // <-- send as plain text
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
     }
 });
+
+
 
 // Add skill to project
 router.post('/:projectId/skills/:skillId', async (req, res) => {

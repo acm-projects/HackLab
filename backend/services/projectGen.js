@@ -29,8 +29,8 @@ async function generateProject(prompt) {
     console.log(text);
 
     // Remove ```json from the response if present
-    if (text.startsWith('```json')) {
-        text = text.slice(7); // Remove the first 7 characters (```json)
+    if (text.startsWith('```latex')) {
+        text = text.slice(8); // Remove the first 7 characters (```json)
     }
     // Remove trailing ``` if present
     if (text.endsWith('```')) {
