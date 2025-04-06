@@ -14,10 +14,10 @@ const User = {
     },
 
     updateUser: async (id, userData) => {
-        const { name, email, emailVerified, image, xp, bio, role_preference_id } = userData;
+        const { name, real_name, email, emailVerified, image, xp, bio, role_preference_id, generated_resume_latex, linkedin_ur } = userData;
         const { rows } = await db.query(
-            'UPDATE users SET name = $1, email = $2, "emailVerified" = $3, image = $4, xp = $5, bio = $6, role_preference_id = $7 WHERE id = $8 RETURNING *',
-            [name, email, emailVerified, image, xp, bio, role_preference_id, id]
+            'UPDATE users SET name = $1, real_name = $2, email = $3, "emailVerified" = $4, image = $5, xp = $6, bio = $7, role_preference_id = $8, generated_resume_latex = $9, linkedin_url = $10, WHERE id = $11 RETURNING *',
+            [name, real_name, email, emailVerified, image, xp, bio, role_preference_id, id]
         );
         return rows[0];
     },
@@ -75,6 +75,31 @@ const User = {
             [userId, topicId]
         );
         return rowCount > 0;
+    },
+
+    // user role interactions
+    getUserRole: async (userId) => {
+        const { rows } = await db.query(
+            'SELECT role.* FROM role JOIN users ON role.id = users.role_preference_id WHERE users.id = $1',
+            [userId]
+        );
+        return rows[0];
+    },
+
+    setUserRole: async (userId, roleId) => {
+        const { rows } = await db.query(
+            'UPDATE users SET role_preference_id = $1 WHERE id = $2 RETURNING *',
+            [roleId, userId]
+        );
+        return rows[0];
+    },
+
+    clearUserRole: async (userId) => {
+        const { rows } = await db.query(
+            'UPDATE users SET role_preference_id = NULL WHERE id = $1 RETURNING *',
+            [userId]
+        );
+        return rows[0];
     },
 
     // user_project interactions
@@ -188,7 +213,27 @@ const User = {
             [userId, projectId]
         );
         return rowCount > 0;
-    }
+    },
+
+    saveResumeData: async (githubUsername, latexContent, linkedinUrl) => {
+        const { rows } = await db.query(
+            `UPDATE users 
+             SET generated_resume_latex = $1,
+                 linkedin_url = $2
+             WHERE name = $3
+             RETURNING *`,
+            [latexContent, linkedinUrl, githubUsername]
+        );
+        return rows[0];
+    },
+    
+    getResumeData: async (userId) => {
+        const { rows } = await db.query(
+            'SELECT generated_resume_latex, linkedin_url FROM users WHERE id = $1',
+            [userId]
+        );
+        return rows[0];
+    },
 };
 
 module.exports = User;

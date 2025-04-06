@@ -123,7 +123,11 @@ const deleteTeamPreferenceFromProject = async (projectId, preferenceId) => {
 
 const markProjectComplete = async (projectId) => {
     const result = await pool.query(
-        'UPDATE project SET completed = TRUE WHERE id = $1 RETURNING *',
+        `UPDATE project 
+         SET completed = TRUE,
+             completion_date = CURRENT_TIMESTAMP
+         WHERE id = $1 
+         RETURNING *`,
         [projectId]
     );
     return result.rows[0];

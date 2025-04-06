@@ -4,7 +4,7 @@ const { generateProject } = require('../services/projectGen');
 const { generateResume } = require('../services/resumeGen');
 const { createRepo } = require('../services/createRepo');
 const { scrapeLinkedIn } = require('../services/linkedin');
-
+const User = require('../models/user');
 const  upload  = require('../middleware/uploadMiddleware');
 const { uploadImageToS3 } = require('../services/s3Service');
 const router = express.Router();
@@ -166,36 +166,32 @@ router.post('/generateProject', async (req, res) => {
 });
 
 
-// Generate resumes for everyone on a project
 router.get('/:id/generateResume', async (req, res) => {
     try {
+        // linkedin is linkedin url, github is repo url, and username is username
         const { linkedin, github, github_username } = req.query;
 
-        if (!github) {
-            return res.status(400).send('GitHub link is required');
+        // Input validation
+        if (!github || !github_username) {
+            return res.status(400).send('GitHub link and username are required');
         }
 
-        if (!github_username) {
-            return res.status(400).send('GitHub username is required');
+        // Generate resume
+        let resume = await generateResume(github, {
+            github,
+            github_username,
+            linkedin,
+            ...(linkedin ? await scrapeLinkedIn(linkedin) : {})
+        });
+
+        if (resume.startsWith('```latex')) {
+            resume = resume.replace(/^```latex\s*/, '').replace(/\s*```$/, '');
         }
 
-        // const github_repo_link = await getGithubById(req.params.id);
-        // if (!github_repo_link) {
-        //     return res.status(404).send('Project not found');
-        // }
+        // Save to user table
+        await User.saveResumeData(github_username, resume, linkedin);
 
-        let userDetails = { github, github_username };
-
-        if (linkedin) {
-            console.log(`Scraping LinkedIn profile: ${linkedin}...`);
-            const scrapedData = await scrapeLinkedIn(linkedin);
-            userDetails = { ...userDetails, ...scrapedData };
-        } else {
-            console.log(`No LinkedIn URL provided. Using default template values.`);
-        }
-
-        const resume = await generateResume(github, userDetails);
-        res.type('text/plain').send(resume); // <-- send as plain text
+        res.type('text/plain').send(resume);
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
@@ -323,9 +319,9 @@ router.delete('/:projectId/teamPreference/:preferenceId', async (req, res) => {
     }
 });
 
-// Mark a project as completed
+// Mark a project as completed (now works with completion date)
 router.patch('/:projectId/complete', async (req, res) => {
-    console.log('Received request to mark project as completed');
+    //console.log('Received request to mark project as completed');
     const { projectId } = req.params;
     try {
         const result = await markProjectComplete(projectId);

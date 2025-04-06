@@ -126,6 +126,39 @@ router.delete('/:id/topics/:topicId', async (req, res) => { // delete topic from
     }
 });
 
+// works
+router.get('/:id/role', async (req, res) => {
+    try {
+        const role = await User.getUserRole(req.params.id);
+        if (role) {
+            res.json(role);
+        } else {
+            res.status(404).json({ error: 'Role not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// works
+router.post('/:id/role/:roleId', async (req, res) => {
+    try {
+        const updatedUser = await User.setUserRole(req.params.id, req.params.roleId);
+        res.json(updatedUser);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.delete('/:id/role', async (req, res) => {
+    try {
+        const updatedUser = await User.clearUserRole(req.params.id);
+        res.json(updatedUser);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // user_project routes
 // will return project_id and role_id's for the user, not the actual project information and stuff
 router.get('/:id/projects', async (req, res) => { // get projects for a user
@@ -259,6 +292,20 @@ router.delete('/:id/join-requests/:projectId', async (req, res) => { // remove j
         }
     } catch (error) {
         res.status(500).json({ error: error.message }); // server error
+    }
+});
+
+// New endpoint to fetch saved resume
+router.get('/:id/resume', async (req, res) => {
+    try {
+        const data = await User.getResumeData(req.params.id);
+        if (!data) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
     }
 });
 
