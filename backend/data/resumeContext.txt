@@ -23,7 +23,7 @@ For the user's phone number, put an template value like 123-456-7890
 If an additional project is provided or talked about in the user's experiences other than the one given with the commit history, list that one below the one with the commit history.
 Otherwise, if no additional projects are mentioned, just only include the one with the commit history.
 THIS IS VERY IMPORTANT, ANY TIME YOU INCLUDE A PERCENTAGE (%), YOU MUST PUT A FORWARD SLASH BEFORE IT (\%)
-Here is the template LaTex file to replace with user data:
+Here is the template LaTex file to replace with user data. DO NOT CHANGE ANY OF THE CODE BEFORE "\begin{document}". LEAVE EVERYTHING BEFORE THAT THE SAME:
 \documentclass[letterpaper,11pt]{article}
 
 \usepackage{latexsym}
