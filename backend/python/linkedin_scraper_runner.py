@@ -15,6 +15,7 @@ options.add_argument("--headless")  # Run Chrome in the background
 options.add_argument("--disable-gpu")  # Disables GPU hardware acceleration (optional)
 options.add_argument("--no-sandbox")  # Helps when running on some server environments
 options.add_argument("--disable-dev-shm-usage")  # Prevents crashes in Docker containers
+options.binary_location = "/usr/bin/google-chrome"  # Update this path to match where Chrome is installed
 
 driver = webdriver.Chrome(options=options)
 
