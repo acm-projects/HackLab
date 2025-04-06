@@ -30,7 +30,6 @@ try:
         "name": person.name,
         "experiences": [vars(e) for e in person.experiences],
         "educations": [vars(e) for e in person.educations],
-        "accomplishments": person.accomplishments,
         "company": person.company,
         "job_title": person.job_title
     }

@@ -20,6 +20,8 @@ Do not exceed the length of the template LaTex file, the resume should not be lo
 For locations, only put the city and state, for example: Dallas, TX
 Do not have any empty lines on the resume. There should be no extra space between lines and bullet points.
 For the user's phone number, put an template value like 123-456-7890
+If an additional project is provided or talked about in the user's experiences other than the one given with the commit history, list that one below the one with the commit history.
+Otherwise, if no additional projects are mentioned, just only include the one with the commit history.
 THIS IS VERY IMPORTANT, ANY TIME YOU INCLUDE A PERCENTAGE (%), YOU MUST PUT A FORWARD SLASH BEFORE IT (\%)
 Here is the template LaTex file to replace with user data:
 \documentclass[letterpaper,11pt]{article}

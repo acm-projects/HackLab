@@ -53,7 +53,7 @@ async function generateResume(github, userDetails) {
   const commitHistoryText = JSON.stringify(commitHistory);
     console.log(commitHistoryText);
   // Use LinkedIn data if available, otherwise use realistic placeholders
-  const name = userDetails.name || userDetails.github_username;
+  const name = userDetails.name || userDetails.db_name;
   const experiences = userDetails.experiences?.length ? JSON.stringify(userDetails.experiences) : JSON.stringify([
     { company: "TechCorp Inc.", title: "Software Engineer", duration: "2021 - Present", description: "Developed high-traffic web applications using React and Node.js, handling 10,000+ daily requests with 99.9% uptime. Spearheaded the migration from legacy jQuery to React/Redux, reducing production bugs by 60% while mentoring junior team members. Optimized DevOps processes by implementing GitHub Actions CI/CD pipelines, cutting deployment times from 15 minutes to under 3 minutes." },
     { company: "StartupX", title: "Backend Developer Intern", duration: "2020 - 2021", description: "Designed and optimized Python/Flask APIs, improving response times by 40% through Redis caching and MongoDB query tuning. Integrated critical business systems including Stripe payments and SendGrid email, enabling $50K+ in annual revenue. Automated infrastructure deployments using Bash and Ansible, saving 20+ engineering hours per month." }
@@ -61,14 +61,10 @@ async function generateResume(github, userDetails) {
   const education = userDetails.educations?.length ? JSON.stringify(userDetails.educations) : JSON.stringify([
     { institution: "University of Example", degree: "B.Sc. in Computer Science", year: "2017 - 2021" }
   ]);
-  const accomplishments = userDetails.accomplishments?.length ? JSON.stringify(userDetails.accomplishments) : JSON.stringify([
-    "Published a research paper on AI-driven automation.",
-    "Built a popular open-source library with 10,000+ downloads."
-  ]);
   const jobTitle = userDetails.job_title || "Software Engineer";
   const company = userDetails.company || "TechCorp Inc.";
   const linkedinLink = userDetails.linkedin || `linkedin.com/in/${userDetails.github_username}`;
-  const user = await User.getUserById(Chat.getUserID(userDetails.github_username));
+  const user = await User.getUserById(await Chat.getUserID(userDetails.db_name));
   const email = user?.email || `${userDetails.github_username}@gmail.com`; // fallback in case it's undefined  
   // Construct AI prompt
   const context = await getContext();
@@ -84,7 +80,6 @@ async function generateResume(github, userDetails) {
     - **Company:** ${company}
     - **Education:** ${education}
     - **Experiences:** ${experiences}
-    - **Accomplishments:** ${accomplishments}
 
     ## Project Contribution
     - **Project Title:** ${repo}

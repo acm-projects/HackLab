@@ -169,7 +169,7 @@ router.post('/generateProject', async (req, res) => {
 router.get('/:id/generateResume', async (req, res) => {
     try {
         // linkedin is linkedin url, github is repo url, and username is username
-        const { linkedin, github, github_username } = req.query;
+        const { linkedin, github, github_username, db_name } = req.query;
 
         // Input validation
         if (!github || !github_username) {
@@ -180,6 +180,7 @@ router.get('/:id/generateResume', async (req, res) => {
         let resume = await generateResume(github, {
             github,
             github_username,
+            db_name,
             linkedin,
             ...(linkedin ? await scrapeLinkedIn(linkedin) : {})
         });
@@ -189,7 +190,7 @@ router.get('/:id/generateResume', async (req, res) => {
         }
 
         // Save to user table
-        await User.saveResumeData(github_username, resume, linkedin);
+        await User.saveResumeData(db_name, resume, linkedin);
 
         res.type('text/plain').send(resume);
     } catch (error) {
