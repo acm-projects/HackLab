@@ -13,7 +13,7 @@ const router = express.Router();
 // Create a new project
 router.post('/',upload.single('thumbnail'), async (req, res) => {
     console.log('Received request to create project');
-    const { accessToken, projectDataString } = req.body; // Extract accessToken and projectData
+    const { accessToken, projectDataString, thumbnail } = req.body; // Extract accessToken and projectData
     const projectData = JSON.parse(projectDataString); // Parse projectData JSON string
     const { title: repoName, short_description: repoDesc } = projectData;
     const image = req.file;
@@ -26,14 +26,20 @@ router.post('/',upload.single('thumbnail'), async (req, res) => {
         projectData.github_repo_url = url;
 
         // store thumbnail link if user uploads a thumbnail link
-        if (projectData.thumbnail){
-            projectData.thumbnail = projectData.thumbnail;
+        if (thumbnail){
+            console.log('Using provided thumbnail link: ' + thumbnail);
+            projectData.thumbnail = thumbnail;
         }
+
         // store image file if user uploads a thumbnail
-        else if (image) {
+        if (image) {
             console.log('Uploading image to S3');
             const image_url = await uploadImageToS3(image);
             projectData.thumbnail = image_url;
+        }
+        else if (thumbnail){
+            console.log('Using provided thumbnail link: ' + thumbnail);
+            projectData.thumbnail = thumbnail;
         }
         else
         {
