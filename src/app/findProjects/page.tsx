@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import OngoingProjectCard from "../components/OngoingProjects";
 import ExpandedProjectModal from "../components/ExpandedProjectCard";
+import ProjectTimeline from "../components/timelineComponent";
 
 interface Project {
   id: number;
@@ -18,6 +19,8 @@ interface Project {
   skills: string[];
   mvp: string[];
   stretch: string[];
+  frontendTasks: string[];
+  backendTasks: string[];
 }
 
 const FindProjects = () => {
@@ -30,7 +33,7 @@ const FindProjects = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
 
-  const currentUserId = 1; // Replace with real userId from auth
+  const currentUserId = 1;
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -97,6 +100,10 @@ const FindProjects = () => {
         setIsLiked(enrichedProjects.map((p) => likedProjectIds.includes(p.id)));
         setIsBookmarked(enrichedProjects.map((p) => bookmarkedProjectIds.includes(p.id)));
         setJoinRequested(Array(enrichedProjects.length).fill(false));
+        console.log("📊 Project likes:");
+        enrichedProjects.forEach((proj) => {
+          console.log(`Project ID ${proj.id} (${proj.title}): ${proj.likes} likes`);
+        });
       } catch (err) {
         console.error("Failed to load projects:", err);
       }
@@ -113,25 +120,15 @@ const FindProjects = () => {
   });
 
   const handleLike = async (index: number) => {
-    const projectId = projects[index].id;
+    const project = projects[index];
+    const projectId = project.id;
+    const liked = isLiked[index];
   
     try {
-      // Re-check backend before POST
-      const checkRes = await fetch(`http://52.15.58.198:3000/users/${currentUserId}/liked-projects`);
-      const liked = await checkRes.json();
-      const alreadyLiked = liked.some((p: any) => p.id === projectId);
-  
-      // Don't try to POST again if already liked
-      if (alreadyLiked && isLiked[index]) {
+      if (liked) {
         // Unlike
         await fetch(`http://52.15.58.198:3000/users/${currentUserId}/liked-projects/${projectId}`, {
           method: "DELETE",
-        });
-  
-        await fetch(`http://52.15.58.198:3000/projects/${projectId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ likes: projects[index].likes - 1 }),
         });
   
         setIsLiked((prev) => {
@@ -142,23 +139,15 @@ const FindProjects = () => {
   
         setProjects((prev) => {
           const copy = [...prev];
-          copy[index].likes -= 1;
+          copy[index] = { ...copy[index], likes: copy[index].likes - 1 };
           return copy;
         });
-  
-        return;
-      }
-  
-      // Like (only if not already liked)
-      if (!alreadyLiked) {
+      } else {
+        // Like
         await fetch(`http://52.15.58.198:3000/users/${currentUserId}/liked-projects/${projectId}`, {
           method: "POST",
-        });
-  
-        await fetch(`http://52.15.58.198:3000/projects/${projectId}`, {
-          method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ likes: projects[index].likes + 1 }),
+          body: JSON.stringify({ user_id: currentUserId, project_id: projectId }),
         });
   
         setIsLiked((prev) => {
@@ -169,12 +158,12 @@ const FindProjects = () => {
   
         setProjects((prev) => {
           const copy = [...prev];
-          copy[index].likes += 1;
+          copy[index] = { ...copy[index], likes: copy[index].likes + 1 };
           return copy;
         });
       }
     } catch (err) {
-      console.error("❌ handleLike error:", err);
+      console.error("❌ Error toggling like:", err);
     }
   };
   
@@ -234,7 +223,7 @@ const FindProjects = () => {
 
       <div className="h-screen flex flex-col items-center bg-blue-900 text-white w-[90%] scrollbar-hide">
         {filteredProjects.length > 0 ? (
-          <div className="text-[#000000] font-[700] underline underline-offset-5 text-[24px] mt-[100px] mb-[-100px] mr-[950px]">
+          <div className="text-[#000000] font-[700] text-[24px] mt-[100px] mb-[-100px] mr-[950px]">
             Found {filteredProjects.length} project{filteredProjects.length !== 1 ? "s" : ""} just for you
           </div>
         ) : (
@@ -257,6 +246,7 @@ const FindProjects = () => {
                   {...project}
                   showJoinButton={true}
                   isLiked={isLiked[index]}
+                  likes={project.likes}
                   isBookmarked={isBookmarked[index]}
                   joinRequested={joinRequested[index]}
                   onLike={() => handleLike(index)}

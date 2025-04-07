@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useRef, useState, useLayoutEffect } from "react";
 
 interface OngoingProjectCardProps {
   title: string;
@@ -23,6 +24,38 @@ interface OngoingProjectCardProps {
   onJoin: () => void;
 }
 
+const TagRow: React.FC<{ items: string[]; color: string }> = ({ items, color }) => {
+  const validItems = items.filter((item) => typeof item === "string" && item.trim() !== "");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const thirdRef = useRef<HTMLSpanElement>(null);
+  const [hideThird, setHideThird] = useState(false);
+
+  useLayoutEffect(() => {
+    if (containerRef.current && thirdRef.current) {
+      const containerTop = containerRef.current.getBoundingClientRect().top;
+      const thirdTop = thirdRef.current.getBoundingClientRect().top;
+      setHideThird(thirdTop > containerTop);
+    }
+  }, [items]);
+
+  if (!validItems.length) return null;
+
+  return (
+    <div ref={containerRef} className="flex flex-wrap gap-[6px] mb-[10px] overflow-hidden">
+      {validItems.slice(0, hideThird ? 2 : 3).map((item, index) => (
+        <span
+          key={index}
+          ref={index === 2 ? thirdRef : null}
+          className="text-[11px] px-[8px] py-[4px] rounded-[8px]"
+          style={{ backgroundColor: color, color: "#fff" }}
+        >
+          {item}
+        </span>
+      ))}
+    </div>
+  );
+};
+
 const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
   title,
   groupLeader,
@@ -44,30 +77,11 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
 }) => {
   const descriptionWords = description.trim().split(" ");
   const truncatedDescription =
-    descriptionWords.length > 45
-      ? descriptionWords.slice(0, 45).join(" ") + "..."
-      : description;
-
-  const adjustedLikes = likes + (isLiked ? 1 : 0);
-
-  const renderTags = (items: string[] = [], color: string) => {
-    const validItems = items.filter((item) => typeof item === "string" && item.trim() !== "");
-    if (!validItems.length) return null;
-
-    return validItems.slice(0, 3).map((item, index) => (
-      <span
-        key={index}
-        className="text-[11px] px-[8px] py-[4px] rounded-[8px]"
-        style={{ backgroundColor: color, color: "#fff", marginRight: "4px" }}
-      >
-        {item}
-      </span>
-    ));
-  };
+    descriptionWords.length > 45 ? descriptionWords.slice(0, 45).join(" ") + "..." : description;
 
   return (
     <div
-      className="h-[370px] w-full rounded-[15px] border border-black bg-[#ffffff] overflow-hidden flex flex-col mb-[3px] cursor-pointer"
+      className="relative h-[370px] w-full rounded-[15px] border border-black bg-[#ffffff] overflow-hidden flex flex-col mb-[3px] cursor-pointer"
       style={{ boxShadow: "5px 5px 5px rgb(30 40 50 / 40%)" }}
     >
       {/* Top Image */}
@@ -79,26 +93,20 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
       <div className="h-[60%] w-full px-[15px] py-[10px] flex mt-[-10px] gap-[4px]">
         {/* Left Side */}
         <div className="flex flex-col w-1/2 pr-[8px] ml-[10px]">
-        <h2 className="text-[18px] font-bold text-[#000000] mt-[4px]">{title}</h2>
-        {topics.length > 0 && (
-            <div className="flex flex-wrap gap-[4px] mt-[-10px]">
-              {renderTags(topics, "#426c98")}
-            </div>
-          )}
+          <h2 className="text-[18px] font-bold text-[#000000] mt-[4px] mb-[3px]">{title}</h2>
+          {topics.length > 0 && <TagRow items={topics} color="#426c98" />}
+          <div className = "mt-[-5px]">
+          {skills.length > 0 && <TagRow items={skills} color="#5888b5" />}
+          </div>
 
-          {skills.length > 0 && (
-            <div className="flex flex-wrap gap-[4px] mt-[4px]">
-              {renderTags(skills, "#5888b5")}
-            </div>
-          )}
-       
-        <div className="flex items-center gap-[6px] mt-[4px]">
-  <p className="text-[13px] text-[#2e2e2e]">
-    Led by: <span className="font-semibold">{groupLeader.name}</span>
-  </p>
-</div>
+          <div className="flex items-center gap-[6px] mt-[4px]">
+            <p className="text-[13px] text-[#2e2e2e] absolute mt-[40px]">
+              Led by: <span className="font-semibold">{groupLeader.name}</span>
+            </p>
+          </div>
+
           {/* Members */}
-          <div className="flex flex-col mt-[-15px] pb-[8px]">
+          <div className="absolute flex flex-col mt-[-15px] pb-[8px] mt-[120px]">
             <div className="flex items-center gap-[6px]">
               <div className="flex">
                 {members.slice(0, 3).map((url, idx) => (
@@ -115,16 +123,14 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
                 ))}
               </div>
               <div className="flex flex-col">
-                <span className="text-[12px] text-[#000] translate-y-[12px]">
-                  {totalMembers} members
-                </span>
+                <span className="text-[12px] text-[#000] translate-y-[12px]">{totalMembers} members</span>
                 <p className="text-[11px] text-[#aaaaaa]">{moreNeeded} member needed</p>
               </div>
             </div>
           </div>
 
           {/* Buttons */}
-          <div className="flex items-center gap-[1px] mt-[6px] justify-start ml-[-7px]">
+          <div className="absolute bottom-[16px] left-[16px] flex gap-[-4px] z-10">
             <button
               className="flex items-center outline-none border-none bg-transparent"
               onClick={(e) => {
@@ -168,18 +174,18 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
                   d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
                 />
               </svg>
-              <span className="text-[12px] ml-[2px]">{adjustedLikes}</span>
+              <span className="text-[12px] ml-[2px]">{likes}</span>
             </button>
           </div>
         </div>
 
-        {/* Right Side - Description & Join */}
-        <div className="w-1/2 flex flex-col justify-between mr-[40px] mt-[40px]">
-          <div className="text-[12px] text-black break-words overflow-hidden pr-[10px]">
+        {/* Right Side */}
+        <div className="w-[500px] flex flex-col justify-between mr-[40px] mt-[16px]">
+          <div className="text-[16px] text-black break-words overflow-hidden pr-[10px]">
             <p>{truncatedDescription}</p>
           </div>
           {showJoinButton && (
-            <div className="flex justify-end pt-[10px] mb-[40px]">
+            <div className="absolute bottom-[18px] right-[35px] z-10">
               <button
                 onClick={(e) => {
                   e.stopPropagation();

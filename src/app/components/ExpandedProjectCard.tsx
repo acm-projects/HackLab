@@ -1,4 +1,5 @@
 import React from "react";
+import ProjectTimeline from "../components/timelineComponent";
 
 interface ExpandedProjectModalProps {
   title: string;
@@ -23,9 +24,11 @@ interface ExpandedProjectModalProps {
   mvp?: string[];
   stretch?: string[];
   showJoinButton?: boolean;
+  id: number;
 }
 
 const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
+  id,
   title,
   groupLeader,
   image,
@@ -168,6 +171,9 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
               )}
             </div>
           )}
+          <div>
+          <ProjectTimeline projectId={id} />
+          </div>
 
           <div className="flex justify-end gap-[16px] mt-[24px]">
             <button onClick={onBookmark} className="flex items-center outline-none border-none bg-transparent">

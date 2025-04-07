@@ -279,6 +279,9 @@ export default function NavBar({ onClearFilters, onApplyFilters, searchInput, se
 
            &nbsp; Create Project
           </button>
+          <button onClick={() => router.push("/ProjectCompletion")}>
+            Temp go Completion
+          </button>
         </div>
 
         {/* Profile Button */}

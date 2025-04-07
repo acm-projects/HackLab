@@ -22,7 +22,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ ongoing, created, co
   <div className="w-1/2 h-[200px] bg-[#FFFFFF] rounded-[8px] p-[20px] flex flex-col justify-between text-center border border-[#c1c1c1]"
        >
     <h3 className="text-[16px] font-medium text-[#111827] mb-[10px]">Project Stats</h3>
-    <div className="flex justify-between gap-[10px]">
+    <div className="flex justify-between gap-[10px] mb-[50px]">
       <div className="flex-1 bg-[#FED7D7] rounded-[4px] p-[10px] text-center">
         <div className="text-[20px] font-bold text-[#E53E3E]">{ongoing}</div>
         <div className="text-[13px] text-[#E53E3E]">Ongoing</div>

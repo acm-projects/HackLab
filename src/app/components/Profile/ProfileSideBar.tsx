@@ -9,6 +9,7 @@ interface ProfileInfoProps {
   topics: string[]; // formerly 'languages'
   roles: string[];
   skills: string[]; // formerly 'interests'
+  onEditClick: () => void;
 }
 
 const ProfileSidebar: React.FC<ProfileInfoProps> = ({
@@ -18,11 +19,12 @@ const ProfileSidebar: React.FC<ProfileInfoProps> = ({
   topics,
   roles,
   skills,
+  onEditClick
 }) => {
   const router = useRouter();
 
   return (
-    <div className="w-[220px] h-[850px] bg-[#FFFFFF] rounded-[10px] p-[16px] border border-[#E5E7EB] text-[#111827] text-[14px] pb-[20px]">
+    <div className="flex-shrink-0 w-[220px] h-[925px] bg-[#FFFFFF] rounded-[10px] p-[16px] border border-[#E5E7EB] text-[#111827] text-[14px] pb-[20px] mt-[40px]">
       {/* Profile Header */}
       <div className="w-full flex flex-col items-center mb-[40px]">
         <div className="w-full flex items-center gap-[16px] mb-[16px]">
@@ -58,7 +60,7 @@ const ProfileSidebar: React.FC<ProfileInfoProps> = ({
         </div>
 
         <button
-          onClick={() => router.push("/profile/edit")}
+          onClick={onEditClick}
           className="w-full bg-[#385773] text-[#FFFFFF] text-[14px] font-[500] py-[8px] rounded-[8px] hover:bg-[#2d475f] transition"
         >
           Edit Profile
