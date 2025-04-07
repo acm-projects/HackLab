@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-
+//changes made april 7
 interface FilterBoxProps {
   onClose: () => void;
   onApply: (filters: any) => void;
@@ -76,8 +76,8 @@ export default function FilterBox({ onClose, onApply }: FilterBoxProps) {
   return (
     <div 
       ref={boxRef}
-      className="absolute top-[50px] right-[-200px] w-[280px] max-h-[300px] z-50 rounded-[8px] shadow-xl border px-4 py-5 overflow-y-auto"
-      style={{ backgroundColor: "#ffffff", color: "#000000", borderColor: "#d1d5db" }}
+      className="absolute top-[50px] right-[-222px] w-[280px] max-h-[300px] z-50 px-[10px] py-[10px] rounded-[8px] shadow-xl border px-4 py-5 overflow-y-auto ml-[50px] "
+      style={{ backgroundColor: "#ffffff", color: "#000000", borderColor: "#d1d5db", boxShadow: "0px 0px 5px 3px rgba(0,0,0,0.6)"}}
     >
       {/* Search Bar */}
       <input
@@ -85,7 +85,7 @@ export default function FilterBox({ onClose, onApply }: FilterBoxProps) {
         placeholder="Search tags"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-[150px] mb-3 px-3 py-1.5 text-[13px] border border-gray-300 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#385773]"
+        className="w-[90%] mb-[5px] px-[5px] py-[5px] text-[13px] border border-gray-300 rounded-[6px] outline-none focus:ring-1 focus:ring-[#385773]"
         style={{ color: "#1f2937" }}
       />
 
@@ -163,7 +163,7 @@ export default function FilterBox({ onClose, onApply }: FilterBoxProps) {
       </div>
 
       {/* Buttons */}
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-[5px] pt-[2px]">
         <button
           onClick={() => {
             setSelectedTopics([]);
@@ -171,14 +171,14 @@ export default function FilterBox({ onClose, onApply }: FilterBoxProps) {
             setSelectedRoles([]);
             setSearchQuery("");
           }}
-          className="text-[12px] px-3 py-1 rounded-md"
-          style={{ backgroundColor: "#e5e7eb", color: "#000000" }}
+          className="text-[12px] px-[5]x py-[5px] rounded-[5px] border-transparent border-none outline-none"
+          style={{ backgroundColor: "#e5e7eb", color: "#000000"}}
         >
           Reset
         </button>
         <button
           onClick={handleApply}
-          className="text-[12px] px-4 py-1 rounded-[4px]"
+          className="text-[12px] px-[5px] py-[5px] rounded-[5px] border-none outline-none"
           style={{ backgroundColor: "#385773", color: "#ffffff" }}
         >
           Apply

@@ -1,5 +1,6 @@
 "use client";
 
+// new changes made: removed sign in button and made the sign up button a sign in button with github- april 7
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import { FaGithub } from "react-icons/fa";
@@ -14,32 +15,19 @@ export default function AuthButtons() {
      {/* If the user is NOT logged in, show Sign In & Sign Up */}
      {!session ? (
        <>
-         {/* Sign In Button (Existing Users) */}
-         <button
-           onClick={() =>  signIn("github", {
-             callbackUrl: "/Survey/name",
-             prompt: "login", // Forces GitHub login every time
-           })}
-           className="bg-black text-tertiary hover:text-white border-none
-                     focus:outline-none font-nunito rounded-[10px] text-md px-[20px] py-[12px] text-center
-                     me-2 mb-2">
-           Sign In
-         </button>
-
-
          {/* Sign Up with GitHub (For New Users) */}
          <button
            onClick={() =>
              signIn("github", {
-               callbackUrl: "/Survey/name",
+               callbackUrl: "/Survey",
                prompt: "login", // Forces GitHub login every time
              })
            }
            className="bg-[#385773] text-primary font-nunito rounded-[10px] text-md px-[20px] py-[10px] text-center
-                     flex items-center gap-2 me-2 mb-2"
+                     flex items-center gap-2 me-2 mb-2 border-transparent border-none outline-none cursor-pointer transition-transform duration-200 hover:scale-105"
          >
            <FaGithub className="w-[18px] h-[18px] text-white" />
-           &nbsp; Sign Up with GitHub
+           &nbsp; Sign In with GitHub
          </button>
        </>
      ) : (
@@ -48,7 +36,7 @@ export default function AuthButtons() {
          onClick={() => signOut({ callbackUrl: "/" })} // Redirects to landing page after logout
          className="mb-[50px] bg-[#385773] text-[#fff] border-transparent border-none outline-none
                    font-nunito rounded-[10px] text-[15px] px-[20px] py-[12px] text-center
-                   z-50 flex items-center gap-2 ml-[30px]"
+                   z-50 flex items-center gap-2 ml-[30px] mt-[50px] cursor-pointer"
        >
          {/* Logout Icon */}
          <svg

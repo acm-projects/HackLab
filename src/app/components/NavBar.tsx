@@ -5,7 +5,7 @@ import NotificationDropdown from "./NotificationDropdown";
 import LogoutButton from "../components/LogoutButton";
 import { usePathname } from "next/navigation";
 import FilterBox from "./filterbox"; 
-
+//changes made april 7
 interface Notification {
   type: "joinRequest" | "like";
   user: {
@@ -95,8 +95,7 @@ export default function NavBar({ onClearFilters, onApplyFilters, searchInput, se
 
         {/* Search Bar */}
         <div className="flex flex-1 justify-start">
-          <div className="bg-[#ffffff] text-[#38577368] border-none 
-                        hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
+          <div className="bg-[#ffffff] text-[#38577368] border-none outline-none
                         font-nunito rounded-[10px] ml-[20px] text-md px-[20px] py-[7px] text-center 
                         flex items-center justify-start w-[500px]">
             <svg
@@ -124,13 +123,13 @@ export default function NavBar({ onClearFilters, onApplyFilters, searchInput, se
                   onClearFilters?.();  
                 }
               }}
-              className="bg-transparent border-none focus:outline-none w-full text-[#385773]"
+              className="bg-transparent border-none outline-none focus:outline-none w-full text-[#385773]"
             />
           </div>
 {pathname === "/findProjects" && (
   <div className="relative">
     <button
-      className="ml-8 w-[80px] flex items-center gap-2 px-4 py-1 bg-white text-[#2e2e2e] rounded-[10px] shadow border border-gray-300 text-sm hover:shadow-lg"
+      className="ml-8 w-[80px] flex items-center gap-[1px] px-[13px] py-[8px] bg-[#fff] text-[#2e2e2e] rounded-[10px] shadow border border-gray-300 text-sm border-transparent border-none outline-none ml-[20px] "
       onClick={() => setShowFilterBox(!showFilterBox)}
     >
       Filter
@@ -140,7 +139,7 @@ export default function NavBar({ onClearFilters, onApplyFilters, searchInput, se
         viewBox="0 0 24 24"
         strokeWidth="2"
         stroke="currentColor"
-        className="w-4 h-4"
+        className="size-[25px]"
       >
         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
       </svg>
@@ -164,8 +163,8 @@ export default function NavBar({ onClearFilters, onApplyFilters, searchInput, se
         {/* Notification Button */}
         <div className="relative">
           <button
-            className="bg-[#385773] text-primary hover:text-white border-none 
-                        hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
+            className="bg-[#385773] text-primary border-none 
+                         outline-none
                         font-nunito rounded-[10px] text-md px-[30px] py-[12px] text-center"
             onClick={handleNotificationClick}
           >
@@ -208,7 +207,7 @@ export default function NavBar({ onClearFilters, onApplyFilters, searchInput, se
 
       {/* Expanding Box Below Navigation */}
       <div
-        className={`fixed top-[0px] w-[270px] h-screen bg-[#385773] ml-[-10px] rounded-br-[65px] text-[#fff] flex flex-col items-start transition-transform duration-500 
+        className={`fixed top-[0px] w-[270px] h-screen bg-[#385773] ml-[-10px] rounded-br-[65px] text-[#fff] flex flex-col items-start transition-transform duration-500  
           ${isMenuOpen ? "translate-x-0" : "-translate-x-[270px]"}`}
         style={{
           zIndex: 50,
@@ -216,8 +215,7 @@ export default function NavBar({ onClearFilters, onApplyFilters, searchInput, se
         }}
       >
         <button
-          className="w-full bg-[#385773] text-[#fff] hover:bg-gray-900 border-none 
-                    focus:ring-4 focus:outline-none focus:ring-blue-300 
+          className="w-full bg-[#385773] text-[#fff] border-none outline-none
                     font-nunito rounded-[10px] text-[30px]
                     text-start flex items-center gap-2 justify-start mt-[15px] px-[50px]"
           onClick={() => router.push("/homeScreen")} // Navigate to the home screen
@@ -228,8 +226,7 @@ export default function NavBar({ onClearFilters, onApplyFilters, searchInput, se
         <div className="w-full flex flex-col mt-[130px] space-y-4 items-start ml-[30px]">
           {/* Dashboard Link */}
           <button
-            className="mb-[20px] bg-[#385773] text-primary hover:text-white border-none 
-                    hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
+            className="mb-[20px] bg-[#385773] text-primary border-none outline-none
                     font-nunito rounded-[10px] text-[15px] px-[20px] text-center flex items-center"
             onClick={() => router.push("/myProject")} 
           >        {/* Testing this with the chat page for now */}
@@ -242,8 +239,7 @@ export default function NavBar({ onClearFilters, onApplyFilters, searchInput, se
 
           {/* FindProjects Link */}
           <button
-            className="mb-[20px] bg-[#385773] text-primary hover:text-white border-none 
-                    hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
+            className="mb-[20px] bg-[#385773] text-primary border-none outline-none
                     font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-50 lex flex items-center gap-2"
             onClick={() => router.push("/findProjects")}
           >
@@ -267,8 +263,7 @@ export default function NavBar({ onClearFilters, onApplyFilters, searchInput, se
 
           {/* CreateProject Link */}
           <button
-            className="mt-auto bg-[#385773] text-primary hover:text-white border-none 
-                    hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
+            className="mt-auto bg-[#385773] text-primary border-none outline-none
                     font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-50 flex items-center gap-2"
             onClick={() => router.push("/CreateProject")}
           >
@@ -279,15 +274,11 @@ export default function NavBar({ onClearFilters, onApplyFilters, searchInput, se
 
            &nbsp; Create Project
           </button>
-          <button onClick={() => router.push("/ProjectCompletion")}>
-            Temp go Completion
-          </button>
         </div>
 
         {/* Profile Button */}
         <button
-          className="mt-auto bg-[#385773] text-primary hover:text-white border-none 
-                    hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-300 
+          className="mt-auto bg-[#385773] text-[#fff] border-none outline-none
                     font-nunito rounded-[10px] text-[15px] px-[20px] py-[12px] text-center z-50 flex items-center gap-2 ml-[30px]"
           onClick={() => router.push("/profile")}
         >

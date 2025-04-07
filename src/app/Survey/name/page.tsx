@@ -1,46 +1,28 @@
-
-
 "use client";
+
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-
-
-
+import SurveyLayout from "../../components/SurveyLayout";
 
 const NameForm = () => {
-const router = useRouter();
-const [name, setName] = useState("");
+  const router = useRouter();
+  const [name, setName] = useState("");
 
-
-
-
-return (
-  <div
-    className="flex justify-center items-center h-screen w-screen translate-x-[-8px] translate-y-[-8px]"
-    style={{ backgroundColor: "#385773" }}
-  >
-    <div
-      className="shadow-[10px] flex flex-col justify-center"
-      style={{
-        backgroundColor: "#ffffff",
-        borderRadius: "24px",
-        padding: "80px",
-        width: "550px",
-        height: "600px",
-      }}
-    >
+  return (
+    <SurveyLayout step={1} totalSteps={5}>
       <div className="flex-1 flex flex-col justify-center items-center gap-[10px]">
         <h1
-          className="text-center font-bold"
-          style={{ fontSize: "20px", color: "#000000" }}
+          className="text-center font-[400]"
+          style={{ fontSize: "20px", color: "#fff" }}
         >
           What is your name?
         </h1>
+
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Type in your name"
+          placeholder="ex: Josh Chen"
           style={{
             width: "100%",
             padding: "12px 16px",
@@ -53,37 +35,15 @@ return (
         />
       </div>
 
-
-
-
-      <div className="flex justify-between mt-8">
-        <button
-          disabled
-          style={{
-            backgroundColor: "#385773",
-            padding: "10px 24px",
-            borderRadius: "12px",
-            color: "#ffffff",
-            opacity: 0.5,
-            cursor: "not-allowed",
-            fontSize: "14px",
-            border: "none",
-          }}
-        >
-          Back
-        </button>
-
-
-
-
+      <div className="flex justify-end mt-8">
         <button
           onClick={() => router.push("/Survey/languages")}
           disabled={!name.trim()}
           style={{
-            backgroundColor: name.trim() ? "#385773" : "#385773",
+            backgroundColor: name.trim() ? "#fff" : "#fff",
             padding: "10px 24px",
             borderRadius: "12px",
-            color: "#ffffff",
+            color: "#385773",
             cursor: name.trim() ? "pointer" : "not-allowed",
             fontSize: "14px",
             border: "none",
@@ -94,17 +54,8 @@ return (
           Next
         </button>
       </div>
-    </div>
-  </div>
-);
+    </SurveyLayout>
+  );
 };
 
-
-
-
 export default NameForm;
-
-
-
-
-

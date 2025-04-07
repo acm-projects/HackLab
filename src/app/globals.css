@@ -107,15 +107,15 @@ body {
 }
 
 .text-hacklab-title {
-  @apply text-[45px] font-[1000] leading-none;
+  @apply text-[45px] font-[500] leading-none;
 }
 
 .text-landing-make {
-  @apply text-[40px] font-[1000] text-[#122435];
+  @apply text-[30px] font-[500] text-[#122435];
 }
 
 .text-landing-text {
-  @apply text-[40px] font-[750];
+  @apply text-[30px] font-[500];
 }
 
 .landing-page-images {
