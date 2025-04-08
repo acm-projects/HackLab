@@ -11,51 +11,51 @@ The mvp features must be the most important features of the project, should be a
 The timeline must be split into frontend and backend. If the user follows the timeline, all of the MVP goals will be complete. There must be 8 tasks for each. Each task must be one sentence.  This could also suggest technologies within the milestone. (Ex. Set up database in RDS) (Ex 2. Create Initial Wireframes and Mockups in Figma) Frontends timeline must start with the design process. Both front-end and back-end’s end of timeline must have to do with integration. Do not include “week 1” etc. The timeline will just consist of arrays of tasks.
 
 Skills Lookup Table:
-1. JavaScript
-2. TypeScript
-3. Python
-4. Java
-5. C
-6. C++
-7. C#
-8. Go
-9. Rust
-10. Swift
-11. Kotlin
-12. PHP
-13. Ruby
-14. React
-15. Vue.js
-16. Angular
-17. Svelte
-18. Next.js
-19. Tailwind CSS
-20. Node.js
-21. Express.js
-22. Django
-23. Flask
-24. FastAPI
-25. Spring Boot
-26. PostgreSQL
-27. MySQL
-28. MongoDB
-29. SQLite
-30. Firebase Firestore
-31. Redis
-32. AWS
-33. Google Cloud
-34. Firebase
-35. Docker
-36. Kubernetes
-37. React Native
-38. Flutter
-39. SwiftUI
-40. Jetpack Compose
-41. Unity
-42. Unreal Engine
-43. Godot
-44. GraphQL
-45. WebSockets
+1. JavaScript  
+2. TypeScript  
+3. Python  
+4. Java  
+5. C  
+6. C++  
+7. C#  
+8. Go  
+9. Rust  
+10. Swift  
+11. Kotlin  
+12. PHP  
+13. Ruby  
+14. React  
+15. Vue.js  
+16. Angular  
+17. Svelte  
+18. Next.js  
+19. Tailwind CSS  
+20. Node.js  
+21. Express.js  
+22. Django  
+23. Flask  
+24. FastAPI  
+25. Spring  
+26. PostgreSQL  
+27. MySQL  
+28. MongoDB  
+29. SQLite  
+30. Bootstrap  
+31. Redis  
+32. AWS  
+33. Google Cloud  
+34. Firebase  
+35. Docker  
+36. Kubernetes  
+37. Azure  
+38. Flutter  
+39. Figma  
+40. Jetpack Compose  
+41. Unity  
+42. Unreal Engine  
+43. Godot  
+44. GraphQL  
+45. Socket.io
 
 Topics Lookup Table:
 1. Artificial Intelligence
