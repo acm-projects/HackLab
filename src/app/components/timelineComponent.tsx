@@ -1,24 +1,77 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-const ProjectTimeline: React.FC<{ projectId: number }> = ({ projectId }) => {
-  const [tasks, setTasks] = useState<any[]>([]);
+interface Task {
+  date: string;
+  description: string;
+  frontend?: string;
+  backend?: string;
+  side: "frontend" | "backend";
+  originalIndex: number;
+}
+
+const ProjectTimeline: React.FC<{ projectId: number; isLeader: boolean }> = ({
+  projectId,
+  isLeader,
+}) => {
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
+  const [completed, setCompleted] = useState<string[]>([]);
+
+  const LOCAL_STORAGE_KEY = `project-${projectId}-completed-tasks`;
 
   const toggleTask = (id: string) => {
     setSelectedTask((prev) => (prev === id ? null : id));
   };
-  
+
+  const saveToLocalStorage = (completedKeys: string[]) => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(completedKeys));
+  };
+
+  const toggleComplete = (
+    key: string,
+    side: "frontend" | "backend",
+    originalIndex: number
+  ) => {
+    if (!isLeader) return;
+
+    const isCurrentlyCompleted = completed.includes(key);
+
+    let updated: string[];
+
+    if (isCurrentlyCompleted) {
+      const sameSideKeysToRemove = tasks
+        .filter((t) => t.side === side && t.originalIndex >= originalIndex)
+        .map((t) => generateKey(t.side, t.originalIndex));
+
+      updated = completed.filter((k) => !sameSideKeysToRemove.includes(k));
+    } else {
+      const sameSideKeysToAdd = tasks
+        .filter((t) => t.side === side && t.originalIndex <= originalIndex)
+        .map((t) => generateKey(t.side, t.originalIndex));
+
+      updated = Array.from(new Set([...completed, ...sameSideKeysToAdd]));
+    }
+
+    setCompleted(updated);
+    saveToLocalStorage(updated);
+  };
+
+  const generateKey = (side: string, index: number) => {
+    return `project-${projectId}-${side}-${index}`;
+  };
 
   useEffect(() => {
-    console.log("📦 Fetching timeline for project ID:", projectId);
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) setCompleted(JSON.parse(saved));
+    else setCompleted([]);
+  }, [projectId]);
+
+  useEffect(() => {
     const fetchTimeline = async () => {
-      
       try {
         const res = await fetch(`http://52.15.58.198:3000/projects/${projectId}`);
         const project = await res.json();
-        console.log("🧠 Project data:", project);
-        
 
         const frontendTasks = project.timeline?.frontend || [];
         const backendTasks = project.timeline?.backend || [];
@@ -30,7 +83,7 @@ const ProjectTimeline: React.FC<{ projectId: number }> = ({ projectId }) => {
           return `${month} ${String(day).padStart(2, "0")}`;
         };
 
-        const combinedTasks: any[] = [];
+        const combinedTasks: Task[] = [];
         const maxLength = Math.max(frontendTasks.length, backendTasks.length);
 
         for (let i = 0; i < maxLength; i++) {
@@ -40,6 +93,7 @@ const ProjectTimeline: React.FC<{ projectId: number }> = ({ projectId }) => {
               frontend: frontendTasks[i],
               description: `Frontend Task ${i + 1}`,
               side: "frontend",
+              originalIndex: i,
             });
           }
           if (backendTasks[i]) {
@@ -48,10 +102,10 @@ const ProjectTimeline: React.FC<{ projectId: number }> = ({ projectId }) => {
               backend: backendTasks[i],
               description: `Backend Task ${i + 1}`,
               side: "backend",
+              originalIndex: i,
             });
           }
         }
-        
 
         setTasks(combinedTasks);
       } catch (err) {
@@ -63,72 +117,104 @@ const ProjectTimeline: React.FC<{ projectId: number }> = ({ projectId }) => {
   }, [projectId]);
 
   return (
-    <div className="flex flex-col items-center mt-[24px] bg-[#ffffff] px-[20px] py-[24px] rounded-[12px] border border-[#fff] overflow-x-auto">
-      <h2 className="text-[20px] font-[700] text-[#385773] mb-[24px]">Project Timeline</h2>
-      <div className="flex w-full">
-        {/* Labels */}
+    <div className="bg-white px-[20px] py-[20px] rounded-[8px] shadow-md border border-[#d1d5db]">
+      <h1 className="text-[22px] font-bold text-[#111827] mb-[20px]">
+        Project Timeline
+      </h1>
+
+      <div className="flex">
+        {/* Labels on the left */}
         <div className="flex flex-col justify-center gap-[140px] pr-[24px]">
-          <div className="text-[#385773] font-[600] text-[14px] text-right">Frontend</div>
-          <div className="text-[#385773] font-[600] text-[14px] text-right">Backend</div>
+          <div className="text-[#385773] font-semibold text-[14px] text-right">
+            Frontend
+          </div>
+          <div className="text-[#385773] font-semibold text-[14px] text-right">
+            Backend
+          </div>
         </div>
 
-        {/* Timeline */}
-        <div className="relative flex-1 ml-[26px]">
-          <div className="absolute top-1/2 left-0 w-full border-t-[2px] border-[#385773] z-0" />
+        {/* Actual Timeline */}
+        <div className="relative flex-1 overflow-x-auto max-w-full">
+          <div className="relative w-max px-[20px] py-[30px]">
+            <div className="absolute top-1/2 left-0 h-[2px] w-full bg-[#385773] z-0" />
 
-          <div className="flex justify-around items-center h-[320px] relative z-10 gap-[50px]">
-            {tasks.map((task, idx) => (
-              <div key={idx} className="relative flex flex-col items-center w-[120px]">
-                {task.frontend && (
-                <div className="relative flex flex-col items-center w-[140px] h-[160px]">
-                  {/* Text floats above */}
-                  <div className="absolute top-[-40px] text-[13px] text-[#1f2937] text-center px-[4px]">
-                    {task.frontend}
-                  </div>
+            <div className="flex items-center gap-[80px] relative z-10">
+              {tasks.map((task, idx) => {
+                const key =
+                  task.side === "frontend"
+                    ? generateKey("frontend", task.originalIndex)
+                    : generateKey("backend", task.originalIndex);
 
-                  {/* Line & Dot fixed in center */}
-                  <div className="mt-[32px] w-[2px] h-[40px] border-l border-dotted border-[#9ca3af]" />
+                return (
                   <div
-                    className="w-[12px] h-[12px] bg-[#000000] rounded-full cursor-pointer"
-                    onClick={() => toggleTask(`${idx}-frontend`)}
-                  />
-                  <div className="mt-[2px] text-[12px] text-[#6b7280]">{task.date}</div>
+                    key={idx}
+                    className="relative flex flex-col items-center min-w-[120px]"
+                  >
+                    {task.frontend && (
+                      <div className="-mt-[30px] flex flex-col items-center relative">
+                        <div className="mb-[6px] text-[12px] text-[#1f2937]">
+                          {task.frontend}
+                        </div>
+                        <div className="w-[2px] h-[30px] border-l border-dotted border-[#9ca3af]" />
+                        <div
+                          className="rounded-full cursor-pointer"
+                          style={{
+                            width: "10px",
+                            height: "10px",
+                            backgroundColor: completed.includes(key)
+                              ? "#DAA520"
+                              : "#385773",
+                          }}
+                          onClick={() =>
+                            toggleComplete(key, "frontend", task.originalIndex)
+                          }
+                        />
+                        <div className="mt-[6px] text-[11px] text-[#6b7280] invisible">
+                          placeholder
+                        </div>
 
-                  {selectedTask === `${idx}-frontend` && (
-                    <div className="absolute -bottom-[80px] w-[160px] bg-[#ffffff] text-[#111827] text-[12px] border border-[#d1d5db] shadow rounded-[6px] px-[12px] py-[8px] z-[20]">
-                      {task.description}
-                    </div>
-                  )}
-                </div>
-              )}
+                        {selectedTask === key && (
+                          <div className="absolute -bottom-[70px] w-[140px] bg-white text-black text-[11px] border border-[#d1d5db] shadow rounded px-[10px] py-[6px] z-20">
+                            {task.description}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-              {task.backend && (
-                <div className="relative flex flex-col items-center w-[140px] h-[160px]">
-                  {/* Date above dot */}
-                  <div className="mt-[55px] text-[12px] text-[#6b7280] mb-[4px]">{task.date}</div>
+                    {task.backend && (
+                      <div className="mt-[34px] flex flex-col items-center relative">
+                        <div className="mt-[6px] text-[11px] text-[#6b7280] invisible">
+                          placeholder
+                        </div>
+                        <div
+                          className="rounded-full cursor-pointer"
+                          style={{
+                            width: "10px",
+                            height: "10px",
+                            backgroundColor: completed.includes(key)
+                              ? "#facc15"
+                              : "#385773",
+                          }}
+                          onClick={() =>
+                            toggleComplete(key, "backend", task.originalIndex)
+                          }
+                        />
+                        <div className="w-[2px] h-[30px] border-l border-dotted border-[#9ca3af]" />
+                        <div className="mt-[6px] text-[12px] text-[#1f2937]">
+                          {task.backend}
+                        </div>
 
-                  {/* Dot & line fixed in center */}
-                  <div
-                    className=" w-[12px] h-[12px] bg-[#000000] rounded-full cursor-pointer"
-                    onClick={() => toggleTask(`${idx}-backend`)}
-                  />
-                  <div className="w-[2px] h-[40px] border-l border-dotted border-[#9ca3af]" />
-
-                  {/* Backend task text absolutely positioned below */}
-                  <div className="absolute bottom-[-40px] text-[13px] text-[#1f2937] text-center px-[4px]">
-                    {task.backend}
+                        {selectedTask === key && (
+                          <div className="absolute top-[70px] w-[140px] bg-white text-black text-[11px] border border-[#d1d5db] shadow rounded px-[10px] py-[6px] z-20">
+                            {task.description}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-
-                  {/* Tooltip */}
-                  {selectedTask === `${idx}-backend` && (
-                    <div className="absolute top-[80px] w-[160px] bg-[#ffffff] text-[#111827] text-[12px] border border-[#d1d5db] shadow rounded-[6px] px-[12px] py-[8px] z-[20]">
-                      {task.description}
-                    </div>
-                  )}
-                </div>
-              )}
-              </div>
-            ))}
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

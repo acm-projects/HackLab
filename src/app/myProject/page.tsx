@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation"; // 👈 add at the top
-
-
+import ProjectTimeline from "../components/timelineComponent";
+import EditProject from "../components/EditProjectInline";
 
 
 const MyProject = () => {
  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
  const [view, setView] = useState("dashboard");
+ const [isEditing, setIsEditing] = useState(false);
  const [userProjects, setUserProjects] = useState<any[]>([]);
  const [userId, setUserId] = useState<number | null>(null);
  const { data: session } = useSession();
@@ -18,7 +19,27 @@ const MyProject = () => {
  const [projectSkills, setProjectSkills] = useState<string[]>([]);
  const [tasks, setTasks] = useState<any[]>([]);
  const [selectedTask, setSelectedTask] = useState<string | null>(null);
+ const [projectUsers, setProjectUsers] = useState<any[]>([]);
+ 
 
+ useEffect(() => {
+   const fetchProjectUsers = async () => {
+     if (!selectedProjectId) return;
+ 
+     try {
+       const res = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}/users`);
+       if (!res.ok) throw new Error("Failed to fetch project users");
+       const data = await res.json();
+       setProjectUsers(data);
+     } catch (err) {
+       console.error("Failed to fetch project users:", err);
+       setProjectUsers([]);
+     }
+   };
+ 
+   fetchProjectUsers();
+ }, [selectedProjectId]);
+ 
 
  const toggleTask = (id: string) => {
    setSelectedTask((prev) => (prev === id ? null : id));
@@ -191,78 +212,121 @@ const MyProject = () => {
 
 
  return (
-   <div className="w-screen h-full bg-[#f5f7fa]">
+   <div className="w-screen h-full bg-[#f5f7fa] text-nunito">
      <NavBar />
      <div className="flex w-screen h-screen translate-[-8px]">
-       <div className="w-[270px] bg-[#385773] py-[15px] text-[#fff] flex flex-col gap-[5px] overflow-y-auto border-r border-[#fff] mt-[50px]">
-         {userProjects.map(project => (
-           <img
-             key={project.id}
-             src={project.thumbnail || "/placeholder.jpg"}
-             alt="thumbnail"
-             className={` mt-[0px] w-[150px] h-[100px] object-cover rounded-[8px] cursor-pointer border-1 border-[#fff] ml-[60px] ${
-               selectedProjectId === project.id ? "border-[#385773]" : "border-transparent"
-             }`}
-             onClick={() => setSelectedProjectId(project.id)}
-           />
-         ))}
-       </div>
+     <div className="w-[270px] mt-[55px] bg-[#385773] py-[15px] text-[#fff] flex flex-col gap-[12px] overflow-y-auto border-r border-[#fff] px-[10px] rounded-r-[30px]">
+      {userProjects.map((project) => (
+        <div
+          key={project.id}
+          onClick={() => setSelectedProjectId(project.id)}
+          className={`flex items-center gap-[20px] px-[15px] py-[10px] rounded-[8px] cursor-pointer transition-colors ${
+            selectedProjectId === project.id ? "bg-[#ffffff20]" : "hover:bg-[#ffffff10]"
+          }`}
+        >
+          <img
+            src={project.thumbnail || "/placeholder.jpg"}
+            alt="thumbnail"
+            className="w-[50px] h-[50px] object-cover rounded-[6px] border border-white"
+          />
+          <span className="text-[14px] font-medium text-[#fff] whitespace-nowrap overflow-hidden text-ellipsis max-w-[130px]">
+            {project.title}
+          </span>
+        </div>
+      ))}
+    </div>
+
 
 
        <div className="flex-1 flex flex-col p-[20px] gap-[10px] mt-[50px] max-h-[calc(100vh-50px)] overflow-y-auto">
 
 
-         <div className="flex gap-[10px] mb-[10px] items-center justify-between">
-           <div className="flex gap-[10px]">
-             {['dashboard', 'timeline', 'chat'].map((item) => (
-               <button
-                 key={item}
-                 className={`px-[16px] py-[8px] rounded-[6px] text-[#ffffff] font-medium ${
-                   view === item ? "bg-[#385773]" : "bg-[#9ca3af] hover:bg-[#6b7280]"
-                 }`}
-                 onClick={() => setView(item)}
-               >
-                 {item.charAt(0).toUpperCase() + item.slice(1)}
-               </button>
-             ))}
-           </div>
+       <div className="sticky top-[0px] translate-y-[-10px] bg-[#f5f7fa] z-20 py-[10px] flex gap-[10px] items-center justify-between border-b border-[#e5e7eb] px-[5px]">
+       <div className="relative bg-[#d1d5db] rounded-[8px] w-[240px] h-[40px] flex items-center justify-between px-[15px]">
+        {/* Sliding Pill Indicator */}
+        <div
+          className="absolute top-[4px] left-[4px] h-[32px] w-[112px] bg-[#6b7280] rounded-[6px] transition-transform duration-300 ease-in-out"
+          style={{
+            transform: view === "timeline" ? "translateX(140px)" : "translateX(10px)",
+          }}
+        />
+
+        {/* Tabs */}
+        <button
+          onClick={() => setView("dashboard")}
+          className={`z-10 w-[112px] h-[32px] rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
+            view === "dashboard" ? "text-[#fff]" : "text-[#374151]"
+          }`}
+        >
+          Dashboard
+        </button>
+        <button
+          onClick={() => setView("timeline")}
+          className={`z-10 w-[112px] h-[32px] rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
+            view === "timeline" ? "text-[#fff]" : "text-[#374151]"
+          }`}
+        >
+          Timeline
+        </button>
+      </div>
 
 
-           {selectedProject && userId === selectedProject.team_lead_id && (
-           <div className="flex gap-[10px]">
-               {/* Edit Button */}
-               <button
-               onClick={() => router.push(`/editReviewPage?id=${selectedProjectId}`)}
-               className="bg-[#2869a2] hover:bg-[#385773] text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium flex justify-center items-center"
-               >
-               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[20px] mr-[6px]">
-                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.251 2.251 0 0 1 3.182 3.182L6.75 19.963 3 21l1.037-3.75L16.862 3.487Z" />
-               </svg>
-               Edit
-               </button>
+
+
+        {selectedProject && userId === selectedProject.team_lead_id && (
+          <div className="flex gap-[10px]">
+            {/* Edit Button */}
+            <button
+              onClick={() => setIsEditing(true)}
+              className="bg-[#2869a2] hover:bg-[#385773] text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium flex justify-center items-center border-none outline-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="size-[20px] mr-[6px]"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.862 3.487a2.251 2.251 0 0 1 3.182 3.182L6.75 19.963 3 21l1.037-3.75L16.862 3.487Z"
+                />
+              </svg>
+              Edit
+            </button>
+
+            {/* Delete Button */}
+            <button
+              onClick={handleDelete}
+              className="bg-[#ef4444] hover:bg-[#dc2626] text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium flex justify-center items-center border-none outline-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="size-[20px] mr-[6px]"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                />
+              </svg>
+              Delete
+            </button>
+          </div>
+        )}
+      </div>
 
 
 
-
-               {/* Delete Button */}
-               <button
-               onClick={handleDelete}
-               className="bg-[#ef4444] hover:bg-[#dc2626] text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium flex justify-center items-center"
-               >
-               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[20px] mr-[6px]">
-                   <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-               </svg>
-               Delete
-               </button>
-           </div>
-           )}
-
-
-         </div>
-
-
-         {view === "dashboard" && selectedProject && (
- <div className="bg-[#ffffff] p-[20px] rounded-[8px] shadow-md border border-[#d1d5db]">
+      {view === "dashboard" && selectedProject && !isEditing && (
+ <div className="bg-[#ffffff] p-[20px] rounded-[8px] shadow-md border border-[#d1d5db] h-[650px] overflow-hidden">
+  <div className="h-full overflow-y-auto pr-[10px]">
    {/* Layer 1: Title, Type, GitHub, Description */}
    <div className="mb-[20px]">
      <h2 className="text-[22px] font-bold text-[#111827] mb-[5px]">{selectedProject.title}</h2>
@@ -402,101 +466,55 @@ const MyProject = () => {
 
  {/* Members Box */}
  <div className="flex-1 border border-[#d1d5db] rounded-[8px] p-[15px] min-h-[160px] bg-[#f9fafb]">
-   <h3 className="text-[16px] font-semibold text-[#111827] mb-[10px] flex justify-start items-center">
-   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
-       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-       </svg>
+  <h3 className="text-[16px] font-semibold text-[#111827] mb-[10px] flex items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px] mr-[6px]">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+    </svg>
+    Members
+  </h3>
 
-
-       Members</h3>
-   <div className="flex flex-wrap gap-[8px]">
-     <span className="bg-[#e0f2fe] text-[#0369a1] px-[10px] py-[4px] rounded-[6px] text-[13px]">
-       Coming Soon
-     </span>
-   </div>
- </div>
+  <div className="flex flex-col gap-[12px] max-h-[180px] overflow-y-auto pr-[5px]">
+    {projectUsers.length > 0 ? (
+      projectUsers.map((user, idx) => (
+        <div
+          key={idx}
+          onClick={() => router.push(`/profile/${user.id}`)}
+          className="cursor-pointer flex items-center gap-[10px] bg-white px-[10px] py-[6px] rounded-[8px] shadow-sm border border-[#e5e7eb] hover:shadow-md transition"
+        >
+          <img
+            src={user.image || "/default-avatar.png"}
+            alt={user.name}
+            className="w-[35px] h-[35px] rounded-full border border-[#d1d5db] object-cover"
+          />
+          <span className="text-[14px] font-medium text-[#374151]">{user.name}</span>
+        </div>
+      ))
+      
+    ) : (
+      <p className="text-[13px] text-[#9ca3af]">No members yet.</p>
+    )}
+  </div>
 </div>
 
+</div>
+</div>
 
  </div>
 )}
+    {view === "dashboard" && selectedProject && isEditing && (
+      <EditProject
+        projectId={selectedProjectId!.toString()}
+        onClose={() => setIsEditing(false)}
+      />
+    )}
            {view === "timeline" && selectedProject && (
- <div className="bg-[#ffffff] p-[20px] rounded-[8px] shadow-md border border-[#d1d5db]">
-   <h1 className="text-[22px] font-bold text-[#111827] mb-[20px]">Project Timeline</h1>
-  
-   <div className="flex">
-     {/* Labels on the left */}
-     <div className="flex flex-col justify-center gap-[140px] pr-[24px]">
-       <div className="text-[#385773] font-semibold text-[14px] text-right">Frontend</div>
-       <div className="text-[#385773] font-semibold text-[14px] text-right">Backend</div>
-     </div>
+          <ProjectTimeline
+          projectId={selectedProjectId!}
+          isLeader={userId === selectedProject.team_lead_id}
+        />
+        
+        )}
 
-
-     {/* Actual Timeline */}
-     <div className="relative flex-1 overflow-x-auto max-w-full">
- <div className="relative w-max px-[20px] py-[30px]">
-   {/* ✅ MOVED: line now inside scroll container and stretches with content */}
-   <div className="absolute top-1/2 left-0 h-[2px] w-full bg-[#385773] z-0" />
-
-
-   <div className="flex items-center gap-[80px] relative z-10">
-     {tasks.map((task, idx) => (
-       <div key={idx} className="relative flex flex-col items-center min-w-[120px]">
-         {task.frontend && (
-           <div className="-mt-[30px] flex flex-col items-center relative">
-             <div className="mb-[6px] text-[12px] text-[#1f2937]">{task.frontend}</div>
-             <div className="w-[2px] h-[30px] border-l border-dotted border-[#9ca3af]" />
-             <div
-               className="w-[10px] h-[10px] bg-[#385773] rounded-full cursor-pointer"
-               onClick={() => toggleTask(`${idx}-frontend`)}
-             />
-             <div className="mt-[6px] text-[11px] text-[#6b7280]">{task.date}</div>
-
-
-             {selectedTask === `${idx}-frontend` && (
-               <div className="absolute -bottom-[70px] w-[140px] bg-white text-black text-[11px] border border-[#d1d5db] shadow rounded px-[10px] py-[6px] z-20">
-                 {task.description}
-               </div>
-             )}
-           </div>
-         )}
-
-
-         {task.backend && (
-           <div className="mt-[34px] flex flex-col items-center relative">
-             <div className="mt-[6px] text-[11px] text-[#6b7280]">{task.date}</div>
-             <div
-               className="w-[10px] h-[10px] bg-[#385773] rounded-full cursor-pointer"
-               onClick={() => toggleTask(`${idx}-backend`)}
-             />
-             <div className="w-[2px] h-[30px] border-l border-dotted border-[#9ca3af]" />
-             <div className="mt-[6px] text-[12px] text-[#1f2937]">{task.backend}</div>
-
-
-             {selectedTask === `${idx}-backend` && (
-               <div className="absolute top-[70px] w-[140px] bg-white text-black text-[11px] border border-[#d1d5db] shadow rounded px-[10px] py-[6px] z-20">
-                 {task.description}
-               </div>
-             )}
-           </div>
-         )}
-       </div>
-     ))}
-   </div>
- </div>
-</div>
-
-
-
-
-   </div>
- </div>
-)}
-
-
-         {view === "chat" && (
-           <div className="text-[#6b7280] text-[14px]">Chat view (Coming Soon)</div>
-         )}
        </div>
      </div>
    </div>

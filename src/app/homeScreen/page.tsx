@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import ProjectCard from "../components/TopProjectCard";
 import ExpandedProjectModal from "../components/ExpandedProjectCard";
-
+import { useSession } from "next-auth/react";
 interface Project {
   id: number;
   title: string;
@@ -28,7 +28,7 @@ export default function HomeScreen() {
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [mostUsedTech, setMostUsedTech] = useState<string>("");
-
+  const { data: session } = useSession();
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -141,30 +141,39 @@ export default function HomeScreen() {
     <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito">
       <NavBar />
       <div className="h-screen flex flex-col items-center overflow-y-scroll w-[90%] scrollbar-hide">
-        {/* Hero */}
-        <div className="w-screen h-[300px] flex flex-col items-center justify-center text-center mt-[60px]">
-          <h1 className="text-[#000] bg-[#fff] text-[36px]">WELCOME TO HACKLAB</h1>
-          <p className="text-[#000000] translate-y-[-30px] bg-[#fff]">
-            Explore, Build, and Contribute to Open Source Projects
-          </p>
+  
+        {/* Personalized Greeting */}
+        <div className="w-[85%] h-[300px] flex flex-col items-start justify-center text-center mt-[60px] mb-[20px]">
+          <h1 className="text-[30px] font-[500] text-white font-bold mb-[0px]">
+          Hello {session?.user?.login ? `@${session.user.login}` : "USER"}!!
+          </h1>
+          <p className="mt-[-5px]">Hope you are having a good day</p>
         </div>
-
+  
         {/* Slider */}
-        <div className="w-[85%] h-[350px] bg-[#385773] flex items-center justify-center rounded-[15px] mt-[-20px]">
-          <button onClick={prevSlide} className="text-white px-4">←</button>
-          <div className="flex w-full justify-between items-center">
+        <div className="w-[85%] h-[350px] bg-[#385773] flex items-center justify-center rounded-[15px] mt-[-10px]">
+        <button onClick={prevSlide} className="text-[#fff] px-[10px] ml-[5px] border-transparent border-none outline-none bg-transparent">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-[25px] h-[25px]">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+          <div className="flex w-full justify-between items-center ml-[10%] mr-[10%]">
             <div className="w-1/2 text-left pl-8">
-              <h2 className="text-2xl font-bold">{slides[currentSlide].title}</h2>
+              <h2 className="text-2xl font-bold text-[#fff]">{slides[currentSlide].title}</h2>
               <p className="mt-2 text-[#d1d5db]">{slides[currentSlide].description}</p>
             </div>
             <div className="w-1/2 flex justify-end pr-8">
               <img src={slides[currentSlide].image} alt="slide" className="h-[200px]" />
             </div>
           </div>
-          <button onClick={nextSlide} className="text-white px-4">→</button>
+          <button onClick={nextSlide} className="text-[#fff] px-[10px] mr-[5px] border-transparent border-none outline-none bg-transparent">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-[25px] h-[25px]">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
         </div>
-
-        {/* Projects */}
+  
+        {/* Projects Section */}
         <div className="w-[85%] -translate-y-[90px] mt-[70px]">
           <h2 className="text-3xl font-bold text-center text-[#000] pt-[40px] pb-[20px] text-[24px]">TOP PROJECTS</h2>
           <div className="grid grid-cols-3 gap-[40px]">
@@ -179,7 +188,7 @@ export default function HomeScreen() {
               </div>
             ))}
           </div>
-
+  
           <h2 className="text-3xl font-bold text-center text-[#000] mt-[60px] mb-6">RECENT PROJECTS</h2>
           <div className="grid grid-cols-3 gap-[40px]">
             {olderProjects.map((project, index) => (
@@ -194,7 +203,7 @@ export default function HomeScreen() {
             ))}
           </div>
         </div>
-
+  
         {/* Modal */}
         {showModal && selectedIndex !== null && (
           <div className="fixed inset-0 flex items-start justify-center translate-y-[150px] z-[40] translate-x-[-25px]">

@@ -3,7 +3,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { ProjectData } from "../shared/types";
-
+import NavBar from "../components/NavBar";
 
 const logToTerminal = async (message: string) => {
  try {
@@ -245,161 +245,141 @@ export default function ReviewPage() {
 
 
  return (
-   <div className="relative flex items-center justify-center w-screen h-screen overflow-hidden font-nunito bg-gradient-to-br from-[#2c3640] via-[#385773] to-[#00d4ff] translate-[-8px]">
-     {/* Blur Circles */}
-     <div className="absolute top-[100px] left-0 w-full h-full pointer-events-none">
-       <div className="absolute top-[10%] left-[5%] w-[300px] h-[300px] rounded-full bg-[#60a5fa] opacity-[0.1] blur-[80px]"></div>
-       <div className="absolute bottom-[15%] right-[10%] w-[250px] h-[250px] rounded-full bg-[#a5b4fc] opacity-[0.1] blur-[60px]"></div>
-       <div className="absolute top-[40%] right-[20%] w-[200px] h-[200px] rounded-full bg-[#c084fc] opacity-[0.1] blur-[70px]"></div>
-     </div>
+  <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito">
+        <NavBar />
+    {/* Blur Circles */}
+    <div className="absolute top-[100px] left-0 w-full h-full pointer-events-none">
+      <div className="absolute top-[10%] left-[5%] w-[300px] h-[300px] rounded-full bg-[#60a5fa] opacity-[0.1] blur-[80px]" />
+      <div className="absolute bottom-[15%] right-[10%] w-[250px] h-[250px] rounded-full bg-[#a5b4fc] opacity-[0.1] blur-[60px]" />
+      <div className="absolute top-[40%] right-[20%] w-[200px] h-[200px] rounded-full bg-[#c084fc] opacity-[0.1] blur-[70px]" />
+    </div>
 
+    {/* Title */}
+    <h2 className="absolute top-[20px] text-[25px] py-[50px] font-bold text-[#385773] z-10 mt-[10px]">
+      REVIEW YOUR PROJECT
+    </h2>
 
-     {/* Title */}
-     <h2 className="absolute top-[20px] text-[25px] py-[50px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#e0f2fe] to-[#e0e7ff] z-10 mt-[-30px]">
-       REVIEW YOUR PROJECT
-     </h2>
+    {/* Review Card */}
+    <div className="z-10 flex flex-col w-[800px] h-[550px] p-[50px] mt-[150px] overflow-y-auto text-[#385773] rounded-[16px] shadow-[0px_8px_32px_rgba(0,0,0,0.1)] bg-[#f5f9fc] backdrop-blur-lg scrollbar-hidden">
+      <div className="mb-4">
+        <h3 className="text-lg font-bold mb-2">Project Name:</h3>
+        <p className="px-[10px] py-[10px] rounded-[10px] bg-white border border-[#cfdce5]">{projectData.projectName}</p>
+      </div>
 
+      <div className="mb-4">
+        <h3 className="text-lg font-bold mb-2">Project Type:</h3>
+        <p className="px-[10px] py-[10px] rounded-[10px] bg-white border border-[#cfdce5]">{projectData.projectType}</p>
+      </div>
 
-     {/* Review Card */}
-     <div className="z-10 flex flex-col w-[800px] h-[600px] p-[50px] mt-[50px] overflow-y-auto text-[#fff] rounded-[16px] shadow-[0px_8px_32px_rgba(0,0,0,0.1)] bg-[#ffffff1a] backdrop-blur-lg scrollbar-hidden">
-       {/* Project Fields */}
-       <div className="mb-4">
-         <h3 className="text-lg font-bold mb-2">Project Name:</h3>
-         <p className="px-[10px] py-[10px] rounded-[10px] bg-[#ffffff20]">{projectData.projectName}</p>
-       </div>
+      <div className="mb-4">
+        <h3 className="text-lg font-bold mb-2">Description:</h3>
+        <p className="px-[10px] py-[10px] rounded-[10px] bg-white border border-[#cfdce5]">{projectData.description}</p>
+      </div>
 
+      <div className="mb-4">
+        <h3 className="text-lg font-bold mb-2">Tech To Be Used:</h3>
+        <div className="flex flex-wrap gap-2">
+          {projectData.techToBeUsed.map((tech, index) => (
+            <span key={index} className="px-[10px] py-[10px] text-sm rounded-[10px] bg-white border border-[#cfdce5]">
+              {tech}
+            </span>
+          ))}
+        </div>
+      </div>
 
-       <div className="mb-4">
-         <h3 className="text-lg font-bold mb-2">Project Type:</h3>
-         <p className="px-[10px] py-[10px] rounded-[10px] bg-[#ffffff20]">{projectData.projectType}</p>
-       </div>
+      <div className="mb-4">
+        <h3 className="text-lg font-bold mb-2">Interests:</h3>
+        <div className="flex flex-wrap gap-[5px]">
+          {(projectData.interests || []).map((interest, index) => (
+            <span key={index} className="px-[10px] py-[10px] text-sm rounded-[10px] bg-white border border-[#cfdce5]">
+              {interest}
+            </span>
+          ))}
+        </div>
+      </div>
 
+      <div className="mb-4">
+        <h3 className="text-lg font-bold mb-[5px]">MVPs:</h3>
+        <ul className="pl-[10px] list-disc">
+          {projectData.mvps.map((mvp, index) => (
+            <li key={index}>{mvp}</li>
+          ))}
+        </ul>
+      </div>
 
-       <div className="mb-4">
-         <h3 className="text-lg font-bold mb-2">Description:</h3>
-         <p className="px-[10px] py-[10px] rounded-[10px] bg-[#ffffff20]">{projectData.description}</p>
-       </div>
+      <div className="mb-4">
+        <h3 className="text-lg font-bold mb-2">Stretch Goals:</h3>
+        <ul className="pl-6 list-disc">
+          {projectData.stretchGoals.map((goal, index) => (
+            <li key={index}>{goal}</li>
+          ))}
+        </ul>
+      </div>
 
+      {projectData.timeline && (
+        <div className="mb-4">
+          <h3 className="text-lg font-bold mb-2">Timeline:</h3>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <h4 className="font-semibold mb-1">Frontend:</h4>
+              {projectData.timeline.frontend.length > 0 ? (
+                <ul className="pl-5 list-disc">
+                  {projectData.timeline.frontend.map((task, index) => (
+                    <li key={index}>{task}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-[#385773]/60 italic">No frontend tasks added.</p>
+              )}
+            </div>
 
-       {/* Tech */}
-       <div className="mb-4">
-         <h3 className="text-lg font-bold mb-2">Tech To Be Used:</h3>
-         <div className="flex flex-wrap gap-2">
-           {projectData.techToBeUsed.map((tech, index) => (
-             <span key={index} className="px-[10px] py-[10px] text-sm text-[#fff] rounded-[10px] bg-[#ffffff20]">
-               {tech}
-             </span>
-           ))}
-         </div>
-       </div>
+            <div>
+              <h4 className="font-semibold mb-1">Backend:</h4>
+              {projectData.timeline.backend.length > 0 ? (
+                <ul className="pl-5 list-disc">
+                  {projectData.timeline.backend.map((task, index) => (
+                    <li key={index}>{task}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-[#385773]/60 italic">No backend tasks added.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
+      {projectData.thumbnail && (
+        <div className="mb-4">
+          <h3 className="text-lg font-bold mb-2">Thumbnail:</h3>
+          <img
+            src={projectData.thumbnail}
+            alt="Project Thumbnail"
+            className="object-cover w-full max-h-[200px] rounded-[12px] border border-[#cfdce5]"
+          />
+        </div>
+      )}
 
-       {/* Interests */}
-       <div className="mb-4">
-         <h3 className="text-lg font-bold mb-2">Interests:</h3>
-         <div className="flex flex-wrap gap-[5px]">
-           {(projectData.interests || []).map((interest, index) => (
-             <span key={index} className="px-[10px] py-[10px] text-sm text-[#fff] rounded-[10px] bg-[#ffffff20]">
-               {interest}
-             </span>
-           ))}
-         </div>
-       </div>
+      <div className="flex justify-center gap-[10px] mt-[10px]">
+        <button
+          onClick={handleEdit}
+          disabled={isSubmitting}
+          className="px-[10px] py-[10px] text-[#385773] font-bold transition-colors bg-[#e8eff5] border border-[#385773] rounded-[10px] hover:bg-[#93a6ba] disabled:opacity-50"
+        >
+          Edit
+        </button>
+        <button
+          onClick={handleConfirm}
+          disabled={isSubmitting}
+          className="px-[10px] py-[10px] text-white font-bold transition-colors bg-[#e8eff5] border border-[#385773] rounded-[10px] hover:bg-[#93a6ba] disabled:opacity-50"
+        >
+          {isSubmitting ? "Processing..." : "Confirm"}
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
-
-       {/* MVPs */}
-       <div className="mb-4">
-         <h3 className="text-lg font-bold mb-[5px]">MVPs:</h3>
-         <ul className="pl-[10px] list-disc">
-           {projectData.mvps.map((mvp, index) => (
-             <li key={index}>{mvp}</li>
-           ))}
-         </ul>
-       </div>
-
-
-       {/* Stretch Goals */}
-       <div className="mb-4">
-         <h3 className="text-lg font-bold mb-2">Stretch Goals:</h3>
-         <ul className="pl-6 list-disc">
-           {projectData.stretchGoals.map((goal, index) => (
-             <li key={index}>{goal}</li>
-           ))}
-         </ul>
-       </div>
-        
-           {/* Timeline Section */}
-           {projectData.timeline && (
-             <div className="mb-4">
-               <h3 className="text-lg font-bold mb-2">Timeline:</h3>
-               <div className="grid grid-cols-2 gap-6">
-                 {/* Frontend */}
-                 <div>
-                   <h4 className="font-semibold mb-1">Frontend:</h4>
-                   {projectData.timeline.frontend.length > 0 ? (
-                     <ul className="pl-5 list-disc">
-                       {projectData.timeline.frontend.map((task, index) => (
-                         <li key={index}>{task}</li>
-                       ))}
-                     </ul>
-                   ) : (
-                     <p className="text-sm text-white/60 italic">No frontend tasks added.</p>
-                   )}
-                 </div>
-
-
-                 {/* Backend */}
-                 <div>
-                   <h4 className="font-semibold mb-1">Backend:</h4>
-                   {projectData.timeline.backend.length > 0 ? (
-                     <ul className="pl-5 list-disc">
-                       {projectData.timeline.backend.map((task, index) => (
-                         <li key={index}>{task}</li>
-                       ))}
-                     </ul>
-                   ) : (
-                     <p className="text-sm text-white/60 italic">No backend tasks added.</p>
-                   )}
-                 </div>
-               </div>
-             </div>
-           )}
-
-
-
-
-       {projectData.thumbnail && (
-         <div className="mb-4">
-           <h3 className="text-lg font-bold mb-2">Thumbnail:</h3>
-           <img
-             src={projectData.thumbnail}
-             alt="Project Thumbnail"
-             className="object-cover w-full max-h-[200px] rounded-[12px] border border-[#fff]/20"
-           />
-         </div>
-       )}
-
-
-       {/* Buttons */}
-       <div className="flex justify-center gap-[10px] mt-[10px]">
-         <button
-           onClick={handleEdit}
-           disabled={isSubmitting}
-           className="px-[10px] py-[10px] text-black transition-colors bg-[#adc6df] border border-black rounded-[10px] hover:bg-[#c3d4f3] disabled:opacity-50"
-         >
-           Edit
-         </button>
-         <button
-           onClick={handleConfirm}
-           disabled={isSubmitting}
-           className="px-[10px] py-[10px] text-black transition-colors bg-[#adc6df] border border-black rounded-[10px] hover:bg-[#c3d4f3] disabled:opacity-50"
-         >
-           {isSubmitting ? "Processing..." : "Confirm"}
-         </button>
-       </div>
-     </div>
-   </div>
- );
 }
 
 
