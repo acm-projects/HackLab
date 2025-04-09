@@ -135,7 +135,7 @@ export default function NavBar({
         <img
           src="images/nav-bg-image.png"
           alt="Nav Background"
-          className="w-full h-full object-cover rounded-br-[40px] ml-[145px] mt-[50px]"
+          className="w-full h-full object-cover rounded-br-[40px] ml-[145px]"
         />
       </div>
 
@@ -190,6 +190,17 @@ export default function NavBar({
               <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
             </svg>
             &nbsp; Create Project
+          </button>
+
+          <button
+            className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[45px] pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
+            onClick={() => router.push("/ProjectCompletion")}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[23px]">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
+          </svg>
+
+            &nbsp; Generate Resume
           </button>
 
           

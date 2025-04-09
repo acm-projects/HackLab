@@ -56,173 +56,139 @@ export default function ReviewPage() {
 
 
  const handleConfirm = async () => {
-   if (!session?.accessToken) {
-     alert("GitHub access token is missing. Please log in with GitHub.");
-     return;
-   }
+  if (!session?.accessToken) {
+    alert("GitHub access token is missing. Please log in with GitHub.");
+    return;
+  }
 
+  if (!projectData) {
+    alert("Project data is missing. Please fill in the project details.");
+    return;
+  }
 
-   if (!projectData) {
-     alert("Project data is missing. Please fill in the project details.");
-     return;
-   }
+  console.log("Using GitHub access token:", session.accessToken);
 
+  setIsSubmitting(true);
 
-   console.log("Using GitHub access token:", session.accessToken);
-
-
-   setIsSubmitting(true);
-
-
-   try {
-     let userId: number;
-     try {
-       if (!session.user?.email) throw new Error("No email in session");
-       const currentUser = await fetchCurrentUser(session.user.email);
-       userId = currentUser.id;
-    
-     } catch (dbError) {
-       console.warn("Failed to fetch database user ID, falling back to session ID:", dbError);
-       if (!session.user?.id) {
-         throw new Error("Neither database user ID nor session ID available");
-       }
-       userId = Number(session.user.id);
- 
-     }
-
-
-     const formData = new FormData();
-     formData.append("accessToken", session.accessToken);
-     formData.append("projectDataString", JSON.stringify({
-       title: projectData.projectName || "Trial Project",
-       description: projectData.description || "Temporary fallback description.",
-       short_description: "",
-       type: projectData.projectType || "Trial",
-       mvp: projectData.mvps || ["Trial MVP"],
-       stretch: projectData.stretchGoals || ["Trial Stretch"],
-       timeline: {
-         frontend: projectData.timeline?.frontend || [],
-         backend: projectData.timeline?.backend || [],
-       },       
-       team_lead_id: userId,
-     }));
-
-
-     if (projectData.thumbnail) {
-      if (projectData.thumbnail.startsWith("data:image/")) {
-        try {
-          const parts = projectData.thumbnail.split(",");
-          const byteString = atob(parts[1]);
-          const mimeString = parts[0].match(/:(.*?);/)![1];
-          const ab = new ArrayBuffer(byteString.length);
-          const ia = new Uint8Array(ab);
-          for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-          }
-          const blob = new Blob([ab], { type: mimeString });
-          formData.append("thumbnail", blob, "thumbnail.png");
-        } catch (err) {
-          console.warn("⚠️ Failed to parse base64 thumbnail, skipping it.");
-        }
-       } else if ((projectData.thumbnail as string).startsWith("http")) {
-        formData.append("thumbnail_url", projectData.thumbnail);
+  try {
+    let userId: number;
+    try {
+      if (!session.user?.email) throw new Error("No email in session");
+      const currentUser = await fetchCurrentUser(session.user.email);
+      userId = currentUser.id;
+    } catch (dbError) {
+      console.warn("Failed to fetch database user ID, falling back to session ID:", dbError);
+      if (!session.user?.id) {
+        throw new Error("Neither database user ID nor session ID available");
       }
-     }
+      userId = Number(session.user.id);
+    }
 
-     const response = await fetch("http://52.15.58.198:3000/projects", {
-       method: "POST",
-       body: formData,
-     });
+    const formData = new FormData();
+    formData.append("accessToken", session.accessToken);
+    formData.append("projectDataString", JSON.stringify({
+      title: projectData.projectName || "Trial Project",
+      description: projectData.description || "Temporary fallback description.",
+      short_description: "",
+      type: projectData.projectType || "Trial",
+      mvp: projectData.mvps || ["Trial MVP"],
+      stretch: projectData.stretchGoals || ["Trial Stretch"],
+      timeline: {
+        frontend: projectData.timeline?.frontend || [],
+        backend: projectData.timeline?.backend || [],
+      },
+      team_lead_id: userId,
+    }));
 
+    // Send the thumbnail as a separate field
+    if (projectData.thumbnail) {
+      // If the thumbnail is a base64 string or image URL, you might need to convert it to binary.
+      if (typeof projectData.thumbnail === "string" && projectData.thumbnail.startsWith("http")) {
+        // If it's an image URL, send it directly as a string (this is for the image URL from AI generation)
+        formData.append("thumbnail", projectData.thumbnail);  // Add URL as a string
+      } else if (typeof projectData.thumbnail === "string" && projectData.thumbnail.startsWith("data:image/")) {
+        // If it's a base64-encoded image, send it as binary data
+        const binaryImage = new Blob([new Uint8Array(atob(projectData.thumbnail.split(',')[1]).split("").map(c => c.charCodeAt(0)))], { type: 'image/png' });
+        formData.append("thumbnail", binaryImage);  // Add base64 as binary
+      }
+    }
 
-     if (!response.ok) {
-       const errorText = await response.text();
-       throw new Error(`Server responded with ${response.status}: ${errorText}`);
-     }
+    const response = await fetch("http://52.15.58.198:3000/projects", {
+      method: "POST",
+      body: formData,
+    });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server responded with ${response.status}: ${errorText}`);
+    }
 
-     const createdProject = await response.json();
+    const createdProject = await response.json();
 
+    const existing = JSON.parse(localStorage.getItem("createdProjects") || "[]");
+    const projectId = projectData.projectName || `temp-${Math.random().toString(36).substring(2, 9)}`;
 
-     const existing = JSON.parse(localStorage.getItem("createdProjects") || "[]");
-     const projectId = projectData.projectName || `temp-${Math.random().toString(36).substring(2, 9)}`;
+    if (!existing.some((p: any) => p.id === projectId)) {
+      localStorage.setItem(
+        "createdProjects",
+        JSON.stringify([...existing, {
+          id: projectId,
+          title: projectData.projectName || "Untitled Project"
+        }])
+      );
+    }
 
+    if (createdProject?.github_repo_url) {
+      alert(`✅ Repository created successfully! You can access it here: ${createdProject.github_repo_url}`);
+      window.open(createdProject.github_repo_url, "_blank");
+    } else {
+      alert("✅ Project created successfully, but no repository URL was returned.");
+    }
 
-     if (!existing.some((p: any) => p.id === projectId)) {
-       localStorage.setItem(
-         "createdProjects",
-         JSON.stringify([...existing, {
-           id: projectId,
-           title: projectData.projectName || "Untitled Project"
-         }])
-       );
-     }
+    const allProjectsRes = await fetch("http://52.15.58.198:3000/projects");
+    if (!allProjectsRes.ok) throw new Error("Failed to fetch all projects.");
+    const allProjects = await allProjectsRes.json();
+    const matchedProject = allProjects.find((proj: any) => proj.title === projectData.projectName);
+    if (!matchedProject) throw new Error("Created project not found in the project list.");
+    const specificProjectId = matchedProject.id;
+    const roleId = 1;
 
+    const linkUserProjectRes = await fetch(
+      `http://52.15.58.198:3000/users/${userId}/projects/${specificProjectId}/${roleId}`,
+      { method: "POST" }
+    );
+    if (!linkUserProjectRes.ok) throw new Error("Failed to link project to user.");
 
-     if (createdProject?.github_repo_url) {
-       alert(`✅ Repository created successfully! You can access it here: ${createdProject.github_repo_url}`);
-       window.open(createdProject.github_repo_url, "_blank");
-     } else {
-       alert("✅ Project created successfully, but no repository URL was returned.");
-     }
+    const [topicRes, skillRes] = await Promise.all([
+      fetch("http://52.15.58.198:3000/topics"),
+      fetch("http://52.15.58.198:3000/skills")
+    ]);
+    const [allTopics, allSkills] = await Promise.all([topicRes.json(), skillRes.json()]);
 
+    for (const interest of projectData.interests || []) {
+      const matchedTopic = allTopics.find((t: any) => t.topic === interest);
+      if (matchedTopic) {
+        await fetch(`http://52.15.58.198:3000/projects/${specificProjectId}/topics/${matchedTopic.id}`, { method: "POST" });
+        await fetch(`http://52.15.58.198:3000/users/${userId}/topics/${matchedTopic.id}`, { method: "POST" });
+      }
+    }
 
-     const allProjectsRes = await fetch("http://52.15.58.198:3000/projects");
-     if (!allProjectsRes.ok) throw new Error("Failed to fetch all projects.");
-     const allProjects = await allProjectsRes.json();
-     const matchedProject = allProjects.find((proj: any) => proj.title === projectData.projectName);
-     if (!matchedProject) throw new Error("Created project not found in the project list.");
-     const specificProjectId = matchedProject.id;
-     const roleId = 1;
+    for (const tech of projectData.techToBeUsed || []) {
+      const matchedSkill = allSkills.find((s: any) => s.skill === tech);
+      if (matchedSkill) {
+        await fetch(`http://52.15.58.198:3000/projects/${specificProjectId}/skills/${matchedSkill.id}`, { method: "POST" });
+        await fetch(`http://52.15.58.198:3000/users/${userId}/skills/${matchedSkill.id}`, { method: "POST" });
+      }
+    }
 
-
-     const linkUserProjectRes = await fetch(
-       `http://52.15.58.198:3000/users/${userId}/projects/${specificProjectId}/${roleId}`,
-       { method: "POST" }
-     );
-     if (!linkUserProjectRes.ok) throw new Error("Failed to link project to user.");
-
-
-     
-
-
-     const [topicRes, skillRes] = await Promise.all([
-       fetch("http://52.15.58.198:3000/topics"),
-       fetch("http://52.15.58.198:3000/skills")
-     ]);
-     const [allTopics, allSkills] = await Promise.all([topicRes.json(), skillRes.json()]);
-
-
-     for (const interest of projectData.interests || []) {
-       const matchedTopic = allTopics.find((t: any) => t.topic === interest);
-       if (matchedTopic) {
-         await fetch(`http://52.15.58.198:3000/projects/${specificProjectId}/topics/${matchedTopic.id}`, { method: "POST" });
-         await fetch(`http://52.15.58.198:3000/users/${userId}/topics/${matchedTopic.id}`, { method: "POST" });
-        
-       }
-     }
-
-
-     for (const tech of projectData.techToBeUsed || []) {
-       const matchedSkill = allSkills.find((s: any) => s.skill === tech);
-       if (matchedSkill) {
-         await fetch(`http://52.15.58.198:3000/projects/${specificProjectId}/skills/${matchedSkill.id}`, { method: "POST" });
-         await fetch(`http://52.15.58.198:3000/users/${userId}/skills/${matchedSkill.id}`, { method: "POST" });
-         
-       }
-     }
-
-
-   } catch (error) {
-     console.error("Error during project creation:", error);
-     alert(`⚠️ An error occurred: ${error instanceof Error ? error.message : String(error)}`);
-   } finally {
-     setIsSubmitting(false);
-     router.push("/myProject");
-   }
- };
-
-
+  } catch (error) {
+    console.error("Error during project creation:", error);
+    alert(`⚠️ An error occurred: ${error instanceof Error ? error.message : String(error)}`);
+  } finally {
+    setIsSubmitting(false);
+    router.push("/myProject");
+  }
+};
 
 
  if (!projectData) {
@@ -339,7 +305,7 @@ export default function ReviewPage() {
         </div>
       )}
 
-      {projectData.thumbnail && (
+      {projectData.thumbnail && typeof projectData.thumbnail === "string" && (
         <div className="mb-4">
           <h3 className="text-lg font-bold mb-2">Thumbnail:</h3>
           <img
@@ -349,6 +315,7 @@ export default function ReviewPage() {
           />
         </div>
       )}
+
 
       <div className="flex justify-center gap-[10px] mt-[10px]">
         <button
