@@ -3,78 +3,133 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation"; // 👈 add at the top
+import { useRouter } from "next/navigation";
 import ProjectTimeline from "../components/timelineComponent";
 import EditProject from "../components/EditProjectInline";
 
-
 const MyProject = () => {
- const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
- const [view, setView] = useState("dashboard");
- const [isEditing, setIsEditing] = useState(false);
- const [userProjects, setUserProjects] = useState<any[]>([]);
- const [userId, setUserId] = useState<number | null>(null);
- const { data: session } = useSession();
- const [projectTopics, setProjectTopics] = useState<string[]>([]);
- const [projectSkills, setProjectSkills] = useState<string[]>([]);
- const [tasks, setTasks] = useState<any[]>([]);
- const [selectedTask, setSelectedTask] = useState<string | null>(null);
- const [projectUsers, setProjectUsers] = useState<any[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+  const [view, setView] = useState("dashboard");
+  const [isEditing, setIsEditing] = useState(false);
+  const [userProjects, setUserProjects] = useState<any[]>([]);
+  const [userId, setUserId] = useState<number | null>(null);
+  const { data: session } = useSession();
+  const [projectTopics, setProjectTopics] = useState<string[]>([]);
+  const [projectSkills, setProjectSkills] = useState<{ name: string; icon_url: string }[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [selectedTask, setSelectedTask] = useState<string | null>(null);
+  const [projectUsers, setProjectUsers] = useState<any[]>([]);
+  const [joinRequests, setJoinRequests] = useState<any[]>([]);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
+  const router = useRouter();
  
+
+ const fetchProjectUsers = async () => {
+   if (!selectedProjectId) return;
+   try {
+     const res = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}/users`);
+     if (!res.ok) throw new Error("Failed to fetch project users");
+     const data = await res.json();
+     setProjectUsers(data);
+   } catch (err) {
+     console.error("Failed to fetch project users:", err);
+     setProjectUsers([]);
+   }
+ };
+ const fetchJoinRequests = async (uid: number) => {
+  try {
+    const res = await fetch(`http://52.15.58.198:3000/users/${uid}/join-requests`);
+    const data = await res.json();
+    setJoinRequests(data);
+  } catch (err) {
+    console.error("Failed to fetch join requests:", err);
+  }
+};
+
+const handleAcceptJoin = async (userIdToAccept: number, projectId: number) => {
+  const roleId = 2; // example roleId for 'member'
+  try {
+    const res = await fetch(`http://52.15.58.198:3000/users/${userIdToAccept}/projects/${projectId}/${roleId}`, {
+      method: "POST"
+    });
+    if (!res.ok) throw new Error("Accept failed");
+    await handleRejectJoin(userIdToAccept, projectId);
+    fetchProjectUsers();
+  } catch (err) {
+    console.error("Accept failed:", err);
+  }
+};
+
+const handleRejectJoin = async (userIdToReject: number, projectId: number) => {
+  try {
+    const res = await fetch(`http://52.15.58.198:3000/users/${userIdToReject}/join-requests/${projectId}`, {
+      method: "DELETE"
+    });
+    if (!res.ok) throw new Error("Reject failed");
+    setJoinRequests((prev) => prev.filter(req => req.user_id !== userIdToReject || req.project_id !== projectId));
+  } catch (err) {
+    console.error("Reject failed:", err);
+  }
+};
+
 
  useEffect(() => {
-   const fetchProjectUsers = async () => {
-     if (!selectedProjectId) return;
- 
-     try {
-       const res = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}/users`);
-       if (!res.ok) throw new Error("Failed to fetch project users");
-       const data = await res.json();
-       setProjectUsers(data);
-     } catch (err) {
-       console.error("Failed to fetch project users:", err);
-       setProjectUsers([]);
-     }
-   };
- 
    fetchProjectUsers();
  }, [selectedProjectId]);
- 
+
+ const handleKickUser = async (userIdToKick: number) => {
+   if (!selectedProjectId) return;
+   try {
+     const res = await fetch(`http://52.15.58.198:3000/users/${userIdToKick}/projects/${selectedProjectId}`, {
+       method: "DELETE"
+     });
+     if (!res.ok) throw new Error("Failed to kick user");
+     fetchProjectUsers();
+     alert("User removed successfully");
+   } catch (err) {
+     console.error("Error removing user from project:", err);
+     alert("Failed to remove user");
+   }
+ };
 
  const toggleTask = (id: string) => {
    setSelectedTask((prev) => (prev === id ? null : id));
  };
 
-
- const router = useRouter()
  useEffect(() => {
-   const fetchProjectMeta = async () => {
-     if (!selectedProjectId) return;
+  const fetchProjectMeta = async () => {
+    if (!selectedProjectId) return;
+    try {
+      const topicRes = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}/topics`);
+      if (!topicRes.ok) throw new Error("Failed to fetch topics");
+      const topicData = await topicRes.json();
+      setProjectTopics(topicData.map((topic: any) => topic.topic));
 
-
-     try {
-       // Fetch Topics
-       const topicRes = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}/topics`);
-       if (!topicRes.ok) throw new Error("Failed to fetch topics");
-       const topicData = await topicRes.json();
-       setProjectTopics(topicData.map((topic: any) => topic.topic)); // ✅ FIXED
-
-
-       // Fetch Skills
-       const skillRes = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}/skills`);
-       if (!skillRes.ok) throw new Error("Failed to fetch skills");
-       const skillData = await skillRes.json();
-       setProjectSkills(skillData.map((skill: any) => skill.skill)); // ✅ FIXED
-     } catch (err) {
-       console.error("Error fetching project metadata:", err);
-       setProjectTopics([]);
-       setProjectSkills([]);
-     }
-   };
-
-
-   fetchProjectMeta();
- }, [selectedProjectId]);
+      const skillRes = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}/skills`);
+      const skillData = await skillRes.json();
+      
+      console.log("Raw skillData:", skillData);
+      
+      setProjectSkills(skillData.map((skill: any) => ({
+        name: skill.skill,
+        icon_url: skill.icon_url,
+      })));
+      
+      console.log("Mapped projectSkills:", skillData.map((skill: any) => ({
+        name: skill.name,
+        icon_url: skill.icon_url,
+      })));
+      
+      
+    } catch (err) {
+      console.error("Error fetching project metadata:", err);
+      setProjectTopics([]);
+      setProjectSkills([]);
+    }
+  };
+  fetchProjectMeta();
+}, [selectedProjectId]);
 
 
  useEffect(() => {
@@ -85,20 +140,15 @@ const MyProject = () => {
        const users = await usersRes.json();
        const currentUser = users.find((u: any) => u.email === session.user.email);
        if (!currentUser) return;
-
-
        const fetchedUserId = currentUser.id;
        setUserId(fetchedUserId);
-
 
        const userProjectsRes = await fetch(`http://52.15.58.198:3000/users/${fetchedUserId}/projects`);
        const userProjectLinks = await userProjectsRes.json();
        const projectIds = userProjectLinks.map((link: any) => link.project_id);
 
-
        const allProjectsRes = await fetch("http://52.15.58.198:3000/projects");
        const allProjects = await allProjectsRes.json();
-
 
        const associatedProjects = allProjects.filter((p: any) => projectIds.includes(p.id));
        setUserProjects(associatedProjects);
@@ -110,21 +160,16 @@ const MyProject = () => {
    fetchProjects();
  }, [session]);
 
-
  const selectedProject = userProjects.find(p => p.id === selectedProjectId);
+
  useEffect(() => {
    const fetchTimeline = async () => {
      if (!selectedProjectId) return;
-
-
      try {
        const res = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}`);
        const project = await res.json();
-
-
        const frontendTasks = project.timeline?.frontend || [];
        const backendTasks = project.timeline?.backend || [];
-
 
        const generateDate = (index: number) => {
          const day = (index + 1) * 2;
@@ -133,10 +178,8 @@ const MyProject = () => {
          return `${month} ${String(day).padStart(2, "0")}`;
        };
 
-
        const combinedTasks: any[] = [];
        const maxLength = Math.max(frontendTasks.length, backendTasks.length);
-
 
        for (let i = 0; i < maxLength; i++) {
          if (frontendTasks[i]) {
@@ -157,75 +200,71 @@ const MyProject = () => {
          }
        }
 
-
        setTasks(combinedTasks);
      } catch (err) {
        console.error("Failed to fetch timeline:", err);
      }
    };
-
-
    fetchTimeline();
  }, [selectedProjectId]);
 
+ const handleMarkComplete = async () => {
+  if (!selectedProjectId) return;
+  try {
+    const res = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}/complete`, {
+      method: "PATCH"
+    });
+    if (!res.ok) throw new Error("Failed to mark project as complete");
+    alert("Project marked as complete!");
+    setShowCompleteConfirm(false);
+  } catch (err) {
+    console.error("Error:", err);
+    alert("Could not mark project complete");
+  }
+};
 
- const handleDelete = async () => {
-   if (!selectedProjectId || !userId) return;
-   try {
-     const unlinkRes = await fetch(`http://52.15.58.198:3000/users/${userId}/projects/${selectedProjectId}`, {
-       method: "DELETE"
-     });
+const handleDelete = async () => {
+  if (!selectedProjectId || !userId) return;
+  try {
+    const unlinkRes = await fetch(`http://52.15.58.198:3000/users/${userId}/projects/${selectedProjectId}`, {
+      method: "DELETE"
+    });
+    if (!unlinkRes.ok) {
+      alert("Failed to remove project from user.");
+      return;
+    }
+    const deleteRes = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}`, {
+      method: "DELETE"
+    });
+    if (!deleteRes.ok) {
+      alert("Failed to delete the project.");
+      return;
+    }
+    alert("Project deleted successfully.");
+    setShowDeleteConfirm(false);
+  } catch (err) {
+    console.error("Delete error:", err);
+    alert("An error occurred while deleting the project.");
+  }
+};
 
-
-     if (!unlinkRes.ok) {
-       alert("Failed to remove project from user.");
-       return;
-     }
-
-
-     if (selectedProject?.team_lead_id === userId) {
-       const deleteRes = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}`, {
-         method: "DELETE"
-       });
-
-
-       if (!deleteRes.ok) {
-         alert("Failed to delete the project.");
-         return;
-       }
-
-
-       alert("Project deleted successfully.");
-     } else {
-       alert("Project removed from your profile.");
-     }
-
-
-     setUserProjects(prev => prev.filter(p => p.id !== selectedProjectId));
-     setSelectedProjectId(null);
-   } catch (err) {
-     console.error("Delete error:", err);
-     alert("An error occurred while deleting the project.");
-   }
-  
- };
-
-
+ 
  return (
    <div className="w-screen h-full bg-[#f5f7fa] text-nunito">
      <NavBar />
      <div className="flex w-screen h-screen translate-[-8px]">
-     <div className="w-[270px] mt-[55px] bg-[#385773] py-[15px] text-[#fff] flex flex-col gap-[12px] overflow-y-auto border-r border-[#fff] px-[10px] rounded-r-[30px]">
+     <div className="w-[270px] mt-[30px] bg-[#385773] py-[15px] text-[#fff] flex flex-col gap-[12px] overflow-y-auto border-r border-[#fff] px-[10px] rounded-br-[55px]">
+      <div className="translate-y-[35px]">
       {userProjects.map((project) => (
         <div
           key={project.id}
           onClick={() => setSelectedProjectId(project.id)}
-          className={`flex items-center gap-[20px] px-[15px] py-[10px] rounded-[8px] cursor-pointer transition-colors ${
+          className={`flex items-center gap-[20px] px-[15px] py-[20px] rounded-[8px] cursor-pointer transition-colors ${
             selectedProjectId === project.id ? "bg-[#ffffff20]" : "hover:bg-[#ffffff10]"
           }`}
         >
           <img
-            src={project.thumbnail || "/placeholder.jpg"}
+            src={project.thumbnail}
             alt="thumbnail"
             className="w-[50px] h-[50px] object-cover rounded-[6px] border border-white"
           />
@@ -234,6 +273,7 @@ const MyProject = () => {
           </span>
         </div>
       ))}
+      </div>
     </div>
 
 
@@ -242,19 +282,25 @@ const MyProject = () => {
 
 
        <div className="sticky top-[0px] translate-y-[-10px] bg-[#f5f7fa] z-20 py-[10px] flex gap-[10px] items-center justify-between border-b border-[#e5e7eb] px-[5px]">
-       <div className="relative bg-[#d1d5db] rounded-[8px] w-[240px] h-[40px] flex items-center justify-between px-[15px]">
+       <div className="relative bg-[#d1d5db] rounded-[8px] w-[340px] h-[40px] flex items-center justify-between px-[15px]">
         {/* Sliding Pill Indicator */}
-        <div
+                <div
           className="absolute top-[4px] left-[4px] h-[32px] w-[112px] bg-[#6b7280] rounded-[6px] transition-transform duration-300 ease-in-out"
           style={{
-            transform: view === "timeline" ? "translateX(140px)" : "translateX(10px)",
+            transform:
+              view === "timeline"
+                ? "translateX(124px)"
+                : view === "manage"
+                ? "translateX(244px)"
+                : "translateX(4px)",
           }}
         />
+
 
         {/* Tabs */}
         <button
           onClick={() => setView("dashboard")}
-          className={`z-10 w-[112px] h-[32px] rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
+          className={`z-10 w-[112px] h-[32px] translate-x-[-7px] rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
             view === "dashboard" ? "text-[#fff]" : "text-[#374151]"
           }`}
         >
@@ -262,11 +308,19 @@ const MyProject = () => {
         </button>
         <button
           onClick={() => setView("timeline")}
-          className={`z-10 w-[112px] h-[32px] rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
+          className={`z-10 w-[112px] h-[32px]  rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
             view === "timeline" ? "text-[#fff]" : "text-[#374151]"
           }`}
         >
           Timeline
+        </button>
+        <button
+          onClick={() => setView("manage")}
+          className={`z-10 w-[112px] h-[32px] translate-x-[5px] rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
+            view === "manage" ? "text-[#fff]" : "text-[#374151]"
+          }`}
+        >
+          Manage
         </button>
       </div>
 
@@ -299,9 +353,9 @@ const MyProject = () => {
 
             {/* Delete Button */}
             <button
-              onClick={handleDelete}
-              className="bg-[#ef4444] hover:bg-[#dc2626] text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium flex justify-center items-center border-none outline-none"
-            >
+                onClick={() => setShowDeleteConfirm(true)} // JUST set the modal
+                className="bg-[#ef4444] hover:bg-[#dc2626] text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium flex justify-center items-center border-none outline-none"
+              >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -318,7 +372,65 @@ const MyProject = () => {
               </svg>
               Delete
             </button>
+            <button
+              onClick={() => setShowCompleteConfirm(true)} // JUST set the modal
+              className="bg-[#10b981] hover:bg-[#059669] text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium border-none outline-none"
+            >
+          Mark Complete
+        </button>
+
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50 ">
+            <div className="bg-[#385773] text-[#fff] p-[10px] rounded shadow-lg text-center rounded-[10px] mt-[70px]">
+              <p className="mb-[5px] text-lg font-medium">Are you sure you want to delete this project?</p>
+              <div className="flex justify-center gap-[10px] ">
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false); // close modal
+                    handleDelete(); // only delete if user says yes
+                  }}
+                  className="bg-[#ef4444] text-[#fff] px-[10px] py-[10px] rounded border-none outline-none rounded-[10px]"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="bg-[#9ca3af] text-[#fff] px-[10px] py-[10px] rounded border-none outline-none rounded-[10px]"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           </div>
+        )}
+
+        {showCompleteConfirm && (
+          <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+            <div className="bg-[#385773] text-[#fff] p-[10px] rounded shadow-lg text-center rounded-[10px] mt-[70px]">
+              <p className="mb-[5px] text-lg font-medium">Do you want to mark this project as complete?</p>
+              <div className="flex justify-center gap-[10px]">
+                <button
+                  onClick={() => {
+                    setShowCompleteConfirm(false); // close modal
+                    handleMarkComplete(); // only complete if user confirms
+                  }}
+                  className="bg-[#10b981] text-[#fff] rounded-[10px] px-[10px] py-[10px] rounded border-none outline-none"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => setShowCompleteConfirm(false)}
+                  className="bg-[#9ca3af] text-[#fff] rounded-[10px] px-[10px] py-[10px] rounded border-none outline-none"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+          </div>
+          
         )}
       </div>
 
@@ -390,7 +502,7 @@ const MyProject = () => {
                <p className="text-[13px] text-[#374151]">{goal}</p>
                </div>
            ))}
-           </div>
+           </div> 
        </div>
        </div>
 
@@ -447,20 +559,23 @@ const MyProject = () => {
 
        Tech Used
        </h3>
-   <div className="flex flex-wrap gap-[8px]">
-     {projectSkills.length > 0 ? (
-       projectSkills.map((skill, idx) => (
-         <span
-           key={idx}
-           className="px-[10px] py-[4px] bg-[#fef3c7] text-[#92400e] rounded-[6px] text-[13px]"
-         >
-           {skill}
-         </span>
-       ))
-     ) : (
-       <p className="text-[13px] text-[#9ca3af]">No skills listed.</p>
-     )}
-   </div>
+       <div className="flex flex-wrap gap-[10px]">
+        {projectSkills.map((skill, idx) => (
+          <div
+            key={idx}
+            className="flex items-center gap-[8px] px-[10px] py-[6px] bg-[#fef3c7] border border-[#fcd34d] rounded-[6px] shadow-sm"
+          >
+            <img
+              src={skill.icon_url || "/default-tech-icon.png"}
+              alt={skill.name}
+              className="w-[18px] h-[18px] object-contain"
+            />
+            <span className="text-[13px] text-[#92400e]"> {skill.name} </span>
+          </div>
+        ))}
+      </div>
+
+
  </div>
 
 
@@ -514,6 +629,72 @@ const MyProject = () => {
         />
         
         )}
+        {view === "manage" && selectedProject && userId === selectedProject.team_lead_id && (
+          <div className="bg-white p-[20px] rounded-[8px] shadow-md border border-[#d1d5db] h-[650px] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4 text-[#385773]">Manage Members</h2>
+            <div className="flex flex-col gap-[10px] mb-8">
+              {projectUsers.map((user) => (
+                <div
+                  key={user.id}
+                  className="flex justify-between items-center bg-[#f9fafb] border border-[#d1d5db] px-[15px] py-[10px] rounded-[6px]"
+                >
+                  <div className="flex items-center gap-[10px]">
+                    <img
+                      src={user.image || "/default-avatar.png"}
+                      alt={user.name}
+                      className="w-[40px] h-[40px] rounded-full border border-[#d1d5db] object-cover"
+                    />
+                    <span className="text-[14px] font-medium text-[#374151]">{user.name}</span>
+                  </div>
+                  <button
+                    onClick={() => handleKickUser(user.id)}
+                    className="text-[#ef4444] text-[12px] border border-[#ef4444] px-[10px] py-[4px] rounded-[6px] hover:bg-[#fee2e2]"
+                  >
+                    Kick Out
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <h2 className="text-xl font-bold mb-2 text-[#385773]">Join Requests</h2>
+            <div className="flex flex-col gap-[10px]">
+              {joinRequests.filter(r => r.project_id === selectedProjectId).map((req) => (
+                <div
+                  key={`${req.user_id}-${req.project_id}`}
+                  className="flex justify-between items-center bg-[#e0f2fe] border border-[#38bdf8] px-[15px] py-[10px] rounded-[6px]"
+                >
+                  <div className="flex items-center gap-[10px]">
+                    <button
+                      onClick={() => router.push(`/profile/${req.user_id}`)}
+                      className="text-[14px] font-semibold text-[#1d4ed8] underline hover:text-[#1e40af]"
+                    >
+                      View Profile
+                    </button>
+                    <span className="text-[14px] text-[#1e293b]">User ID: {req.user_id}</span>
+                  </div>
+                  <div className="flex gap-[10px]">
+                    <button
+                      onClick={() => handleAcceptJoin(req.user_id, req.project_id)}
+                      className="text-white bg-[#10b981] hover:bg-[#059669] px-[10px] py-[5px] text-[13px] rounded-[6px]"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => handleRejectJoin(req.user_id, req.project_id)}
+                      className="text-white bg-[#ef4444] hover:bg-[#dc2626] px-[10px] py-[5px] text-[13px] rounded-[6px]"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {joinRequests.filter(r => r.project_id === selectedProjectId).length === 0 && (
+                <p className="text-[13px] text-[#64748b]">No join requests for this project.</p>
+              )}
+            </div>
+          </div>
+        )}
+
 
        </div>
      </div>

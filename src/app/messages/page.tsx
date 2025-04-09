@@ -1,14 +1,18 @@
-"use client";
 
-import { useState, useEffect } from "react";
+"use client";
+import io, { Socket } from "socket.io-client";
+import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import NavBar from "../components/NavBar";
+
+
 interface Project {
   id: number;
   title: string;
   thumbnail: string;
   team_lead_id: number;
 }
+
 
 interface User {
   id: number;
@@ -17,6 +21,7 @@ interface User {
   image: string;
 }
 
+
 interface Message {
   id: number;
   sender: User;
@@ -24,9 +29,11 @@ interface Message {
   timestamp: string;
 }
 
+
 export default function MessagesPage() {
   const { data: session } = useSession();
   const [userId, setUserId] = useState<number | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -34,7 +41,11 @@ export default function MessagesPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [kickDropdownOpen, setKickDropdownOpen] = useState<boolean>(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [typingUsers, setTypingUsers] = useState<number[]>([]); // <- Track user IDs who are typing
+  const [typingUsers, setTypingUsers] = useState<number[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const socketRef = useRef<Socket | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -45,6 +56,7 @@ export default function MessagesPage() {
         const matchedUser = users.find((u: any) => u.email === session.user.email);
         if (matchedUser) {
           setUserId(matchedUser.id);
+          setUsername(matchedUser.name)
         }
       } catch (err) {
         console.error("Failed to fetch users:", err);
@@ -52,6 +64,7 @@ export default function MessagesPage() {
     };
     fetchUserId();
   }, [session]);
+
 
   useEffect(() => {
     const fetchProjectsAndUsers = async () => {
@@ -67,6 +80,7 @@ export default function MessagesPage() {
         setProjects(associatedProjects);
         if (associatedProjects.length > 0) setSelectedProject(associatedProjects[0]);
 
+
         const usersMap: Record<number, User[]> = {};
         const userSet = new Map<number, User>();
         for (const project of associatedProjects) {
@@ -79,14 +93,6 @@ export default function MessagesPage() {
         }
         setProjectUsersMap(usersMap);
         setAllUsers(Array.from(userSet.values()));
-
-        // Simulate who is typing (randomly pick 1 user to simulate typing)
-        setTimeout(() => {
-          const randomUser = Array.from(userSet.values())[0];
-          if (randomUser && (!selectedUser || selectedUser.id !== randomUser.id)) {
-            setTypingUsers([randomUser.id]);
-          }
-        }, 2000);
       } catch (err) {
         console.error("Failed to fetch projects or users:", err);
       }
@@ -94,16 +100,207 @@ export default function MessagesPage() {
     fetchProjectsAndUsers();
   }, [userId]);
 
+
+  useEffect(() => {
+    if (!userId || (!selectedUser && !selectedProject)) return;
+ 
+    const socket = io("http://52.15.58.198:3000", {
+      transports: ["websocket"],
+    });
+ 
+    socketRef.current = socket;
+    const isDM = !!selectedUser;
+ 
+    const targetRoomId = isDM
+      ? `dm-${[userId, selectedUser.id].sort().join("-")}`
+      : `project-${selectedProject?.id}`;
+ 
+    if (isDM) {
+      // JOIN DM ROOM
+      socket.emit("joinDMRoom", userId, session?.user?.name || "Unknown", selectedUser.id, targetRoomId);
+ 
+      socket.on("loadDMMessages", async () => {
+        console.log("Loading DM messages...");
+ 
+        socket.emit("getDMs", userId);
+        socket.emit("sentDMs", userId);
+ 
+        const [receivedDMs, sentDMs] = (await Promise.all([
+          new Promise<any[]>((resolve) => socket.once("loadDMs", resolve)),
+          new Promise<any[]>((resolve) => socket.once("loadSentDMs", resolve)),
+        ])) as [any[], any[]];
+ 
+        let chats: Message[] = [];
+ 
+        for (const msg of receivedDMs) {
+          if (String(msg.sender_id) === String(selectedUser.id)) {
+            const userRes = await fetch(`http://52.15.58.198:3000/users/${msg.sender_id}`);
+            const user = await userRes.json();
+ 
+            chats.push({
+              id: Math.random(),
+              sender: {
+                id: msg.sender_id,
+                name: user.name,
+                email: user.email,
+                image: user.image,
+              },
+              content: msg.message,
+              timestamp: msg.time,
+            });
+          }
+        }
+ 
+        for (const msg of sentDMs) {
+          if (String(msg.receiver_id) === String(selectedUser.id)) {
+            const userRes = await fetch(`http://52.15.58.198:3000/users/${msg.sender_id}`);
+            const user = await userRes.json();
+ 
+            chats.push({
+              id: Math.random(),
+              sender: {
+                id: msg.sender_id,
+                name: user.name,
+                email: user.email,
+                image: user.image,
+              },
+              content: msg.message,
+              timestamp: msg.time,
+            });
+          }
+        }
+ 
+        chats.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+        setMessages(chats);
+      });
+    } else {
+      // JOIN PROJECT ROOM
+      socket.emit("joinRoom", {
+        user_id: userId,
+        username: session?.user?.name || "Unknown",
+        project_id: selectedProject?.id,
+        room: targetRoomId,
+      });
+ 
+      socket.on("loadMessages", async (loadedMessages: any[]) => {
+        const formattedMessages = await Promise.all(
+          loadedMessages.map(async (msg) => {
+            const userRes = await fetch(`http://52.15.58.198:3000/users/${msg.sender_id}`);
+            const user = await userRes.json();
+ 
+            return {
+              id: Math.random(),
+              sender: { id: msg.sender_id, name: user.name, email: user.email, image: user.image },
+              content: msg.message,
+              timestamp: msg.time,
+            };
+          })
+        );
+        setMessages(formattedMessages);
+      });
+    }
+ 
+    socket.on("message", async (msg: any) => {
+      if (msg.username === session?.user?.name) return;
+ 
+      const res = await fetch("http://52.15.58.198:3000/users");
+      const users = await res.json();
+      const matchedUser = users.find((u: any) => u.name === msg.username);
+ 
+      if (!matchedUser) return;
+ 
+      const formatted: Message = {
+        id: Math.random(),
+        sender: {
+          id: matchedUser.id,
+          name: matchedUser.name,
+          email: matchedUser.email,
+          image: matchedUser.image,
+        },
+        content: msg.text,
+        timestamp: msg.time,
+      };
+ 
+      setMessages((prev) => [...prev, formatted]);
+    });
+ 
+    socket.on("userTyping", (typingUserId: number) => {
+      if (typingUserId !== userId && !typingUsers.includes(typingUserId)) {
+        setTypingUsers((prev) => [...prev, typingUserId]);
+      }
+    });
+ 
+    socket.on("userStopTyping", (typingUserId: number) => {
+      setTypingUsers((prev) => prev.filter((id) => id !== typingUserId));
+    });
+ 
+    return () => {
+      socket.disconnect();
+    };
+  }, [userId, selectedUser, selectedProject]);
+ 
+
+
+  const emitTyping = () => {
+    if (!socketRef.current || !userId) return;
+    const targetRoomId = selectedUser
+      ? `dm-${[userId, selectedUser.id].sort().join("-")}`
+      : `project-${selectedProject?.id}`;
+
+
+    socketRef.current.emit("userTyping", userId, targetRoomId);
+
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+
+    typingTimeoutRef.current = setTimeout(() => {
+      socketRef.current?.emit("userStopTyping", userId, targetRoomId);
+    }, 3000);
+  };
+
+
+  const handleSend = () => {
+    if (!newMessage.trim() || !socketRef.current || !userId) return;
+
+
+    const targetRoomId = selectedUser
+      ? `dm-${[userId, selectedUser.id].sort().join("-")}`
+      : `project-${selectedProject?.id}`;
+
+
+    socketRef.current.emit("chatMessage", userId, newMessage, selectedUser ? selectedUser.id : selectedProject?.id, selectedUser ? true: false, targetRoomId);
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Math.random(),
+        sender: { id: userId, name: username || "You", email: "", image: "" },
+        content: newMessage,
+        timestamp: formatTime(new Date().toString()),
+      },
+    ]);
+    setNewMessage("");
+    socketRef.current.emit("userStopTyping", userId, targetRoomId);
+  };
+
+
   const handleProjectClick = (project: Project) => {
     setSelectedProject(project);
     setSelectedUser(null);
+    setMessages([]);
+    setTypingUsers([]);
   };
+
 
   const handleUserClick = (user: User) => {
     setSelectedUser(user);
     setSelectedProject(null);
-    setTypingUsers((prev) => prev.filter((id) => id !== user.id)); // remove typing if clicked
+    setMessages([]);
+    setTypingUsers([]);
   };
+
 
   const handleKick = async (userIdToKick: number) => {
     if (!selectedProject) return;
@@ -123,6 +320,7 @@ export default function MessagesPage() {
     }
   };
 
+
   const handleLeaveGroup = async () => {
     if (!selectedProject || !userId) return;
     try {
@@ -135,6 +333,22 @@ export default function MessagesPage() {
       console.error("Failed to leave project:", err);
     }
   };
+
+
+  const formatTime = (timestamp: string) => {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const date = new Date(timestamp);
+    console.log(date)
+    console.log(timestamp)
+    const day = days[date.getDay()];
+    const hours = date.getHours() % 12 || 12;
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+    return `${day}, ${hours}:${minutes} ${ampm}`
+  };
+
+
+
 
   return (
     <div className="flex h-screen font-nunito">
@@ -160,6 +374,7 @@ export default function MessagesPage() {
             </div>
           ))}
         </div>
+
 
         <div>
           <div className="text-left w-full font-bold mb-[12px] border-none outline-none bg-transparent text-[#ffffff]">
@@ -190,6 +405,7 @@ export default function MessagesPage() {
         </div>
       </aside>
 
+
       <main className="flex-1 bg-[#e3ecf2] flex flex-col mt-[60px] h-[91%] justify-center ml-[10px] border-1 border-[#385773] rounded-[10px]">
         <div className="h-[60px] px-[20px] bg-[#cfdce6] flex justify-between items-center border-b border-[#a1b6c8] rounded-[10px]">
           <div className="flex items-center gap-[12px]">
@@ -202,6 +418,7 @@ export default function MessagesPage() {
               {selectedUser?.name || selectedProject?.title || "Messages"}
             </span>
           </div>
+
 
           {selectedProject && selectedProject.team_lead_id === userId && (
             <div className="relative">
@@ -232,6 +449,7 @@ export default function MessagesPage() {
             </div>
           )}
 
+
           {selectedProject && selectedProject.team_lead_id !== userId && (
             <button
               onClick={handleLeaveGroup}
@@ -242,34 +460,77 @@ export default function MessagesPage() {
           )}
         </div>
 
+
         <div className="flex-1 p-[20px] overflow-y-auto flex flex-col gap-[10px]">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex flex-col ${msg.sender.id === userId ? "items-end" : "items-start"}`}
-            >
-              <span className="text-[11px] text-[#6b7280] mb-[2px]">
-                {msg.sender.name}
-              </span>
-              <div
-                className={`px-[12px] py-[8px] rounded-[12px] max-w-[60%] shadow ${msg.sender.id === userId ? "bg-[#ffffff] text-[#385773]" : "bg-[#385773] text-[#ffffff]"}`}
-              >
-                {msg.content}
-              </div>
-            </div>
-          ))}
+        {messages.map((msg, index) => {
+  const isLast = index === messages.length - 1;
+
+
+
+
+  return (
+    <div
+      key={msg.id}
+      className={`flex ${msg.sender.id === userId ? "justify-end" : "justify-start"} items-end gap-[8px]`}
+    >
+      {msg.sender.id !== userId && (
+        <img
+          src={msg.sender.image || "/default-avatar.png"}
+          alt={msg.sender.name}
+          className="w-[32px] h-[32px] rounded-full object-cover border border-[#ccc]"
+        />
+      )}
+
+
+      <div className="flex flex-col max-w-[70%]">
+        <span className="text-[11px] text-[#6b7280] mb-[2px]">{msg.sender.name}</span>
+        <div
+          className={`px-[12px] py-[8px] rounded-[12px] shadow ${
+            msg.sender.id === userId
+              ? "bg-[#ffffff] text-[#385773] self-end"
+              : "bg-[#385773] text-[#ffffff] self-start"
+          }`}
+        >
+          {msg.content}
+        </div>
+        {isLast && (
+          <span className={`text-[10px] mt-[2px] ${msg.sender.id === userId ? "text-right text-[#6b7280]" : "text-left text-[#d1d5db]"}`}>
+            {msg.timestamp}
+          </span>
+        )}
+      </div>
+
+
+      {msg.sender.id === userId && (
+        <img
+          src={session?.user?.image || "/default-avatar.png"}
+          alt="You"
+          className="w-[32px] h-[32px] rounded-full object-cover border border-[#ccc]"
+        />
+      )}
+    </div>
+  );
+})}
         </div>
 
+
         <div className="h-[60px] px-[20px] bg-[#d9e3eb] flex items-center border-t border-[#a1b6c8] rounded-[10px]">
-          <input
-            type="text"
-            placeholder="Type your message..."
-            className="flex-1 px-[12px] py-[8px] rounded-[8px] border border-[#ccc] outline-none text-[14px]"
-          />
-          <button className="ml-[12px] px-[15px] py-[8px] bg-[#385773] text-[#fff] rounded-[8px] text-[14px] border-none outline-none flex justify-center">
+        <input
+          type="text"
+          value={newMessage}
+          onChange={(e) => {
+            setNewMessage(e.target.value);
+            emitTyping();
+          }}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          placeholder="Type your message..."
+          className="flex-1 px-[12px] py-[8px] rounded-[8px] border border-[#ccc] outline-none text-[14px]"
+        />
+          <button onClick={handleSend} className="ml-[12px] px-[15px] py-[8px] bg-[#385773] text-[#fff] rounded-[8px] text-[14px] border-none outline-none flex justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[20px]">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
             </svg>
+
 
           </button>
         </div>
@@ -277,3 +538,4 @@ export default function MessagesPage() {
     </div>
   );
 }
+

@@ -125,6 +125,8 @@ export default function ManualProject() {
       
       setFrontendTimeline(data.timeline?.frontend || []);
       setBackendTimeline(data.timeline?.backend || []);
+      setThumbnail(data.thumbnail || null); // ✅ Add this line
+
     } catch (error) {
       console.error("❌ Failed to parse AI project data:", error);
     }
@@ -173,15 +175,28 @@ export default function ManualProject() {
     };
   
     if (thumbnail) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64Image = reader.result;
-        const enrichedData = { ...projectData, thumbnail: base64Image };
+      // If it's a File (user-uploaded), convert to base64
+      if (thumbnail instanceof File) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64Image = reader.result;
+          const enrichedData = { ...projectData, thumbnail: base64Image };
+          localStorage.setItem("projectReviewData", JSON.stringify(enrichedData));
+          router.push(`/reviewPage`);
+        };
+        reader.readAsDataURL(thumbnail);
+      } else if (typeof thumbnail === "string" && (thumbnail as string).startsWith("http")) {
+        // If it's already a URL from AI, just store as-is
+        const enrichedData = { ...projectData, thumbnail };
         localStorage.setItem("projectReviewData", JSON.stringify(enrichedData));
         router.push(`/reviewPage`);
-      };
-      reader.readAsDataURL(thumbnail);
-    } else {
+      } else {
+        // Fallback in case thumbnail is something unexpected
+        localStorage.setItem("projectReviewData", JSON.stringify(projectData));
+        router.push(`/reviewPage`);
+      }
+    }
+     else {
       localStorage.setItem("projectReviewData", JSON.stringify(projectData));
       router.push(`/reviewPage`);
     }
@@ -929,16 +944,35 @@ export default function ManualProject() {
 
 
            {/* Thumbnail Upload - Full Width */}
-           <div style={{ width: "100%" }}>
-             <label style={{ marginBottom: "8px", display: "block" }}>Upload Project Thumbnail</label>
-             <input
-               type="file"
-               accept="image/*"
-               onChange={(e) => {
-                 const file = e.target.files?.[0];
-                 if (file) setThumbnail(file);
-               }}
-               style={{
+      <div style={{ width: "100%" }}>
+        <label style={{ marginBottom: "8px", display: "block" }}>Upload Project Thumbnail</label>
+
+            {/* 👇👇 Add this block here 👇👇 */}
+            {typeof thumbnail === "string" && (thumbnail as string).startsWith("http") && (
+              <div style={{ marginBottom: "12px" }}>
+                <img
+                  src={thumbnail}
+                  alt="AI-generated Thumbnail"
+                  style={{
+                    width: "100%",
+                    maxHeight: "250px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Existing upload input */}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setThumbnail(file);
+              }}
+              style={{
                 width: "100%",
                 padding: "12px",
                 borderRadius: "8px",
@@ -946,9 +980,10 @@ export default function ManualProject() {
                 color: "#385773",
                 border: "1px solid rgba(56, 87, 115, 0.3)",
                 boxSizing: "border-box",
-               }}
-             />
-           </div>
+              }}
+            />
+          </div>
+
 
 
            {/* Save Button - Full Width */}

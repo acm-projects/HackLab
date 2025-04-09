@@ -145,7 +145,7 @@ export default function HomeScreen() {
         {/* Personalized Greeting */}
         <div className="w-[85%] h-[300px] flex flex-col items-start justify-center text-center mt-[60px] mb-[20px]">
           <h1 className="text-[30px] font-[500] text-white font-bold mb-[0px]">
-          Hello {session?.user?.login ? `@${session.user.login}` : "USER"}!!
+          Hello {session?.user?.name ? `${session.user.name}` : "USER"}!!
           </h1>
           <p className="mt-[-5px]">Hope you are having a good day</p>
         </div>

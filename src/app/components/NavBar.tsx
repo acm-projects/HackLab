@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import LogoutButton from "../components/LogoutButton";
@@ -13,7 +14,7 @@ interface NavBarProps {
   setSearchInput?: (value: string) => void;
   onSearchSubmit?: () => void;
   onClearFilters?: () => void;
-  showSearch?: boolean; // ✅ Added prop
+  showSearch?: boolean;
 }
 
 export default function NavBar({
@@ -22,7 +23,7 @@ export default function NavBar({
   searchInput,
   setSearchInput,
   onSearchSubmit,
-  showSearch = false, // ✅ default value
+  showSearch = false,
 }: NavBarProps) {
   const [showFilterBox, setShowFilterBox] = useState(false);
   const pathname = usePathname();
@@ -52,9 +53,11 @@ export default function NavBar({
 
   return (
     <div className="w-full fixed top-[0px] z-50">
-      <div className={`h-[60px] bg-[#385773] flex items-center justify-between px-4 transition-all duration-500 ${isMenuOpen ? "pl-[200px]" : "pl-4"}`}>
+      {/* Background image behind navbar on the left side */}
+
+      <div className={`h-[60px] bg-[#385773] flex items-center justify-start px-4 transition-all duration-500 ${isMenuOpen ? "pl-[200px]" : "pl-4"}`}>
         <button
-          className="bg-[#385773] text-primary border-transparent border-none outline-none font-nunito text-md px-[35px] py-[16px] text-center z-50 ml-[-10px]"
+          className="bg-[#385773] text-primary border-transparent border-none outline-none cursor-pointer font-nunito text-md px-[35px] py-[16px] text-center z-50 ml-[-10px]"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px] text-white">
@@ -62,7 +65,7 @@ export default function NavBar({
           </svg>
         </button>
 
-        {showSearch && (
+        {showSearch ? (
           <div className="flex flex-1 justify-start">
             <div className="bg-[#ffffff] text-[#38577368] border-none outline-none font-nunito rounded-[10px] ml-[20px] text-md px-[20px] py-[7px] text-center flex items-center justify-start w-[500px]">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px] mr-2">
@@ -107,16 +110,34 @@ export default function NavBar({
               </div>
             )}
           </div>
+        ) : (
+          !isMenuOpen && (
+            <span className="text-[#fff] text-[35px] font-bold ml-[10px] font-nunito flex justify-start items-start">HackLab</span>
+            
+          )
         )}
       </div>
 
       {isMenuOpen && (
         <div
-          className="fixed top-0 left-0 w-full h-full bg-[#00000080] z-[1000]"
+          className="fixed top-0 left-0 w-full h-full bg-[#00000080] z-[1000] cursor-pointer"
           onClick={() => setIsMenuOpen(false)}
           style={{ zIndex: 40 }}
         />
+        
       )}
+      {/** remove this div section if needed lol its just for juno to pop in ITS ACTUALLY SO FUNNY */}
+      <div
+        className={`absolute top-0 left-0 w-[250px] h-[200px] z-[45] transition-all duration-[500ms] ease-in-out ${
+          isMenuOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
+        }`}
+      >
+        <img
+          src="images/nav-bg-image.png"
+          alt="Nav Background"
+          className="w-full h-full object-cover rounded-br-[40px] ml-[145px] mt-[50px]"
+        />
+      </div>
 
       <div
         className={`fixed top-[0px] w-[270px] h-screen bg-[#385773] ml-[-10px] rounded-br-[65px] text-[#fff] flex flex-col items-start transition-transform duration-500  
@@ -129,20 +150,20 @@ export default function NavBar({
         >
           HackLab
         </button>
-
-        <div className="w-full flex flex-col mt-[130px] space-y-4 items-start ml-[30px]">
+        
+        <div className="w-full flex flex-col mt-[130px] space-y-4 items-start px-[30px]">
           {/* Home Page Button at the Top */}
             <button
-              className="mb-[20px] bg-[#385773] text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] px-[20px] text-center flex items-center"
+              className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[130px] pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
               onClick={() => router.push("/homeScreen")}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px] ">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
               </svg>
               &nbsp; Home
             </button>
           <button
-            className="mb-[20px] bg-[#385773] text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] px-[20px] text-center flex items-center"
+            className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[90px] pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
             onClick={() => router.push("/myProject")}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
@@ -152,7 +173,7 @@ export default function NavBar({
           </button>
 
           <button
-            className="mb-[20px] bg-[#385773] text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-50 flex items-center gap-2"
+            className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] pr-[80px] py-[15px]  pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
             onClick={() => router.push("/findProjects")}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
@@ -162,7 +183,7 @@ export default function NavBar({
           </button>
 
           <button
-            className="mt-auto mb-[20px] bg-[#385773] text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-50 flex items-center gap-2"
+            className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[70px] pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
             onClick={() => router.push("/CreateProject")}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
@@ -173,7 +194,7 @@ export default function NavBar({
 
           
             <button
-            className="mt-auto bg-[#385773] text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-50 flex items-center gap-2"
+            className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[100px] pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
             onClick={() => router.push("/messages")}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
@@ -184,7 +205,7 @@ export default function NavBar({
         </div>
 
         <button
-          className="mt-auto bg-[#385773] text-[#fff] border-none outline-none font-nunito rounded-[10px] text-[15px] px-[20px] py-[12px] text-center z-50 flex items-center gap-2 ml-[30px]"
+          className="mt-auto bg-[#385773] text-[#fff] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[125px] pl-[10px] cursor-pointer border-none outline-none font-nunito rounded-[10px] text-[15px] px-[20px] text-center z-50 flex items-center gap-2 ml-[30px]"
           onClick={() => {
             if (userId) {
               router.push(`/profile/${userId}`);

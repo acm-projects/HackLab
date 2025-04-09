@@ -5,19 +5,7 @@ import { useSession } from "next-auth/react";
 import { ProjectData } from "../shared/types";
 import NavBar from "../components/NavBar";
 
-const logToTerminal = async (message: string) => {
- try {
-   await fetch('/api/log', {
-     method: 'POST',
-     headers: {
-       'Content-Type': 'application/json',
-     },
-     body: JSON.stringify({ message }),
-   });
- } catch (error) {
-   console.error('Failed to log to terminal:', error);
- }
-};
+
 
 
 const fetchCurrentUser = async (email: string) => {
@@ -81,7 +69,6 @@ export default function ReviewPage() {
 
 
    console.log("Using GitHub access token:", session.accessToken);
-   await logToTerminal(`Terminal log - Using GitHub access token: ${session.accessToken}`);
 
 
    setIsSubmitting(true);
@@ -93,14 +80,14 @@ export default function ReviewPage() {
        if (!session.user?.email) throw new Error("No email in session");
        const currentUser = await fetchCurrentUser(session.user.email);
        userId = currentUser.id;
-       await logToTerminal(`Using database user ID: ${userId}`);
+    
      } catch (dbError) {
        console.warn("Failed to fetch database user ID, falling back to session ID:", dbError);
        if (!session.user?.id) {
          throw new Error("Neither database user ID nor session ID available");
        }
        userId = Number(session.user.id);
-       await logToTerminal(`Falling back to session ID: ${userId}`);
+ 
      }
 
 
@@ -122,22 +109,25 @@ export default function ReviewPage() {
 
 
      if (projectData.thumbnail) {
-       try {
-         const parts = projectData.thumbnail.split(",");
-         const byteString = atob(parts[1]);
-         const mimeString = parts[0].match(/:(.*?);/)![1];
-         const ab = new ArrayBuffer(byteString.length);
-         const ia = new Uint8Array(ab);
-         for (let i = 0; i < byteString.length; i++) {
-           ia[i] = byteString.charCodeAt(i);
-         }
-         const blob = new Blob([ab], { type: mimeString });
-         formData.append("thumbnail", blob, "thumbnail.png");
-       } catch (err) {
-         console.warn("⚠️ Failed to parse thumbnail, skipping it.");
-       }
+      if (projectData.thumbnail.startsWith("data:image/")) {
+        try {
+          const parts = projectData.thumbnail.split(",");
+          const byteString = atob(parts[1]);
+          const mimeString = parts[0].match(/:(.*?);/)![1];
+          const ab = new ArrayBuffer(byteString.length);
+          const ia = new Uint8Array(ab);
+          for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+          }
+          const blob = new Blob([ab], { type: mimeString });
+          formData.append("thumbnail", blob, "thumbnail.png");
+        } catch (err) {
+          console.warn("⚠️ Failed to parse base64 thumbnail, skipping it.");
+        }
+       } else if ((projectData.thumbnail as string).startsWith("http")) {
+        formData.append("thumbnail_url", projectData.thumbnail);
+      }
      }
-
 
      const response = await fetch("http://52.15.58.198:3000/projects", {
        method: "POST",
@@ -193,7 +183,7 @@ export default function ReviewPage() {
      if (!linkUserProjectRes.ok) throw new Error("Failed to link project to user.");
 
 
-     await logToTerminal(`✅ Project (ID: ${specificProjectId}) linked to user (ID: ${userId}) with role ID ${roleId}`);
+     
 
 
      const [topicRes, skillRes] = await Promise.all([
@@ -208,7 +198,7 @@ export default function ReviewPage() {
        if (matchedTopic) {
          await fetch(`http://52.15.58.198:3000/projects/${specificProjectId}/topics/${matchedTopic.id}`, { method: "POST" });
          await fetch(`http://52.15.58.198:3000/users/${userId}/topics/${matchedTopic.id}`, { method: "POST" });
-         await logToTerminal(`🔗 Linked topic "${interest}" (ID: ${matchedTopic.id}) to project and user`);
+        
        }
      }
 
@@ -218,7 +208,7 @@ export default function ReviewPage() {
        if (matchedSkill) {
          await fetch(`http://52.15.58.198:3000/projects/${specificProjectId}/skills/${matchedSkill.id}`, { method: "POST" });
          await fetch(`http://52.15.58.198:3000/users/${userId}/skills/${matchedSkill.id}`, { method: "POST" });
-         await logToTerminal(`🔗 Linked skill "${tech}" (ID: ${matchedSkill.id}) to project and user`);
+         
        }
      }
 

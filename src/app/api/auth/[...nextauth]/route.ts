@@ -45,19 +45,26 @@ const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, account, profile }) {
-      if (account?.provider === "github" && profile) {
-        const githubProfile = profile as { id: number; login: string };
-        token.id = githubProfile.id.toString();
-        token.login = githubProfile.login;
+    async jwt({ token, account }) {
+      if (account?.access_token) {
+        token.accessToken = account.access_token;
+      }
+      if (account?.provider === "github") {
+        token.id = account.providerAccountId;
       }
       return token;
-    },    
+    },
+    
     async session({ session, token }) {
+      // Force logout if session has expired
+      if (Date.now() / 1000 > (token.exp as number)) {
+        throw new Error("Session expired");
+      }
+      
+      session.accessToken = token.accessToken as string;
       session.user.id = token.id as string;
-      session.user.login = token.login as string;
       return session;
-    },  
+    },
 
     async signIn({ user }) {
       console.log("✅ User Attempting Sign In:", user);

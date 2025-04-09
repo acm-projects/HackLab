@@ -13,7 +13,7 @@ export default function CreateProject() {
         {/* AI PROJECT CARD */}
         <div className="h-[500px] w-[400px] bg-[#385773] text-[#fff] rounded-[20px] font-nunito flex flex-col items-center px-[20px] py-[30px]">
           <h3 className="text-[20px] mb-[10px] text-center mt-[35px]">
-            LET JUNO CREATE IT FOR YOU
+            LET JUNO DO IT FOR YOU
           </h3>
           <p className="text-center text-sm mb-[20px]">
             Let our smart assistant suggest a fully built project idea for you based on your interests and skills.
@@ -29,7 +29,7 @@ export default function CreateProject() {
           <button
             className="w-[250px] h-[50px] bg-[#ffffff] text-[#000] hover:bg-gray-900 border-none
               focus:ring-4 focus:outline-none focus:ring-blue-300 font-nunito text-[15px]
-              flex text-center justify-center items-center gap-2 rounded-[10px]"
+              flex text-center justify-center items-center gap-2 rounded-[10px] cursor-pointer"
             onClick={() => router.push("/AIProject")}
           >
             Try Juno
@@ -55,7 +55,7 @@ export default function CreateProject() {
           <button
             className="w-[250px] h-[50px] bg-[#ffffff] text-[#000] hover:bg-gray-900 border-none
               focus:ring-4 focus:outline-none focus:ring-blue-300 font-nunito text-[15px]
-              flex text-center justify-center items-center gap-2 rounded-[10px]"
+              flex text-center justify-center items-center gap-2 rounded-[10px] cursor-pointer"
             onClick={() => router.push("/ManualProject")}
           >
             Start Manual Project

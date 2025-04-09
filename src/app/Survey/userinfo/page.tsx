@@ -27,7 +27,7 @@ const UserInfo = () => {
   const isFormValid = location && status && school && isValidLinkedin;
 
   return (
-    <SurveyLayout step={1} totalSteps={5}>
+    <SurveyLayout step={5} totalSteps={5}>
         <div 
           style={{
             flex: 1,

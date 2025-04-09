@@ -219,6 +219,7 @@ const FindProjects = () => {
         onClearFilters={clearFilters}
         onApplyFilters={setFilters}
         onSearchChange={(query: string) => setSearchQuery(query)}
+        showSearch={true}
       />
 
       <div className="h-screen flex flex-col items-center bg-blue-900 text-white w-[90%] scrollbar-hide">

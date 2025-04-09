@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-//changes made april 7
+
 interface FilterBoxProps {
   onClose: () => void;
   onApply: (filters: any) => void;
@@ -45,7 +45,7 @@ export default function FilterBox({ onClose, onApply }: FilterBoxProps) {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (boxRef.current && !boxRef.current.contains(event.target as Node)) {
-        onClose(); // Close the box if click is outside
+        onClose();
       }
     };
 
@@ -53,7 +53,7 @@ export default function FilterBox({ onClose, onApply }: FilterBoxProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  const handleCheckboxChange = (
+  const toggleSelection = (
     value: string,
     selected: string[],
     setSelected: React.Dispatch<React.SetStateAction<string[]>>
@@ -76,94 +76,241 @@ export default function FilterBox({ onClose, onApply }: FilterBoxProps) {
   return (
     <div 
       ref={boxRef}
-      className="absolute top-[50px] right-[-222px] w-[280px] max-h-[300px] z-50 px-[10px] py-[10px] rounded-[8px] shadow-xl border px-4 py-5 overflow-y-auto ml-[50px] "
-      style={{ backgroundColor: "#ffffff", color: "#000000", borderColor: "#d1d5db", boxShadow: "0px 0px 5px 3px rgba(0,0,0,0.6)"}}
+      style={{
+        position: 'absolute',
+        top: '50px',
+        right: '-255px',
+        width: '300px',
+        maxHeight: '400px',
+        zIndex: 50,
+        borderRadius: '8px',
+        boxShadow: '0px 0px 5px 3px rgba(0,0,0,0.1)',
+        backgroundColor: '#ffffff',
+        color: '#000000',
+        border: '1px solid #d1d5db',
+        overflowY: 'auto',
+        marginLeft: '50px',
+        padding: '16px'
+      }}
     >
       {/* Search Bar */}
       <input
         type="text"
-        placeholder="Search tags"
+        placeholder="Search tags..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-[90%] mb-[5px] px-[5px] py-[5px] text-[13px] border border-gray-300 rounded-[6px] outline-none focus:ring-1 focus:ring-[#385773]"
-        style={{ color: "#1f2937" }}
+        style={{
+          width: '90%',
+          marginBottom: '16px',
+          padding: '8px 12px',
+          fontSize: '14px',
+          border: '1px solid #d1d5db',
+          borderRadius: '6px',
+          outline: 'none',
+          color: '#1f2937'
+        }}
       />
 
-      {/* Topics */}
-      <div className="mb-4">
-        <label className="text-[14px] font-bold mb-2 block text-[#000000] pb-[6px] pt-[10px]">
+      {/* Topics - Single Column */}
+      <div style={{ marginBottom: '16px' }}>
+        <h3 style={{
+          fontSize: '14px',
+          fontWeight: 700,
+          marginBottom: '12px',
+          color: '#000000'
+        }}>
           Topics
-        </label>
-        <div className="grid grid-cols-2 gap-y-[6px] pl-1 gap-x-[20px]">
+        </h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {topics
             .filter((topic) => topic.toLowerCase().includes(searchQuery.toLowerCase()))
             .map((topic, i) => (
-              <label key={i} className="flex items-center text-[13px] gap-2 text-[#1f2937]">
-                <input
-                  type="checkbox"
-                  checked={selectedTopics.includes(topic)}
-                  onChange={() =>
-                    handleCheckboxChange(topic, selectedTopics, setSelectedTopics)
-                  }
-                />
-                {topic}
-              </label>
+              <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
+                <button
+                  onClick={() => toggleSelection(topic, selectedTopics, setSelectedTopics)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    border: '1px solid',
+                    marginRight: '8px',
+                    transition: 'all 0.2s',
+                    backgroundColor: '#ffffff',
+                    borderColor: selectedTopics.includes(topic) ? '#3b82f6' : '#d1d5db',
+                    outline: 'none',
+                    position: 'relative'
+                  }}
+                >
+                  {selectedTopics.includes(topic) && (
+                    <div style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '50%',
+                      backgroundColor: '#3b82f6',
+                      position: 'absolute'
+                    }}></div>
+                  )}
+                </button>
+                <label 
+                  onClick={() => toggleSelection(topic, selectedTopics, setSelectedTopics)}
+                  style={{
+                    fontSize: '14px',
+                    color: '#1f2937',
+                    cursor: 'pointer',
+                    flex: 1
+                  }}
+                >
+                  {topic}
+                </label>
+              </div>
             ))}
         </div>
       </div>
 
-      <hr className="border-t border-[#e5e7eb] my-[10px]" />
+      <hr style={{ borderTop: '1px solid #e5e7eb', margin: '16px 0' }} />
 
-      {/* Skills */}
-      <div className="mb-4">
-        <label className="text-[14px] font-bold mb-2 block text-[#000000] pb-[6px]">
+      {/* Skills - Two Columns */}
+      <div style={{ marginBottom: '16px' }}>
+        <h3 style={{
+          fontSize: '14px',
+          fontWeight: 700,
+          marginBottom: '12px',
+          color: '#000000'
+        }}>
           Skills
-        </label>
-        <div className="grid grid-cols-2 gap-y-[6px] pl-1 gap-x-[20px]">
+        </h3>
+        <div style={{ 
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '8px 16px'
+        }}>
           {skills
             .filter((skill) => skill.toLowerCase().includes(searchQuery.toLowerCase()))
             .map((skill, i) => (
-              <label key={i} className="flex items-center text-[13px] gap-2 text-[#1f2937]">
-                <input
-                  type="checkbox"
-                  checked={selectedSkills.includes(skill)}
-                  onChange={() =>
-                    handleCheckboxChange(skill, selectedSkills, setSelectedSkills)
-                  }
-                />
-                {skill}
-              </label>
+              <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
+                <button
+                  onClick={() => toggleSelection(skill, selectedSkills, setSelectedSkills)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    border: '1px solid',
+                    marginRight: '8px',
+                    transition: 'all 0.2s',
+                    backgroundColor: '#ffffff',
+                    borderColor: selectedSkills.includes(skill) ? '#3b82f6' : '#d1d5db',
+                    outline: 'none',
+                    position: 'relative'
+                  }}
+                >
+                  {selectedSkills.includes(skill) && (
+                    <div style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '50%',
+                      backgroundColor: '#3b82f6',
+                      position: 'absolute'
+                    }}></div>
+                  )}
+                </button>
+                <label 
+                  onClick={() => toggleSelection(skill, selectedSkills, setSelectedSkills)}
+                  style={{
+                    fontSize: '14px',
+                    color: '#1f2937',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  {skill}
+                </label>
+              </div>
             ))}
         </div>
       </div>
 
-      <hr className="border-t border-[#e5e7eb] my-[10px]" />
+      <hr style={{ borderTop: '1px solid #e5e7eb', margin: '16px 0' }} />
 
-      {/* Roles */}
-      <div className="mb-4">
-        <label className="text-[14px] font-bold mb-2 block text-[#000000] pb-[6px]">
+      {/* Roles - Two Columns */}
+      <div style={{ marginBottom: '16px' }}>
+        <h3 style={{
+          fontSize: '14px',
+          fontWeight: 700,
+          marginBottom: '12px',
+          color: '#000000'
+        }}>
           Roles
-        </label>
-        <div className="grid grid-cols-2 gap-y-[6px] pl-1 gap-x-[20px]">
+        </h3>
+        <div style={{ 
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '8px 16px'
+        }}>
           {roles
             .filter((role) => role.toLowerCase().includes(searchQuery.toLowerCase()))
             .map((role, i) => (
-              <label key={i} className="flex items-center text-[13px] gap-2 text-[#1f2937]">
-                <input
-                  type="checkbox"
-                  checked={selectedRoles.includes(role)}
-                  onChange={() =>
-                    handleCheckboxChange(role, selectedRoles, setSelectedRoles)
-                  }
-                />
-                {role}
-              </label>
+              <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
+                <button
+                  onClick={() => toggleSelection(role, selectedRoles, setSelectedRoles)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    border: '1px solid',
+                    marginRight: '8px',
+                    transition: 'all 0.2s',
+                    backgroundColor: '#ffffff',
+                    borderColor: selectedRoles.includes(role) ? '#3b82f6' : '#d1d5db',
+                    outline: 'none',
+                    position: 'relative'
+                  }}
+                >
+                  {selectedRoles.includes(role) && (
+                    <div style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '50%',
+                      backgroundColor: '#3b82f6',
+                      position: 'absolute'
+                    }}></div>
+                  )}
+                </button>
+                <label 
+                  onClick={() => toggleSelection(role, selectedRoles, setSelectedRoles)}
+                  style={{
+                    fontSize: '14px',
+                    color: '#1f2937',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  {role}
+                </label>
+              </div>
             ))}
         </div>
       </div>
 
-      {/* Buttons */}
-            <div className="flex justify-end gap-[5px] pt-[2px]">
+      {/* Action Buttons */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: '12px',
+        paddingTop: '16px'
+      }}>
         <button
           onClick={() => {
             setSelectedTopics([]);
@@ -171,15 +318,37 @@ export default function FilterBox({ onClose, onApply }: FilterBoxProps) {
             setSelectedRoles([]);
             setSearchQuery("");
           }}
-          className="text-[12px] px-[5]x py-[5px] rounded-[5px] border-transparent border-none outline-none"
-          style={{ backgroundColor: "#e5e7eb", color: "#000000"}}
+          style={{
+            padding: '8px 16px',
+            fontSize: '14px',
+            fontWeight: 500,
+            color: '#374151',
+            backgroundColor: '#f3f4f6',
+            borderRadius: '6px',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s'
+          }}
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e5e7eb'}
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
         >
           Reset
         </button>
         <button
           onClick={handleApply}
-          className="text-[12px] px-[5px] py-[5px] rounded-[5px] border-none outline-none"
-          style={{ backgroundColor: "#385773", color: "#ffffff" }}
+          style={{
+            padding: '8px 16px',
+            fontSize: '14px',
+            fontWeight: 500,
+            color: '#ffffff',
+            backgroundColor: '#385773',
+            borderRadius: '6px',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s'
+          }}
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#2c4560'}
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#385773'}
         >
           Apply
         </button>

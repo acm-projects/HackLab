@@ -87,7 +87,7 @@ export default function CreateProjectWithAI() {
               className="w-[230px] h-[200px] object-contain mb-[10px] ml-[10px] rounded-[00px]"
             />
             <div>
-              <h2 style={{ fontSize: "28px", fontWeight: "bold", color: "#385773" }}>Create with AI</h2>
+              <h2 style={{ fontSize: "28px", fontWeight: "bold", color: "#385773" }}>Create with Juno</h2>
               <p style={{ color: "#385773", marginTop: "2px" }}>Transform your ideas into reality with AI assistance</p>
             </div>
           </div>
