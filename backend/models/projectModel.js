@@ -133,6 +133,16 @@ const markProjectComplete = async (projectId) => {
     return result.rows[0];
 };
 
+//route to get linkedin_url of a user by name
+
+const getLinkedinByName = async (name) => {
+    const result = await pool.query(
+        `SELECT linkedin_url FROM users WHERE name = $1`,
+        [name]
+    );
+    return result.rows[0]?.linkedin_url;
+}
+
 module.exports = {
     createProject,
     getAllProjects,
@@ -150,5 +160,6 @@ module.exports = {
     deleteSkillFromProject,
     getTopicsFromProject,
     deleteTopicFromProject,
-    markProjectComplete
+    markProjectComplete,
+    getLinkedinByName
 };
