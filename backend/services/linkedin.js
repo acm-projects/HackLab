@@ -5,31 +5,15 @@ const LINKEDIN_EMAIL = process.env.LINKEDIN_EMAIL;
 const LINKEDIN_PASSWORD = process.env.LINKEDIN_PASSWORD;
 
 async function scrapeLinkedIn(linkedinUrl) {
-  return new Promise((resolve, reject) => {
-    const scriptPath = path.join(__dirname, '../python/linkedin_scraper_runner.py');
-
-    const process = spawn('python3', [scriptPath, linkedinUrl, LINKEDIN_EMAIL, LINKEDIN_PASSWORD]);
-
-    let data = '';
-    process.stdout.on('data', chunk => {
-      data += chunk.toString();
-    });
-
-    process.stderr.on('data', err => {
-      console.error(`stderr: ${err}`);
-    });
-
-    process.on('close', code => {
-      try {
-        const parsed = JSON.parse(data);
-        if (parsed.error) {
-          return reject(parsed.error);
-        }
-        resolve(parsed);
-      } catch (err) {
-        reject("Failed to parse scraped LinkedIn data");
-      }
-    });
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch(`http://localhost:5000/scrape?linkedin=${encodeURIComponent(linkedinUrl)}`);
+      const data = await response.json();
+      if (data.error) return reject(data.error);
+      resolve(data);
+    } catch (err) {
+      reject("Failed to get LinkedIn data from local scraper: " + err.message);
+    }
   });
 }
 

@@ -148,6 +148,16 @@ module.exports = (io) => {
             }
         });
 
+        // User is typing
+        socket.on('typing', ({ roomId, username }) => {
+            socket.to(roomId).emit('userTyping', { username });
+        });
+
+        // User stopped typing
+        socket.on('stopTyping', ({ roomId, username }) => {
+            socket.to(roomId).emit('userStopTyping', { username });
+        });
+
         // Handle user disconnect
         socket.on('disconnect', () => {
             console.log('A user disconnected');
