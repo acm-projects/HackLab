@@ -455,44 +455,7 @@ export default function MessagesPage() {
           </div>
 
 
-          {selectedProject && selectedProject.team_lead_id === userId && (
-            <div className="relative">
-              <button
-                onClick={() => setKickDropdownOpen(!kickDropdownOpen)}
-                className="text-[#385773] text-[13px] px-[12px] py-[6px] border border-[#385773] rounded-[6px] bg-[#f0f4f8]"
-              >
-                Manage Members
-              </button>
-              {kickDropdownOpen && (
-                <div className="absolute left-[-90px] top-[50px] w-[220px] bg-white border border-[#ccc] rounded-[8px] shadow-lg z-10">
-                  {projectUsersMap[selectedProject.id]?.map((u) => (
-                    <div
-                      key={u.id}
-                      className="flex justify-between items-center px-[10px] py-[6px] hover:bg-[#f3f4f6]"
-                    >
-                      <span className="text-[#374151] text-[13px]">{u.name}</span>
-                      <button
-                        onClick={() => handleKick(u.id)}
-                        className="text-[12px] text-[#ef4444] hover:text-[#dc2626] border-none bg-transparent outline-none"
-                      >
-                        Kick Out
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-
-          {selectedProject && selectedProject.team_lead_id !== userId && (
-            <button
-              onClick={handleLeaveGroup}
-              className="text-[#ef4444] text-[13px] px-[12px] py-[6px] border border-[#ef4444] rounded-[6px] bg-[#fff] hover:bg-[#fef2f2]"
-            >
-              Leave Group
-            </button>
-          )}
+          
         </div>
 
 

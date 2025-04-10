@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import SurveyLayout from "../../components/SurveyLayout";
+import { useSurvey } from "../../contexts/SurveyContext";
 
 interface Skill {
   id: number;
@@ -19,6 +20,7 @@ const LanguageSelection = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { selectedSkills, setSelectedSkills } = useSurvey();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,6 +51,10 @@ const LanguageSelection = () => {
   }, [session]);
 
   useEffect(() => {
+    setSelected(selectedSkills);
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -75,7 +81,7 @@ const LanguageSelection = () => {
 
     const skill = allLanguages.find((s) => s.skill === lang);
     if (!skill || selected.some((s) => s.id === skill.id)) return;
-
+    setSelectedSkills([...selectedSkills, skill]); // inside handleLangSelect
     setSelected((prev) => [...prev, skill]);
     setSearchTerm("");
     setDropdownOpen(false);
@@ -95,7 +101,9 @@ const LanguageSelection = () => {
   };
 
   const handleRemoveLang = (id: number) => {
-    setSelected((prev) => prev.filter((lang) => lang.id !== id));
+    const updated = selected.filter((lang) => lang.id !== id);
+    setSelected(updated);
+    setSelectedSkills(updated);
   };
 
   return (

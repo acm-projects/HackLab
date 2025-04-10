@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import SurveyLayout from "../../components/SurveyLayout";
+import { useSurvey } from "../../contexts/SurveyContext";
 
 const UserInfo = () => {
   const router = useRouter();

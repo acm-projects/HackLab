@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import SurveyLayout from "../../components/SurveyLayout";
+import { useSurvey } from "../../contexts/SurveyContext";
 
 interface Topic {
   id: number;
@@ -14,11 +15,16 @@ const InterestSelection = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const [allTopics, setAllTopics] = useState<Topic[]>([]);
-  const [selected, setSelected] = useState<string[]>([]);
+  // const [selected, setSelected] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { selectedTopics, setSelectedTopics } = useSurvey();
+
+  // useEffect(() => {
+  //   setSelected(selectedTopics);
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,17 +73,17 @@ const InterestSelection = () => {
   const filteredTopics = allTopics.filter(
     (t) =>
       t.topic.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      !selected.includes(t.topic)
+      !selectedTopics.includes(t.topic)
   );
 
   const handleSelect = async (topic: string) => {
     const match = allTopics.find((t) => t.topic === topic);
     if (!match || !userId) return;
 
-    if (!selected.includes(topic)) {
-      setSelected((prev) => [...prev, topic]);
+    if (!selectedTopics.includes(topic)) {
       setSearchTerm("");
       setDropdownOpen(false);
+      setSelectedTopics([...selectedTopics, topic]); 
 
       try {
         const res = await fetch(
@@ -102,7 +108,8 @@ const InterestSelection = () => {
   };
 
   const handleRemove = (topic: string) => {
-    setSelected((prev) => prev.filter((item) => item !== topic));
+
+    setSelectedTopics(selectedTopics.filter((t) => t !== topic));
   };
 
   return (
@@ -183,7 +190,7 @@ const InterestSelection = () => {
           overflowY: "auto",
         }}
       >
-        {selected.map((interest) => (
+        {selectedTopics.map((interest) => (
           <div
             key={interest}
             style={{

@@ -300,7 +300,7 @@ const handleDelete = async () => {
         {/* Tabs */}
         <button
           onClick={() => setView("dashboard")}
-          className={`z-10 w-[112px] h-[32px] translate-x-[-7px] rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
+          className={`z-10 w-[112px] h-[32px] translate-x-[-7px] hover:text-[#374151] cursor-pointer rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
             view === "dashboard" ? "text-[#fff]" : "text-[#374151]"
           }`}
         >
@@ -308,7 +308,7 @@ const handleDelete = async () => {
         </button>
         <button
           onClick={() => setView("timeline")}
-          className={`z-10 w-[112px] h-[32px]  rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
+          className={`z-10 w-[112px] h-[32px]  rounded-[6px] text-sm font-semibold hover:text-[#374151] cursor-pointer transition-colors duration-200 bg-transparent border-transparent outline-none ${
             view === "timeline" ? "text-[#fff]" : "text-[#374151]"
           }`}
         >
@@ -316,7 +316,7 @@ const handleDelete = async () => {
         </button>
         <button
           onClick={() => setView("manage")}
-          className={`z-10 w-[112px] h-[32px] translate-x-[5px] rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
+          className={`z-10 w-[112px] h-[32px] translate-x-[5px] rounded-[6px] hover:text-[#374151] cursor-pointer text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
             view === "manage" ? "text-[#fff]" : "text-[#374151]"
           }`}
         >
@@ -694,6 +694,7 @@ const handleDelete = async () => {
             </div>
           </div>
         )}
+        
 
 
        </div>

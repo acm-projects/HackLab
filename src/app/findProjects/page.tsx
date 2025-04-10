@@ -240,6 +240,7 @@ const FindProjects = () => {
        onClearFilters={clearFilters}
        onApplyFilters={setFilters}
        onSearchChange={(query: string) => setSearchQuery(query)}
+       showSearch={(true)}
      />
 
 

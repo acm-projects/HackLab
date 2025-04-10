@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import SurveyLayout from "../../components/SurveyLayout";
+import { useSurvey } from "../../contexts/SurveyContext";
 
 interface Role {
   id: number;
@@ -15,8 +16,14 @@ const RoleSelection = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const [allRoles, setAllRoles] = useState<Role[]>([]);
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
+  const { selectedRole, setSelectedRole } = useSurvey();
+
+  const selectRole = (role: string) => {
+    setSelectedRole(selectedRole === role ? null : role);
+  };
+  
+  
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -43,9 +50,7 @@ const RoleSelection = () => {
         if (session?.user?.email) {
           const res = await fetch("http://52.15.58.198:3000/users");
           const users = await res.json();
-          const user = users.find(
-            (u: any) => u.email === session.user?.email
-          );
+          const user = users.find((u: any) => u.email === session.user?.email);
           if (user?.id) setUserId(user.id);
         }
       } catch (err) {
@@ -56,10 +61,6 @@ const RoleSelection = () => {
     fetchRoles();
     fetchUserId();
   }, [session]);
-
-  const selectRole = (role: string) => {
-    setSelectedRole((prev) => (prev === role ? null : role));
-  };
 
   const handleNext = async () => {
     if (!selectedRole || !userId) {
@@ -112,7 +113,7 @@ const RoleSelection = () => {
         {allRoles.map((r) => (
           <div
             key={r.id}
-            onClick={() => selectRole(r.role)}
+            onClick={() => selectRole(r.role)} // ✅ fixed this line
             className="w-[150px] h-[200px] shadow-md cursor-pointer transition-all duration-300 rounded-xl"
             style={{
               backgroundColor: selectedRole === r.role ? "#385773" : "#fff",
@@ -138,7 +139,6 @@ const RoleSelection = () => {
         ))}
       </div>
 
-      {/* Navigation Buttons */}
       <div
         style={{
           display: "flex",

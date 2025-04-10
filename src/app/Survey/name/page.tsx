@@ -3,11 +3,12 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import SurveyLayout from "../../components/SurveyLayout";
+import { useSurvey } from "../../contexts/SurveyContext";
 
 const NameForm = () => {
   const router = useRouter();
-  const [name, setName] = useState("");
-
+  // const [name, setName] = useState("");
+  const { name, setName } = useSurvey();
   return (
     <SurveyLayout step={1} totalSteps={5}>
       <div className="flex-1 flex flex-col justify-center items-center gap-[10px]">
