@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user'); // what we use for db interactions
+const { getGithubById, getLinkedinByName } = require('../models/projectModel'); // what we use to get github link for project
+const { generateResume } = require('../services/resumeGen');
+const { scrapeLinkedIn } = require('../services/linkedin');
 
 /**************************
 REMINDER:   get = access
@@ -303,6 +306,77 @@ router.get('/:id/resume', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
         res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+/*
+    I believe it would be harder for the frontend if we ask them for the linkedin
+    because this is not one of the things that is stored in the session like name
+    or github name. its better if we just find it ouserlves because it is already stored
+    in the backend. same with github link, no reason to ask them for it if we can get it
+    using the project id.
+    Changed to a post request because get request cannot have a body
+*/
+router.post('/:id/generateResume', async (req, res) => {
+    try {
+        // linkedin is linkedin url, github is repo url, and username is username
+        const { github_username, db_name } = req.body;
+
+        /// Get an array of project IDs associated with the user
+        const projectIDs = await User.getUserProjectIDs(req.params.id);
+
+        console.log('this is the projectIDs: ' + projectIDs);
+
+        if (!projectIDs || projectIDs.length === 0) {
+            return res.status(404).send('No projects found for this user');
+        }
+
+        //change to get github link for each project
+        const githubRepos = [];
+        for (const id of projectIDs) {
+            const githubLink = await getGithubById(id);
+            if (githubLink) {
+                githubRepos.push(githubLink);
+            }
+        }
+
+        if (githubRepos.length === 0) {
+            return res.status(404).send('No GitHub links found for this user');
+        }
+
+        const linkedin = await getLinkedinByName(db_name);
+        if (!linkedin) {
+            return res.status(404).send('LinkedIn link not found for this user');
+        }
+
+        console.log('this is the github_username: ' + github_username);
+        console.log('this is the db_name: ' + db_name);
+        console.log('this is the github: ' + githubRepos);
+        console.log('this is the linkedin: ' + linkedin);
+        // Input validation
+        if (!githubRepos || !github_username) {
+            return res.status(400).send('GitHub link and username are required');
+        }
+
+        // Generate resume
+        let resume = await generateResume(githubRepos, {
+            github_username,
+            db_name,
+            linkedin,
+            ...(linkedin ? await scrapeLinkedIn(linkedin) : {})
+        });
+
+        if (resume.startsWith('```latex')) {
+            resume = resume.replace(/^```latex\s*/, '').replace(/\s*```$/, '');
+        }
+
+        // Save to user table
+        await User.saveResumeData(db_name, resume, linkedin);
+
+        res.type('text/plain').send(resume);
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');

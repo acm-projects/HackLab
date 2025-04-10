@@ -3,6 +3,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs/promises');
 const Chat = require('../models/chat'); // Import the Chat model
 const User = require('../models/user'); // what we use for db interactions
+let allCommitHistories = [];
 
 dotenv.config();
 
@@ -32,25 +33,39 @@ function extractOwnerAndRepo(github) {
   }
 }
 
-async function generateResume(github, userDetails) {
-  const { owner, repo } = extractOwnerAndRepo(github);
+async function generateResume(githubRepos, userDetails) {
   const octokit = await getOctokitInstance();
 
-  // Fetch commit history
-  let response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
-    owner: owner,
-    repo: repo
-  });
 
-  // THIS ONLY WORKS IF userDetails.github_username is the actual username which we currently don't store
-  let commitHistory = response.data
-    .filter(commit => commit.commit.author.name.toLowerCase() === userDetails.github_username.toLowerCase())
-    .map(commit => ({
-      author: commit.commit.author.name,
-      message: commit.commit.message
-    }));
+  for (const github of githubRepos) {
+    try {
+      const { owner, repo } = extractOwnerAndRepo(github);
 
-  const commitHistoryText = JSON.stringify(commitHistory);
+      // Fetch commit history for the current repository
+      let response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+        owner: owner,
+        repo: repo
+      });
+
+      // Filter commits by the user's GitHub username
+      let commitHistory = response.data
+        .filter(commit => commit.commit.author.name.toLowerCase() === userDetails.github_username.toLowerCase())
+        .map(commit => ({
+          repo: repo, // Include the repository name for context
+          author: commit.commit.author.name,
+          message: commit.commit.message
+        }));
+
+      allCommitHistories = allCommitHistories.concat(commitHistory);
+    } catch (error) {
+      console.error(`Failed to fetch commit history for repository ${github}:`, error.message);
+      // Skip this repository and continue with the next one
+    }
+  }
+
+  console.log("All Commit Histories:", allCommitHistories);
+
+  const commitHistoryText = JSON.stringify(allCommitHistories);
     console.log(commitHistoryText);
   // Use LinkedIn data if available, otherwise use realistic placeholders
   const name = userDetails.name || userDetails.db_name;
@@ -82,7 +97,6 @@ async function generateResume(github, userDetails) {
     - **Experiences:** ${experiences}
 
     ## Project Contribution
-    - **Project Title:** ${repo}
     - **Commit History:** ${commitHistoryText}
   `;
 

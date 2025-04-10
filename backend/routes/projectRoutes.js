@@ -171,62 +171,6 @@ router.post('/generateProject', async (req, res) => {
     }
 });
 
-/*
-    I believe it would be harder for the frontend if we ask them for the linkedin
-    because this is not one of the things that is stored in the session like name
-    or github name. its better if we just find it ouserlves because it is already stored
-    in the backend. same with github link, no reason to ask them for it if we can get it
-    using the project id.
-    Changed to a post request because get request cannot have a body
-*/
-router.post('/:id/generateResume', async (req, res) => {
-    try {
-        // linkedin is linkedin url, github is repo url, and username is username
-        const { github_username, db_name } = req.body;
-
-        const github = await getGithubById(req.params.id);
-        if (!github) {
-            return res.status(404).send('GitHub link not found for this project');
-        }
-        const linkedin = await getLinkedinByName(db_name);
-        if (!linkedin) {
-            return res.status(404).send('LinkedIn link not found for this user');
-        }
-
-        console.log('this is the github_username: ' + github_username);
-        console.log('this is the db_name: ' + db_name);
-        console.log('this is the github: ' + github);
-        console.log('this is the linkedin: ' + linkedin);
-        // Input validation
-        if (!github || !github_username) {
-            return res.status(400).send('GitHub link and username are required');
-        }
-
-        // Generate resume
-        let resume = await generateResume(github, {
-            github,
-            github_username,
-            db_name,
-            linkedin,
-            ...(linkedin ? await scrapeLinkedIn(linkedin) : {})
-        });
-
-        if (resume.startsWith('```latex')) {
-            resume = resume.replace(/^```latex\s*/, '').replace(/\s*```$/, '');
-        }
-
-        // Save to user table
-        await User.saveResumeData(db_name, resume, linkedin);
-
-        res.type('text/plain').send(resume);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
-    }
-});
-
-
-
 // Add skill to project
 router.post('/:projectId/skills/:skillId', async (req, res) => {
     console.log('Received request to add skill to project');
