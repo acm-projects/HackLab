@@ -21,6 +21,7 @@ const skillRoutes = require('./routes/skillRoutes');
 const topicRoutes = require('./routes/topicRoutes');
 const roleRoutes = require('./routes/roleRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 // Use the routes
 app.use('/users', userRoutes);
@@ -29,6 +30,7 @@ app.use('/skills', skillRoutes);
 app.use('/topics', topicRoutes);
 app.use('/roles', roleRoutes);
 chatRoutes(io); // Pass the io instance to chatRoutes
+notificationRoutes(io);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

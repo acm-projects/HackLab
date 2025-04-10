@@ -196,6 +196,7 @@ router.post('/:id/generateResume', async (req, res) => {
         console.log('this is the github_username: ' + github_username);
         console.log('this is the db_name: ' + db_name);
         console.log('this is the github: ' + github);
+        console.log('this is the linkedin: ' + linkedin);
         // Input validation
         if (!github || !github_username) {
             return res.status(400).send('GitHub link and username are required');
