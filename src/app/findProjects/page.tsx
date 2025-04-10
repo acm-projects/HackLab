@@ -1,116 +1,133 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import NavBar from "../components/NavBar";
 import OngoingProjectCard from "../components/OngoingProjects";
 import ExpandedProjectModal from "../components/ExpandedProjectCard";
 import ProjectTimeline from "../components/timelineComponent";
 
-
 interface Project {
- id: number;
- title: string;
- groupLeader: { name: string; image: string };
- likes: number;
- image: string;
- description: string;
- members: string[];
- totalMembers: number;
- moreNeeded: number;
- topics: string[];
- skills: string[];
- mvp: string[];
- stretch: string[];
- frontendTasks: string[];
- backendTasks: string[];
+  id: number;
+  title: string;
+  groupLeader: { name: string; image: string };
+  likes: number;
+  image: string;
+  description: string;
+  members: string[];
+  totalMembers: number;
+  moreNeeded: number;
+  topics: string[];
+  skills: string[];
+  mvp: string[];
+  stretch: string[];
+  frontendTasks: string[];
+  backendTasks: string[];
 }
 
-
 const FindProjects = () => {
- const [expandedProjectIndex, setExpandedProjectIndex] = useState<number | null>(null);
- const [projects, setProjects] = useState<Project[]>([]);
- const [isLiked, setIsLiked] = useState<boolean[]>([]);
- const [isBookmarked, setIsBookmarked] = useState<boolean[]>([]);
- const [joinRequested, setJoinRequested] = useState<boolean[]>([]);
- const [filters, setFilters] = useState<{ topics: string[]; skills: string[] }>({ topics: [], skills: [] });
- const [searchQuery, setSearchQuery] = useState("");
- const [searchInput, setSearchInput] = useState("");
+  const { data: session } = useSession();
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [expandedProjectIndex, setExpandedProjectIndex] = useState<number | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLiked, setIsLiked] = useState<boolean[]>([]);
+  const [isBookmarked, setIsBookmarked] = useState<boolean[]>([]);
+  const [joinRequested, setJoinRequested] = useState<boolean[]>([]);
+  const [filters, setFilters] = useState<{ topics: string[]; skills: string[] }>({ topics: [], skills: [] });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchInput, setSearchInput] = useState("");
 
+  useEffect(() => {
+    const fetchUserId = async () => {
+      if (!session?.user?.email) return;
+      try {
+        const res = await fetch("http://52.15.58.198:3000/users");
+        const allUsers = await res.json();
+        const currentUser = allUsers.find((u: any) => u.email === session.user.email);
+        if (currentUser) {
+          setCurrentUserId(currentUser.id);
+        }
+      } catch (err) {
+        console.error("❌ Failed to fetch user ID:", err);
+      }
+    };
 
- const currentUserId = 1;
+    fetchUserId();
+  }, [session]);
 
+  useEffect(() => {
+    if (!currentUserId) return;
 
-     useEffect(() => {
-       const fetchProjects = async () => {
-         try {
-           const res = await fetch("http://52.15.58.198:3000/projects");
-           const data = await res.json();
-    
-           const [likedRes, bookmarkedRes, joinRes] = await Promise.all([
-             fetch(`http://52.15.58.198:3000/users/${currentUserId}/liked-projects`),
-             fetch(`http://52.15.58.198:3000/users/${currentUserId}/bookmarked-projects`),
-             fetch(`http://52.15.58.198:3000/users/${currentUserId}/join-requests`)
-           ]);
-    
-           const likedProjectIds = likedRes.ok ? (await likedRes.json()).map((item: any) => Number(item.project_id)) : [];
-           const bookmarkedProjectIds = bookmarkedRes.ok ? (await bookmarkedRes.json()).map((item: any) => Number(item.project_id)) : [];
-           const joinRequestedProjectIds = joinRes.ok ? (await joinRes.json()).map((item: any) => Number(item.project_id)) : [];
-    
-           const enrichedProjects = await Promise.all(
-             data.map(async (p: any) => {
-               const projectId = p.id;
-               let membersData = [];
-               let skillsData = [];
-               let topicsData = [];
-               let teamLeadData = { name: "Unknown", image: "../../../images/default.jpg" };
-    
-               try {
-                 const [teamLeadRes, membersRes, skillsRes, topicsRes] = await Promise.all([
-                   fetch(`http://52.15.58.198:3000/users/${p.team_lead_id}`),
-                   fetch(`http://52.15.58.198:3000/projects/${projectId}/users`),
-                   fetch(`http://52.15.58.198:3000/projects/${projectId}/skills`),
-                   fetch(`http://52.15.58.198:3000/projects/${projectId}/topics`)
-                 ]);
-    
-                 if (teamLeadRes.ok) teamLeadData = await teamLeadRes.json();
-                 if (membersRes.ok) membersData = await membersRes.json();
-                 if (skillsRes.ok) skillsData = (await skillsRes.json()).map((s: any) => s.skill);
-                 if (topicsRes.ok) topicsData = (await topicsRes.json()).map((t: any) => t.topic);
-               } catch (err) {
-                 console.error("Fetch error:", err);
-               }
-    
-               return {
-                 id: projectId,
-                 title: p.title,
-                 groupLeader: teamLeadData,
-                 likes: p.likes || 0,
-                 image: p.thumbnail?.startsWith("http") ? p.thumbnail : "../../../images/default.jpg",
-                 description: p.description || "No description provided.",
-                 topics: topicsData,
-                 skills: skillsData,
-                 members: membersData.map((user: any) => user.image || "../../../images/default.jpg"),
-                 totalMembers: membersData.length,
-                 moreNeeded: p.moreNeeded || 0,
-                 mvp: p.mvp || [],
-                 stretch: p.stretch || [],
-                 frontendTasks: [],
-                 backendTasks: [],
-               };
-             })
-           );
-    
-           setProjects(enrichedProjects);
-           setIsLiked(enrichedProjects.map((p) => likedProjectIds.includes(p.id)));
-           setIsBookmarked(enrichedProjects.map((p) => bookmarkedProjectIds.includes(p.id)));
-           setJoinRequested(enrichedProjects.map((p) => joinRequestedProjectIds.includes(p.id)));
-    
-         } catch (err) {
-           console.error("❌ Failed to load projects:", err);
-         }
-       };
-    
-       fetchProjects();
-     }, []);
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch("http://52.15.58.198:3000/projects");
+        const data = await res.json();
+
+        const [likedRes, bookmarkedRes, joinRes] = await Promise.all([
+          fetch(`http://52.15.58.198:3000/users/${currentUserId}/liked-projects`),
+          fetch(`http://52.15.58.198:3000/users/${currentUserId}/bookmarked-projects`),
+          fetch(`http://52.15.58.198:3000/users/${currentUserId}/join-requests`)
+        ]);
+
+        const likedProjectIds = likedRes.ok ? (await likedRes.json()).map((item: any) => Number(item.project_id)) : [];
+        const bookmarkedProjectIds = bookmarkedRes.ok ? (await bookmarkedRes.json()).map((item: any) => Number(item.project_id)) : [];
+        const joinRequestedProjectIds = joinRes.ok ? (await joinRes.json()).map((item: any) => Number(item.project_id)) : [];
+
+        const enrichedProjects = await Promise.all(
+          data.map(async (p: any) => {
+            const projectId = p.id;
+            let membersData = [];
+            let skillsData = [];
+            let topicsData = [];
+            let teamLeadData = { name: "Unknown", image: "../../../images/default.jpg" };
+
+            try {
+              const [teamLeadRes, membersRes, skillsRes, topicsRes] = await Promise.all([
+                fetch(`http://52.15.58.198:3000/users/${p.team_lead_id}`),
+                fetch(`http://52.15.58.198:3000/projects/${projectId}/users`),
+                fetch(`http://52.15.58.198:3000/projects/${projectId}/skills`),
+                fetch(`http://52.15.58.198:3000/projects/${projectId}/topics`)
+              ]);
+
+              if (teamLeadRes.ok) teamLeadData = await teamLeadRes.json();
+              if (membersRes.ok) membersData = await membersRes.json();
+              if (skillsRes.ok) skillsData = (await skillsRes.json()).map((s: any) => s.skill);
+              if (topicsRes.ok) topicsData = (await topicsRes.json()).map((t: any) => t.topic);
+            } catch (err) {
+              console.error("Fetch error:", err);
+            }
+
+            return {
+              id: projectId,
+              title: p.title,
+              groupLeader: teamLeadData,
+              likes: p.likes || 0,
+              image: p.thumbnail?.startsWith("http") ? p.thumbnail : "../../../images/default.jpg",
+              description: p.description || "No description provided.",
+              topics: topicsData,
+              skills: skillsData,
+              members: membersData.map((user: any) => user.image || "../../../images/default.jpg"),
+              totalMembers: membersData.length,
+              moreNeeded: p.moreNeeded || 0,
+              mvp: p.mvp || [],
+              stretch: p.stretch || [],
+              frontendTasks: [],
+              backendTasks: [],
+            };
+          })
+        );
+
+        setProjects(enrichedProjects);
+        setIsLiked(enrichedProjects.map((p) => likedProjectIds.includes(p.id)));
+        setIsBookmarked(enrichedProjects.map((p) => bookmarkedProjectIds.includes(p.id)));
+        setJoinRequested(enrichedProjects.map((p) => joinRequestedProjectIds.includes(p.id)));
+
+      } catch (err) {
+        console.error("❌ Failed to load projects:", err);
+      }
+    };
+
+    fetchProjects();
+  }, [currentUserId]);
   
   
    const filteredProjects = projects.filter((project) => {
