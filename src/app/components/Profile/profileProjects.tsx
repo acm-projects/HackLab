@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import OngoingProjectCard from "../OngoingProjects";
+import SavedLikedProjectCard from "./savedLikedProjects";
 import CompletedProjectCard from "./completedProjectCard";
 
 
@@ -20,46 +20,54 @@ interface Project {
  isLiked: boolean;
  isBookmarked: boolean;
  joinRequested: boolean;
+ github: string;
+ completionDate: string;
+ isCompleted: boolean;
+ userIsMember: boolean;
 }
-
 
 interface AllCreatedProjectsProps {
  completedProjects: Project[];
  ongoingProjects: Project[];
- createdProjects: Project[];
+ likedProjects: Project[];
+ bookmarkedProjects: Project[];
 }
+const isProjectInList = (projectId: string, list: Project[]) => {
+ return list.some((p) => p.id === projectId);
+};
 
 
-const renderProjectGrid = (projects: Project[], type: "completed" | "saved" | "ongoing" | "liked") => {
+const renderProjectGrid = (projects: Project[], type: "completed" | "ongoing" | "saved" | "liked", likedProjects: Project[], bookmarkedProjects: Project[]) => {
  if (!projects.length) {
    return <p className="text-sm text-muted-foreground">No projects available</p>;
  }
-
-
-  return (
+   
+ return (
    <div className="grid grid-cols-2 md:grid-cols-2 gap-[60px]">
      {projects.map((project) => {
-       console.log("Project:", project.members);
-
-
        return type === "completed" || type === "ongoing" ? (
         
          <CompletedProjectCard
            key={project.id}
            {...project}
+           isLiked={isProjectInList(project.id, likedProjects)}
+           isBookmarked={isProjectInList(project.id, bookmarkedProjects)}
            onLike={() => {}}
            onBookmark={() => {}}
+          
          />
        ) : (
-         <OngoingProjectCard
+         <SavedLikedProjectCard
            key={project.id}
            {...project}
-           showJoinButton={true}
+           showJoinButton={!project.isCompleted && !project.userIsMember}
+           joinRequested={project.joinRequested}
            onLike={() => {}}
            onBookmark={() => {}}
            onJoin={() => {}}
          />
-       );
+       )
+       ;
      })}
    </div>
  );
@@ -69,25 +77,26 @@ const renderProjectGrid = (projects: Project[], type: "completed" | "saved" | "o
 const AllCreatedProjects: React.FC<AllCreatedProjectsProps> = ({
  completedProjects,
  ongoingProjects,
- createdProjects,
+ likedProjects,
+ bookmarkedProjects,
 }) => {
  return (
-   <div className="container mx-auto py-8">
-     <div className="mb-[8px] rounded-lg border bg-card p-6 shadow-sm">
-       <h2 className="pl-[24px] mb-6 text-2xl font-bold">Projects</h2>
+   <div className="container mx-auto py-[20px]">
+     <div className="mb-[50px] rounded-lg border bg-card py-[20px] shadow-sm">
+       <h2 className="pl-[24px] mb-[10px] text-2xl font-bold">Projects</h2>
        <Tabs defaultValue="completed" className="w-[1000px] pl-[24px]">
          <TabsList className="mb-[8px] grid w-full grid-cols-4">
            <TabsTrigger value="completed">Completed Projects</TabsTrigger>
-           <TabsTrigger value="saved">Saved Projects</TabsTrigger>
            <TabsTrigger value="ongoing">Ongoing Projects</TabsTrigger>
+           <TabsTrigger value="saved">Saved Projects</TabsTrigger>
            <TabsTrigger value="liked">Liked Projects</TabsTrigger>
          </TabsList>
 
 
-         <TabsContent value="completed">{renderProjectGrid(completedProjects, "completed")}</TabsContent>
-         <TabsContent value="saved">{renderProjectGrid(createdProjects, "saved")}</TabsContent>
-         <TabsContent value="ongoing">{renderProjectGrid(ongoingProjects, "ongoing")}</TabsContent>
-         <TabsContent value="liked">{renderProjectGrid(createdProjects, "liked")}</TabsContent>
+         <TabsContent value="completed">{renderProjectGrid(completedProjects, "completed", likedProjects, bookmarkedProjects)}</TabsContent>
+         <TabsContent value="ongoing">{renderProjectGrid(ongoingProjects, "ongoing", likedProjects, bookmarkedProjects)}</TabsContent>
+         <TabsContent value="saved">{renderProjectGrid(bookmarkedProjects, "saved", likedProjects, bookmarkedProjects)}</TabsContent>
+         <TabsContent value="liked">{renderProjectGrid(likedProjects, "liked", likedProjects, bookmarkedProjects)}</TabsContent>
        </Tabs>
      </div>
    </div>
@@ -96,6 +105,3 @@ const AllCreatedProjects: React.FC<AllCreatedProjectsProps> = ({
 
 
 export default AllCreatedProjects;
-
-
-

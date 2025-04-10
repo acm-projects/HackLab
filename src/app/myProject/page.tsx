@@ -625,7 +625,7 @@ const handleDelete = async () => {
            {view === "timeline" && selectedProject && (
           <ProjectTimeline
           projectId={selectedProjectId!}
-          isLeader={userId === selectedProject.team_lead_id}
+          
         />
         
         )}
