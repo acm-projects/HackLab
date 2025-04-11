@@ -123,7 +123,10 @@ const User = {
     // user_project ids interactions
     getUserCompletedProjectIDs: async (userId) => {
         const { rows } = await db.query(
-            'SELECT project_id FROM user_project WHERE user_id = $1 AND completed = true',
+            `SELECT user_project.project_id
+             FROM user_project
+             INNER JOIN project ON user_project.project_id = project.id
+             WHERE user_project.user_id = $1 AND project.completed = true`,
             [userId]
         );
         return rows.map(row => row.project_id); // Extract project_id into a flat array
