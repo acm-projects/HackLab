@@ -57,12 +57,20 @@ async function generateResume(githubRepos, userDetails) {
 
       // Filter commits by the user's GitHub username
       let commitHistory = response.data
-        .filter(commit => commit.commit.author.name.toLowerCase() === userDetails.github_username.toLowerCase())
-        .map(commit => ({
-          repo: repo, // Include the repository name for context
-          author: commit.commit.author.name,
-          message: commit.commit.message
-        }));
+      .filter(commit => {
+        const authorName = commit.commit.author?.name?.toLowerCase();
+        const expectedUsername = userDetails.github_username.toLowerCase();
+
+        // Log the author name and expected username for debugging
+        console.log(`Author Name: ${authorName}, Expected Username: ${expectedUsername}`);
+
+        return authorName === expectedUsername;
+      })
+      .map(commit => ({
+        repo: repo, // Include the repository name for context
+        author: commit.commit.author.name,
+        message: commit.commit.message
+      }));
 
       console.log("Commit history for repo:", repo, commitHistory);
 
