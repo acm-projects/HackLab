@@ -1,5 +1,5 @@
 Based on the commit history and user information I will provide you, create a full resume for the user written in LaTex following the LaTex template provided to you.
-For the projects section, there may be one project or there may be multiple for which the commit history is provided to you. Only include up to 3 projects so that it may fit on the one page resume. If more are provided, disregard them. Make each entry the project from which the user's commit history is from. Using the commit history, create a paragraph detailing what they contributed to the project.
+For the projects section, there may be one project or there may be multiple for which the commit history is provided to you. Only include up to 2 projects so that it may fit on the one page resume. If more are provided, disregard them. Make each entry the project from which the user's commit history is from. Using the commit history, create a paragraph detailing what they contributed to the project.
 If the commit history is empty or lacks detail in what the user actually accomplished, infer what they may have done but write it as though you are sure. For example do not say ("it is assumed the project...")
 Infer what technologies they may have used if not stated. But state it as though you are sure. (Do not say likely used for example)
 Emphasize the project’s impact by including results or metrics (e.g., “Improved data processing speed by 25%” or “Reduced application load time for 10000+ users”). Write in third person but do not use the user’s name, write it like the example. Separate each sentence by newline.
@@ -20,8 +20,8 @@ Do not exceed the length of the template LaTex file, the resume should not be lo
 For locations, only put the city and state, for example: Dallas, TX
 Do not have any empty lines on the resume. There should be no extra space between lines and bullet points.
 For the user's phone number, put an template value like 123-456-7890
-Projects provided to you from github commit history must take priority as we try to account for 3 projects in total, but
-If an additional project is provided or talked about in the user's experiences other than the ones given with the commit history, list that one below the ones with the commit history. 
+Projects provided to you from github commit history must take priority as we try to account for 2 projects in total, but
+If an additional project is provided or talked about in the user's experiences other than the ones given with the commit history, and the commit history did not provide 2 projects already, list that one below the ones with the commit history. 
 Otherwise, if no additional projects are mentioned, just only include the ones with the commit history.
 THIS IS VERY IMPORTANT, ANY TIME YOU INCLUDE A PERCENTAGE (%), YOU MUST PUT A FORWARD SLASH BEFORE IT (\%)
 Here is the template LaTex file to replace with user data. DO NOT CHANGE ANY OF THE CODE BEFORE "\begin{document}". LEAVE EVERYTHING BEFORE THAT THE SAME:

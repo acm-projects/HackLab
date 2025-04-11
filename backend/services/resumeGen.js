@@ -3,7 +3,6 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs/promises');
 const Chat = require('../models/chat'); // Import the Chat model
 const User = require('../models/user'); // what we use for db interactions
-let allCommitHistories = [];
 
 dotenv.config();
 
@@ -36,8 +35,13 @@ function extractOwnerAndRepo(github) {
 async function generateResume(githubRepos, userDetails) {
   const octokit = await getOctokitInstance();
 
+  let allCommitHistories = [];
 
-  for (const github of githubRepos) {
+  // Limit the number of repositories to 2
+  const limitedRepos = githubRepos.slice(0, 2);
+
+  console.log("Repos to be used in resume:", limitedRepos);
+  for (const github of limitedRepos) {
     try {
       const { owner, repo } = extractOwnerAndRepo(github);
 

@@ -120,6 +120,15 @@ const User = {
         return rows.map(row => row.project_id); // Extract project_id into a flat array
     },
 
+    // user_project ids interactions
+    getUserCompletedProjectIDs: async (userId) => {
+        const { rows } = await db.query(
+            'SELECT project_id FROM user_project WHERE user_id = $1 AND completed = true',
+            [userId]
+        );
+        return rows.map(row => row.project_id); // Extract project_id into a flat array
+    },
+
     addUserProject: async (userId, projectId, roleId) => {
         const { rows } = await db.query(
             'INSERT INTO user_project (user_id, project_id, role_id) VALUES ($1, $2, $3) RETURNING *',

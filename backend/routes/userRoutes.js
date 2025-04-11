@@ -326,7 +326,7 @@ router.post('/:id/generateResume', async (req, res) => {
         const { github_username, db_name } = req.body;
 
         /// Get an array of project IDs associated with the user
-        const projectIDs = await User.getUserProjectIDs(req.params.id);
+        const projectIDs = await User.getUserCompletedProjectIDs(req.params.id);
 
         console.log('this is the projectIDs: ' + projectIDs);
 
