@@ -55,11 +55,11 @@ async function generateResume(githubRepos, userDetails) {
 
       console.log("Response data for this repo from GitHub API:", response.data);
 
-      // Filter commits by the user's GitHub username
+      // Filter commits by the user's GitHub name
       let commitHistory = response.data
       .filter(commit => {
         const authorName = commit.commit.author?.name?.toLowerCase();
-        const expectedUsername = userDetails.github_username.toLowerCase();
+        const expectedUsername = userDetails.db_name.toLowerCase();
 
         // Log the author name and expected username for debugging
         console.log(`Author Name: ${authorName}, Expected Username: ${expectedUsername}`);
