@@ -64,7 +64,7 @@ async function generateResume(githubRepos, userDetails) {
           message: commit.commit.message
         }));
 
-        console.log("Commit history for repo:", repo, commitHistory);
+      console.log("Commit history for repo:", repo, commitHistory);
 
       allCommitHistories = allCommitHistories.concat(commitHistory);
     } catch (error) {
