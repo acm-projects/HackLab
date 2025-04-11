@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getNotifications, sendNotification } = require('../models/notificationModel');
+const { getNotifications, deleteNotification } = require('../models/notificationModel');
 
   module.exports = (io) => {
     io.on('connection', (socket) => {
@@ -18,14 +18,19 @@ const { getNotifications, sendNotification } = require('../models/notificationMo
             }
         });
 
-        // Listen for a request to send a notification (maybe not necessary)
-        socket.on('sendNotification', async ({ message, userId }) => {
+
+        // Listen for a request to delete a notification
+        socket.on('deleteNotification', async (notificationId) => {
             try {
-                const notification = await sendNotification(message, userId);
-                io.emit(`notification_${userId}`, notification); // Broadcast to the specific user
+                const result = await deleteNotification(notificationId);
+                if (result) {
+                    socket.emit('notificationDeleted', { notificationId }); // Notify the client of successful deletion
+                } else {
+                    socket.emit('error', { message: 'Failed to delete notification' });
+                }
             } catch (error) {
-                console.error('Error sending notification:', error);
-                socket.emit('error', { message: 'Failed to send notification' });
+                console.error('Error deleting notification:', error);
+                socket.emit('error', { message: 'Failed to delete notification' });
             }
         });
 

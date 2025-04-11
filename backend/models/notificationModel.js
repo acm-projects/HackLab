@@ -8,17 +8,17 @@ const getNotifications = async (userId) => {
     return result.rows[0];
 }
 
-const sendNotification = async (message, userId) => {
+const deleteNotification = async (notificationId) => {
     const result = await pool.query(
-        'INSERT INTO notifications (message, user_id) VALUES ($1, $2) RETURNING *',
-        [message, userId]
+        'DELETE FROM notifications WHERE id = $1 RETURNING *',
+        [notificationId]
     );
-    return result.rows[0];
-}
+    return result.rowCount > 0; // Return true if a row was deleted, false otherwise
+};
 
 
 module.exports = {
     getNotifications,
-    sendNotification
+    deleteNotification
 };
 
