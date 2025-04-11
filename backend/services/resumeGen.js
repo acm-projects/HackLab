@@ -43,6 +43,8 @@ async function generateResume(githubRepos, userDetails) {
   console.log("Repos to be used in resume:", limitedRepos);
   for (const github of limitedRepos) {
     try {
+      console.log("Fetching commit history for:", github);
+
       const { owner, repo } = extractOwnerAndRepo(github);
 
       // Fetch commit history for the current repository
@@ -50,6 +52,8 @@ async function generateResume(githubRepos, userDetails) {
         owner: owner,
         repo: repo
       });
+
+      console.log("Response data for this repo from GitHub API:", response.data);
 
       // Filter commits by the user's GitHub username
       let commitHistory = response.data
@@ -59,6 +63,8 @@ async function generateResume(githubRepos, userDetails) {
           author: commit.commit.author.name,
           message: commit.commit.message
         }));
+
+        console.log("Commit history for repo:", repo, commitHistory);
 
       allCommitHistories = allCommitHistories.concat(commitHistory);
     } catch (error) {
