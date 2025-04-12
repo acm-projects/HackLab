@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server",
-    "postinstall": "npx replace-in-file 'os.tmpDir()' 'os.tmpdir()' ./node_modules/latex/node_modules/temp/lib/temp.js"
+    "postinstall": "npx replace-in-file 'os.tmpDir()' 'os.tmpdir()' './node_modules/temp/lib/temp.js'"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",

@@ -386,7 +386,7 @@ router.post('/:id/generateResume', async (req, res) => {
         
             // Compile LaTeX and stream the PDF to the response
             console.log('Compiling LaTeX to PDF...');
-            await compileLatexToPdfStream(latexContent, res);
+            await compileLatexToPdfStream(resume, res);
           } catch (error) {
             console.error('Error generating PDF:', error);
             res.status(500).send('Failed to generate PDF');
