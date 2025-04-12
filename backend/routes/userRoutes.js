@@ -376,6 +376,21 @@ router.post('/:id/generateResume', async (req, res) => {
         // Save to user table
         await User.saveResumeData(db_name, resume, linkedin);
 
+        try {
+            const { latexContent } = resume;
+        
+            // Set the response headers for PDF
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'inline; filename="resume.pdf"');
+        
+            // Compile LaTeX and stream the PDF to the response
+            console.log('Compiling LaTeX to PDF...');
+            await compileLatexToPdfStream(latexContent, res);
+          } catch (error) {
+            console.error('Error generating PDF:', error);
+            res.status(500).send('Failed to generate PDF');
+          }
+
         res.type('text/plain').send(resume);
     } catch (error) {
         console.error(error);
