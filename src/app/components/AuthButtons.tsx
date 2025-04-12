@@ -18,10 +18,11 @@ export default function AuthButtons() {
          {/* Sign Up with GitHub (For New Users) */}
          <button
            onClick={() =>
-             signIn("github", {
-               callbackUrl: "/Survey",
-               prompt: "login", // Forces GitHub login every time
-             })
+            signIn("github", {
+              callbackUrl: "/?isNewUser=true", // used to decide redirect
+              prompt: "login",
+            })            
+            
            }
            className="bg-[#385773] text-primary font-nunito rounded-[10px] text-md px-[20px] py-[10px] text-center
                      flex items-center gap-2 me-2 mb-2 border-transparent border-none outline-none cursor-pointer transition-transform duration-200 hover:scale-105"

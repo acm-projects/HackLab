@@ -78,6 +78,14 @@ const handleRejectJoin = async (userIdToReject: number, projectId: number) => {
    fetchProjectUsers();
  }, [selectedProjectId]);
 
+ useEffect(() => {
+  if (!selectedProjectId || !userId) return;
+  const currentProject = userProjects.find(p => p.id === selectedProjectId);
+  if (currentProject && currentProject.team_lead_id === userId) {
+    fetchJoinRequests(userId);
+  }
+}, [selectedProjectId, userId]);
+
  const handleKickUser = async (userIdToKick: number) => {
    if (!selectedProjectId) return;
    try {
@@ -132,33 +140,43 @@ const handleRejectJoin = async (userIdToReject: number, projectId: number) => {
 }, [selectedProjectId]);
 
 
- useEffect(() => {
-   const fetchProjects = async () => {
-     if (!session?.user?.email) return;
-     try {
-       const usersRes = await fetch("http://52.15.58.198:3000/users");
-       const users = await usersRes.json();
-       const currentUser = users.find((u: any) => u.email === session.user.email);
-       if (!currentUser) return;
-       const fetchedUserId = currentUser.id;
-       setUserId(fetchedUserId);
+useEffect(() => {
+  const fetchProjects = async () => {
+    if (!session?.user?.email) return;
+    try {
+      const usersRes = await fetch("http://52.15.58.198:3000/users");
+      const users = await usersRes.json();
+      const currentUser = users.find((u: any) => u.email === session.user.email);
+      if (!currentUser) return;
+      const fetchedUserId = currentUser.id;
+      setUserId(fetchedUserId);
 
-       const userProjectsRes = await fetch(`http://52.15.58.198:3000/users/${fetchedUserId}/projects`);
-       const userProjectLinks = await userProjectsRes.json();
-       const projectIds = userProjectLinks.map((link: any) => link.project_id);
+      const userProjectsRes = await fetch(`http://52.15.58.198:3000/users/${fetchedUserId}/projects`);
+      const userProjectLinks = await userProjectsRes.json();
+      const projectIds = userProjectLinks.map((link: any) => link.project_id);
 
-       const allProjectsRes = await fetch("http://52.15.58.198:3000/projects");
-       const allProjects = await allProjectsRes.json();
+      const allProjectsRes = await fetch("http://52.15.58.198:3000/projects");
+      const allProjects = await allProjectsRes.json();
 
-       const associatedProjects = allProjects.filter((p: any) => projectIds.includes(p.id));
-       setUserProjects(associatedProjects);
-       if (associatedProjects.length > 0) setSelectedProjectId(associatedProjects[0].id);
-     } catch (err) {
-       console.error("Failed to fetch project data:", err);
-     }
-   };
-   fetchProjects();
- }, [session]);
+      const associatedProjects = allProjects.filter((p: any) => projectIds.includes(p.id));
+      setUserProjects(associatedProjects);
+      if (associatedProjects.length > 0) {
+        const firstProject = associatedProjects[0];
+        setSelectedProjectId(firstProject.id);
+
+        // 🔥 Fetch join requests only if this user is the team leader
+        if (firstProject.team_lead_id === fetchedUserId) {
+          fetchJoinRequests(fetchedUserId);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch project data:", err);
+    }
+  };
+
+  fetchProjects();
+}, [session]);
+
 
  const selectedProject = userProjects.find(p => p.id === selectedProjectId);
 

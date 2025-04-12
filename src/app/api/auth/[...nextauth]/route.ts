@@ -2,7 +2,6 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import PostgresAdapter from "@auth/pg-adapter";
 import { Pool } from "pg";
-//changes made - april 7
 
 // PostgreSQL Pool Setup
 const pool = new Pool({
@@ -24,15 +23,15 @@ if (!process.env.GITHUB_ID || !process.env.GITHUB_SECRET) {
 
 const authOptions: NextAuthOptions = {
   adapter: PostgresAdapter(pool),
-  
+
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
       authorization: {
-        params: { 
+        params: {
           scope: "read:user user:email repo",
-          prompt: "consent" // Forces re-authentication when session expires
+          prompt: "consent",
         },
       },
     }),
@@ -40,40 +39,62 @@ const authOptions: NextAuthOptions = {
 
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60, // 1 hour for testing
-    updateAge: 60 * 30, // Check every 30 seconds
+    maxAge: 60 * 60,
+    updateAge: 60 * 30,
   },
 
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account, user }) {
       if (account?.access_token) {
         token.accessToken = account.access_token;
       }
       if (account?.provider === "github") {
         token.id = account.providerAccountId;
       }
+
+      // ✅ Safely attach email from account/user if available
+      if (!token.email && user?.email) {
+        token.email = user.email;
+      }
+
+      // 🔍 Check if user is new based on email
+      try {
+        if (token.email) {
+          const res = await fetch("http://52.15.58.198:3000/users");
+          const users = await res.json();
+          const isExisting = users.some((u: any) => u.email === token.email);
+          token.isNewUser = !isExisting;
+          console.log("🧠 isNewUser:", token.isNewUser);
+        } else {
+          console.warn("⚠️ Email not available in token.");
+          token.isNewUser = true;
+        }
+      } catch (err) {
+        console.error("❌ Failed to check user existence:", err);
+        token.isNewUser = true;
+      }
+
       return token;
     },
-    
+
     async session({ session, token }) {
-      // Force logout if session has expired
       if (Date.now() / 1000 > (token.exp as number)) {
         throw new Error("Session expired");
       }
-      
+
       session.accessToken = token.accessToken as string;
       session.user.id = token.id as string;
+      session.user.isNewUser = token.isNewUser as boolean;
       return session;
     },
 
     async signIn({ user }) {
-      console.log("✅ User Attempting Sign In:", user);
+      console.log("✅ Sign in attempt from:", user.email);
       return !!user;
     },
 
-    async redirect({ url, baseUrl }) {
-      if (url.includes("/Survey")) return `${baseUrl}/Survey`;
-      return baseUrl;
+    async redirect({ baseUrl }) {
+      return `${baseUrl}/homeScreen`; // Do manual redirect from client using isNewUser flag
     },
   },
 
