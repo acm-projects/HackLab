@@ -37,8 +37,8 @@ async function generateResume(githubRepos, userDetails) {
 
   let allCommitHistories = [];
 
-  // Limit the number of repositories to 2
-  const limitedRepos = githubRepos.slice(0, 2);
+  // Limit the number of repositories to 3
+  const limitedRepos = githubRepos.slice(0, 3);
 
   console.log("Repos to be used in resume:", limitedRepos);
   for (const github of limitedRepos) {
