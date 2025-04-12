@@ -4,6 +4,7 @@ const User = require('../models/user'); // what we use for db interactions
 const { getGithubById, getLinkedinByName } = require('../models/projectModel'); // what we use to get github link for project
 const { generateResume } = require('../services/resumeGen');
 const { scrapeLinkedIn } = require('../services/linkedin');
+const { compileLatexToPdfStream } = require('../services/compileLatex'); // what we use to generate pdf from latex
 
 /**************************
 REMINDER:   get = access
