@@ -143,6 +143,8 @@ const getLinkedinByName = async (name) => {
     return result.rows[0]?.linkedin_url;
 }
 
+
+//exports
 module.exports = {
     createProject,
     getAllProjects,

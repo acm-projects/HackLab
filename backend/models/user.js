@@ -111,7 +111,7 @@ const User = {
         return rows;
     },
 
-    // user_project ids interactions
+    // user_project id interactions 
     getUserProjectIDs: async (userId) => {
         const { rows } = await db.query(
             'SELECT project_id FROM user_project WHERE user_id = $1',
