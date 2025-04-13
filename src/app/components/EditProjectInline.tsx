@@ -52,14 +52,14 @@ const EditProjectInline = ({
       });
 
       if (res.ok) {
-        alert("Project updated successfully!");
+        
         onClose();
       } else {
-        alert("Update failed.");
+       
       }
     } catch (err) {
       console.error("Submit error:", err);
-      alert("Something went wrong.");
+      
     } finally {
       setLoading(false);
     }
@@ -68,8 +68,8 @@ const EditProjectInline = ({
   if (!project) return <div className="p-[20px] text-[#374151]">Loading...</div>;
 
   return (
-    <div className="w-full h-full py-[40px] px-[20px] bg-[#efefef] flex justify-center overflow-y-auto text-nunito">
-      <div className="w-full max-w-[800px] bg-white rounded-[10px] shadow-lg px-[40px] py-[20px] mb-[30px]">
+    <div className="w-[95%] h-full py-[40px] px-[20px] bg-[#efefef] flex justify-center overflow-y-auto text-nunito">
+      <div className="w-[90%] max-w-[1000px] bg-white rounded-[10px] shadow-lg px-[40px] py-[20px] mb-[30px]">
 
         <h1 className="text-[28px] font-bold text-[#1f2937] mb-[24px]">Edit Project</h1>
 
@@ -90,6 +90,9 @@ const EditProjectInline = ({
           onChange={handleChange}
           rows={4}
           className="w-full p-[12px] border border-[#d1d5db] rounded-[6px] mb-[16px] resize-none text-nunito"
+          style={{
+            fontFamily: "'Nunito', sans-serif",
+          }}
         />
 
         {/* Type */}
@@ -190,11 +193,11 @@ const EditProjectInline = ({
         <input type="file" accept="image/*" onChange={handleThumbnailChange} className="w-full mb-[24px] border-1 border-[#b7b7b7] p-[10px] rounded-[10px]" />
 
         {/* Submit Button */}
-        <div className="flex justify-end py-[30px]">
+        <div className="flex justify-end py-[30px] mb-[100px]">
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="py-[10px] px-[18px] bg-[#10b981] hover:bg-[#059669] text-white rounded-[6px] text-[15px] font-medium border-none outline-none"
+            className="py-[10px] px-[18px] bg-[#385773] hover:bg-[#3a4651] text-[#fff] rounded-[6px] text-[15px] font-medium border-none outline-none mb-[50px] translate-x-[25px]"
           >
             {loading ? "Saving..." : "Save Project"}
           </button>

@@ -81,9 +81,9 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
  onBookmark,
  onJoin,
 }) => {
- const descriptionWords = description.trim().split(" ");
- const truncatedDescription =
-   descriptionWords.length > 45 ? descriptionWords.slice(0, 45).join(" ") + "..." : description;
+  const truncatedDescription =
+  description.length > 50 ? description.slice(0, 150) + "..." : description;
+
 
 
  return (
@@ -116,7 +116,7 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
 
 
          {/* Members */}
-         <div className="absolute flex flex-col mt-[-15px] pb-[8px] mt-[120px]">
+         <div className="absolute flex flex-col pb-[8px] mt-[120px]">
            <div className="flex items-center gap-[6px]">
              <div className="flex">
              {(members || []).slice(0, 3).map((url, idx) => (
@@ -143,7 +143,7 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
          {/* Buttons */}
          <div className="absolute bottom-[16px] left-[16px] flex gap-[-4px] z-10">
            <button
-             className="flex items-center outline-none border-none bg-transparent"
+             className="flex items-center outline-none border-none bg-transparent cursor-pointer "
              onClick={(e) => {
                e.stopPropagation();
                onBookmark();
@@ -169,7 +169,7 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
                e.stopPropagation();
                onLike();
              }}
-             className="flex items-center outline-none border-none bg-transparent ml-[-5px]"
+             className="flex items-center outline-none border-none bg-transparent ml-[-5px] cursor-pointer"
            >
              <svg
                xmlns="http://www.w3.org/2000/svg"
@@ -203,7 +203,7 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
                e.stopPropagation();
                onJoin();
              }}
-             className={`text-[12px] px-[40px] py-[10px] rounded-[8px] transition-all duration-200 outline-none border-none ${
+             className={`text-[12px] px-[40px] py-[10px] rounded-[8px] transition-all duration-200 outline-none border-none cursor-pointer ${
                joinRequested
                  ? "bg-[#f0c040] text-[#000] hover:bg-[#e6b832]"
                  : "bg-[#385773] text-[#fff] hover:bg-[#2e475d]"

@@ -88,13 +88,13 @@ export default function CreateProjectWithAI() {
             />
             <div>
               <h2 style={{ fontSize: "28px", fontWeight: "bold", color: "#385773" }}>Create with Juno</h2>
-              <p style={{ color: "#385773", marginTop: "2px" }}>Transform your ideas into reality with AI assistance</p>
+              <p style={{ color: "#385773", marginTop: "2px" }}> While you sip your coffee, Juno is turning your project idea into reality </p>
             </div>
           </div>
 
           <div style={{ position: "relative", marginBottom: "24px" }}>
             <textarea
-              className="project-input"
+              className="project-input font-nunito text-[#385773]"
               placeholder="Describe your dream project in detail..."
               value={description}
               onChange={handleInputChange}
@@ -102,13 +102,14 @@ export default function CreateProjectWithAI() {
               style={{
                 width: "94%",
                 padding: "20px",
-                backgroundColor: "#385773",
+                backgroundColor: "#fff",
                 border: "1px solid #7ea3c2",
-                color: "#fff",
+                color: "#385773",
                 fontSize: "16px",
                 borderRadius: "16px",
                 resize: "none",
                 outline: "none",
+                fontFamily: "'Nunito', sans-serif",
               }}
             />
             <style jsx>{`
@@ -139,13 +140,14 @@ export default function CreateProjectWithAI() {
             </div>
           </div>
 
-          <button
+          <button 
+          className="cursor-pointer"
             type="submit"
             disabled={generating}
             style={{
               width: "100%",
               height: "56px",
-              background: "linear-gradient(to right, #5fa8e0, #4a7296)",
+              background: "#385773",
               border: "none",
               borderRadius: "16px",
               fontSize: "16px",

@@ -2,12 +2,15 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useRef } from "react";
 import type { ProjectData } from "../shared/types"
 import NavBar from "../components/NavBar";
 export default function ManualProject() {
   const router = useRouter()
   const searchParams = useSearchParams()
-
+  const techDropdownRef = useRef<HTMLDivElement>(null);
+  const interestDropdownRef = useRef<HTMLDivElement>(null);
+  
   const [frontendInput, setFrontendInput] = useState<string>("")
   const [frontendTimeline, setFrontendTimeline] = useState<string[]>([])
   const [backendInput, setBackendInput] = useState<string>("")
@@ -16,9 +19,12 @@ export default function ManualProject() {
   const [projectName, setProjectName] = useState<string>("")
   const [projectType, setProjectType] = useState<string>("")
   const [techToBeUsed, setTechToBeUsed] = useState<string>("")
-  const [selectedTechs, setSelectedTechs] = useState<string[]>([])
+  // const [selectedTechs, setSelectedTechs] = useState<string[]>([])
   const [interestInput, setInterestInput] = useState<string>("")
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([])
+  const [selectedTechs, setSelectedTechs] = useState<{ id: number, name: string }[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<{ id: number, name: string }[]>([]);
+
+  
   const [description, setDescription] = useState<string>("")
   const [mvpInput, setMvpInput] = useState<string>("")
   const [mvps, setMvps] = useState<string[]>([])
@@ -38,7 +44,33 @@ export default function ManualProject() {
   const [showStretchGoalWarning, setShowStretchGoalWarning] = useState<boolean>(false)
   const [skillMap, setSkillMap] = useState<{ [id: number]: string }>({});
   const [topicMap, setTopicMap] = useState<{ [id: number]: string }>({});
+  const lowercaseTechOptions = techOptions.map(opt => opt.toLowerCase());
+  const lowercaseInterestOptions = interestOptions.map(opt => opt.toLowerCase());
 
+  const [reverseSkillMap, setReverseSkillMap] = useState<{ [skill: string]: number }>({});
+const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number }>({});
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        techDropdownRef.current &&
+        !techDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+  
+      if (
+        interestDropdownRef.current &&
+        !interestDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowInterestDropdown(false);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  
   useEffect(() => {
     const fetchSkillsAndTopics = async () => {
       try {
@@ -64,6 +96,21 @@ export default function ManualProject() {
         setTopicMap(topicMapTemp);
         setTechOptions(skillsData.map((s: { skill: string }) => s.skill));
         setInterestOptions(topicsData.map((t: { topic: string }) => t.topic));
+        // Create reverse maps for name-to-ID mapping
+          const reverseSkillMap: { [skill: string]: number } = {};
+          skillsData.forEach((s: { id: number; skill: string }) => {
+            reverseSkillMap[s.skill.toLowerCase()] = s.id;
+          });
+
+          const reverseTopicMap: { [topic: string]: number } = {};
+          topicsData.forEach((t: { id: number; topic: string }) => {
+            reverseTopicMap[t.topic.toLowerCase()] = t.id;
+          });
+
+          setReverseSkillMap(reverseSkillMap); // Add new state
+          setReverseTopicMap(reverseTopicMap);
+
+
       } catch (err) {
         console.error("Failed to fetch skills/topics", err);
       }
@@ -74,24 +121,48 @@ export default function ManualProject() {
 
   useEffect(() => {
     const dataParam = searchParams.get("data");
-    if (dataParam) {
-      try {
-        const data: ProjectData = JSON.parse(decodeURIComponent(dataParam));
-        
-        // Set all form fields from the data
-        setProjectName(data.projectName || "");
-        setProjectType(data.projectType || "");
-        setSelectedTechs(data.techToBeUsed || []);
-        setSelectedInterests(data.interests || []);
-        setDescription(data.description || "");
-        setMvps(data.mvps || []);
-        setStretchGoals(data.stretchGoals || []);
-        
-      } catch (error) {
-        console.error("Error parsing project data:", error);
-      }
+  
+    // ⛔️ Don’t proceed if maps aren’t ready
+    if (!dataParam || Object.keys(skillMap).length === 0 || Object.keys(topicMap).length === 0) return;
+  
+    try {
+      const data: ProjectData = JSON.parse(decodeURIComponent(dataParam));
+  
+      setProjectName(data.projectName || "");
+      setProjectType(data.projectType || "");
+  
+      setSelectedTechs(
+        (data.techToBeUsed || []).map((entry: string | number) => {
+          if (typeof entry === "number") {
+            const name = skillMap[entry] || "Unknown";
+            return { id: entry, name };
+          } else {
+            const id = reverseSkillMap[entry.toLowerCase()] || Date.now();
+            return { id, name: entry };
+          }
+        })
+      );
+  
+      setSelectedInterests(
+        (data.interests || []).map((entry: string | number) => {
+          if (typeof entry === "number") {
+            const name = topicMap[entry] || "Unknown";
+            return { id: entry, name };
+          } else {
+            const id = reverseTopicMap[entry.toLowerCase()] || Date.now();
+            return { id, name: entry };
+          }
+        })
+      );
+  
+      setDescription(data.description || "");
+      setMvps(data.mvps || []);
+      setStretchGoals(data.stretchGoals || []);
+    } catch (error) {
+      console.error("Error parsing project data:", error);
     }
-  }, [searchParams]);
+  }, [searchParams, skillMap, topicMap]); // 👈 add skillMap + topicMap to dependencies
+  
 
   useEffect(() => {
     const dataParam = searchParams.get("data");
@@ -113,15 +184,21 @@ export default function ManualProject() {
       setMvps(Array.isArray(data.mvps) ? data.mvps : data.mvp || []);
       setStretchGoals(Array.isArray(data.stretchGoals) ? data.stretchGoals : data.stretch || []);
       
-      const matchedTechs = (data.techToBeUsed || data.skills || []).filter((skill: string) =>
-        techOptions.includes(skill)
-      );
-      setSelectedTechs(matchedTechs);
+      const matchedTechs = (data.techToBeUsed || data.skills || []).map((entry: any) => {
+        const name = typeof entry === "string" ? entry : entry.name;
+        const id = reverseSkillMap[name?.toLowerCase?.()] || Date.now();
+        return { id, name };
+      });
       
-      const matchedInterests = (data.interests || data.topics || []).filter((topic: string) =>
-        interestOptions.includes(topic)
-      );
-      setSelectedInterests(matchedInterests);
+      
+      
+      const matchedInterests = (data.interests || data.topics || []).map((entry: any) => {
+        const name = typeof entry === "string" ? entry : entry.name;
+        const id = reverseTopicMap[name?.toLowerCase?.()] || Date.now();
+        return { id, name };
+      });
+      
+      
       
       setFrontendTimeline(data.timeline?.frontend || []);
       setBackendTimeline(data.timeline?.backend || []);
@@ -163,8 +240,8 @@ export default function ManualProject() {
       id: Date.now(),
       projectName,
       projectType,
-      techToBeUsed: selectedTechs,
-      interests: selectedInterests,
+      techToBeUsed: selectedTechs.map((t) => t.name),  // ✅ Fix here
+      interests: selectedInterests.map((i) => i.name),
       description,
       mvps,
       stretchGoals,
@@ -217,25 +294,26 @@ export default function ManualProject() {
   }
 
   const handleTechSelect = (tech: string) => {
-    if (!selectedTechs.includes(tech)) {
-      setSelectedTechs([...selectedTechs, tech])
+    const id = reverseSkillMap[tech.toLowerCase()];
+    if (id && !selectedTechs.some(t => t.id === id)) {
+      setSelectedTechs([...selectedTechs, { id, name: tech }]);
     }
-    setTechToBeUsed("")
-    setShowDropdown(false)
-  }
-
+    setTechToBeUsed("");
+    setShowDropdown(false);
+  };
+  
+  
   const handleAddNewTech = () => {
     if (techToBeUsed && !techOptions.includes(techToBeUsed)) {
-      setTechOptions([...techOptions, techToBeUsed])
-      setSelectedTechs([...selectedTechs, techToBeUsed])
-      setTechToBeUsed("")
+      const id = Date.now(); // fallback for frontend-only new techs
+      setTechOptions([...techOptions, techToBeUsed]);
+      setSelectedTechs([...selectedTechs, { id, name: techToBeUsed }]);
+      setTechToBeUsed("");
     }
-    setShowDropdown(false)
-  }
+    setShowDropdown(false);
+  };
+  
 
-  const handleRemoveTech = (tech: string) => {
-    setSelectedTechs(selectedTechs.filter((t) => t !== tech))
-  }
 
   const handleInterestInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
@@ -251,25 +329,33 @@ export default function ManualProject() {
   }
 
   const handleInterestSelect = (interest: string) => {
-    if (!selectedInterests.includes(interest)) {
-      setSelectedInterests([...selectedInterests, interest])
+    const id = reverseTopicMap[interest.toLowerCase()];
+    if (id && !selectedInterests.some(t => t.id === id)) {
+      setSelectedInterests([...selectedInterests, { id, name: interest }]);
     }
-    setInterestInput("")
-    setShowInterestDropdown(false)
-  }
-
+    setInterestInput("");
+    setShowInterestDropdown(false);
+  };
+  
   const handleAddNewInterest = () => {
     if (interestInput && !interestOptions.includes(interestInput)) {
-      setInterestOptions([...interestOptions, interestInput])
-      setSelectedInterests([...selectedInterests, interestInput])
-      setInterestInput("")
+      const id = Date.now();
+      setInterestOptions([...interestOptions, interestInput]);
+      setSelectedInterests([...selectedInterests, { id, name: interestInput }]);
+      setInterestInput("");
     }
-    setShowInterestDropdown(false)
-  }
+    setShowInterestDropdown(false);
+  };
+  
 
-  const handleRemoveInterest = (interest: string) => {
-    setSelectedInterests(selectedInterests.filter((t) => t !== interest))
-  }
+  const handleRemoveTech = (techId: number) => {
+    setSelectedTechs(selectedTechs.filter(t => t.id !== techId));
+  };
+  
+  const handleRemoveInterest = (interestId: number) => {
+    setSelectedInterests(selectedInterests.filter(t => t.id !== interestId));
+  };
+  
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -464,7 +550,10 @@ export default function ManualProject() {
                 placeholder="Add Tech"
                 value={techToBeUsed}
                 onChange={handleTechInputChange}
-                onKeyDown={handleKeyDown}
+                onFocus={() => {
+                  setFilteredTechOptions(techOptions);
+                  setShowDropdown(true);
+                }}
                 style={{
                   width: "100%",
                   padding: "12px",
@@ -481,43 +570,49 @@ export default function ManualProject() {
                 </p>
               )}
 
-              {showDropdown && (
-                <div style={{
-                  marginTop: "8px",
-                  backgroundColor: "rgba(56, 87, 115, 0.9)",
-                  borderRadius: "8px",
-                  padding: "8px",
-                  width: "100%",
-                }}>
-                  {filteredTechOptions.map((tech, index) => (
-                    <div
-                      key={index}
-                      onClick={() => handleTechSelect(tech)}
-                      style={{
-                        color: "#fff",
-                        cursor: "pointer",
-                        padding: "4px 0",
-                        width: "100%",
-                      }}
-                    >
-                      {tech}
-                    </div>
-                  ))}
-                  {techToBeUsed && !techOptions.includes(techToBeUsed) && (
-                    <div
-                      onClick={handleAddNewTech}
-                      style={{
-                        color: "#93c5fd",
-                        cursor: "pointer",
-                        paddingTop: "4px",
-                        width: "100%",
-                      }}
-                    >
-                      Add "{techToBeUsed}"
-                    </div>
-                  )}
-                </div>
-              )}
+{showDropdown && (
+  <div
+    ref={techDropdownRef}
+    style={{
+      marginTop: "8px",
+      backgroundColor: "rgba(56, 87, 115, 0.9)",
+      borderRadius: "8px",
+      padding: "8px",
+      width: "100%",
+      maxHeight: "150px",
+      overflowY: "auto",
+    }}
+  >
+    {filteredTechOptions.map((tech, index) => (
+      <div
+        key={index}
+        onClick={() => handleTechSelect(tech)}
+        style={{
+          color: "#fff",
+          cursor: "pointer",
+          padding: "4px 0",
+          width: "100%",
+        }}
+      >
+        {tech}
+      </div>
+    ))}
+    {techToBeUsed && !techOptions.includes(techToBeUsed) && (
+      <div
+        onClick={handleAddNewTech}
+        style={{
+          color: "#93c5fd",
+          cursor: "pointer",
+          paddingTop: "4px",
+          width: "100%",
+        }}
+      >
+        Add "{techToBeUsed}"
+      </div>
+    )}
+  </div>
+)}
+
               <div style={{
                 display: "flex",
                 flexWrap: "wrap",
@@ -538,9 +633,9 @@ export default function ManualProject() {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {tech}
+                    {tech.name}
                     <span
-                      onClick={() => handleRemoveTech(tech)}
+                      onClick={() => handleRemoveTech(tech.id)}
                       style={{
                         marginLeft: "8px",
                         cursor: "pointer"
@@ -555,65 +650,76 @@ export default function ManualProject() {
 
             {/* Interests - Full Width */}
             <div style={{ width: "100%" }}>
-              <input
-                type="text"
-                placeholder="Add Interest"
-                value={interestInput}
-                onChange={handleInterestInputChange}
-                onKeyDown={handleKeyDown}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  backgroundColor: "rgba(56, 87, 115, 0.1)",
-                  color: "#385773",
-                  border: "1px solid rgba(56, 87, 115, 0.3)",
-                  boxSizing: "border-box",
-                }}
-              />
+            <input
+              type="text"
+              placeholder="Add Interest"
+              value={interestInput}
+              onChange={handleInterestInputChange}
+              onFocus={() => {
+                setFilteredInterestOptions(interestOptions);
+                setShowInterestDropdown(true);
+              }}
+              onKeyDown={handleKeyDown}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "8px",
+                backgroundColor: "rgba(56, 87, 115, 0.1)",
+                color: "#385773",
+                border: "1px solid rgba(56, 87, 115, 0.3)",
+                boxSizing: "border-box",
+              }}
+            />
+
               {formErrors.selectedInterests && (
                 <p style={{ color: "#f87171", fontSize: "14px", marginTop: "4px" }}>
                   Please select at least one interest.
                 </p>
               )}
 
-              {showInterestDropdown && (
-                <div style={{
-                  marginTop: "8px",
-                  backgroundColor: "rgba(56, 87, 115, 0.9)",
-                  borderRadius: "8px",
-                  padding: "8px",
-                  width: "100%",
-                }}>
-                  {filteredInterestOptions.map((interest, index) => (
-                    <div
-                      key={index}
-                      onClick={() => handleInterestSelect(interest)}
-                      style={{
-                        color: "#fff",
-                        cursor: "pointer",
-                        padding: "4px 0",
-                        width: "100%",
-                      }}
-                    >
-                      {interest}
-                    </div>
-                  ))}
-                  {interestInput && !interestOptions.includes(interestInput) && (
-                    <div
-                      onClick={handleAddNewInterest}
-                      style={{
-                        color: "#93c5fd",
-                        cursor: "pointer",
-                        paddingTop: "4px",
-                        width: "100%",
-                      }}
-                    >
-                      Add "{interestInput}"
-                    </div>
-                  )}
-                </div>
-              )}
+                {showInterestDropdown && (
+                  <div
+                    ref={interestDropdownRef}
+                    style={{
+                      marginTop: "8px",
+                      backgroundColor: "rgba(56, 87, 115, 0.9)",
+                      borderRadius: "8px",
+                      padding: "8px",
+                      width: "100%",
+                      maxHeight: "150px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    {filteredInterestOptions.map((interest, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleInterestSelect(interest)}
+                        style={{
+                          color: "#fff",
+                          cursor: "pointer",
+                          padding: "4px 0",
+                          width: "100%",
+                        }}
+                      >
+                        {interest}
+                      </div>
+                    ))}
+                    {interestInput && !interestOptions.includes(interestInput) && (
+                      <div
+                        onClick={handleAddNewInterest}
+                        style={{
+                          color: "#93c5fd",
+                          cursor: "pointer",
+                          paddingTop: "4px",
+                          width: "100%",
+                        }}
+                      >
+                        Add "{interestInput}"
+                      </div>
+                    )}
+                  </div>
+                )}
+
               <div style={{
                 display: "flex",
                 flexWrap: "wrap",
@@ -634,9 +740,9 @@ export default function ManualProject() {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {interest}
+                    {interest.name}
                     <span
-                      onClick={() => handleRemoveInterest(interest)}
+                      onClick={() => handleRemoveInterest(interest.id)}
                       style={{
                         marginLeft: "8px",
                         cursor: "pointer"
@@ -650,7 +756,7 @@ export default function ManualProject() {
             </div>
 
             {/* Description - Taller and Full Width */}
-            <div style={{ width: "100%" }}>
+            <div style={{ width: "100%", fontFamily: "'Nunito', sans-serif", }}>
               <textarea
                 placeholder="Project Description"
                 value={description}
@@ -665,6 +771,8 @@ export default function ManualProject() {
                   border: "1px solid rgba(56, 87, 115, 0.3)",
                   resize: "none",
                   boxSizing: "border-box",
+                  fontFamily: "'Nunito', sans-serif",
+                  fontSize: "16px",
                 }}
               />
               {formErrors.description && (

@@ -1,20 +1,16 @@
-// types.ts
-export type ProjectData = {
+export interface ProjectData {
   id: number;
   projectName: string;
   projectType: string;
-  techToBeUsed: string[];
+  techToBeUsed: (string | number)[];
+  interests: (string | number)[];
   description: string;
   mvps: string[];
   stretchGoals: string[];
-  interests: string[];
+  timeline: {
+    frontend: string[];
+    backend: string[];
+  };
   thumbnail?: string;
-  timeline?: {
-    frontend: string[],
-    backend: string[],
-  },
- };
- 
- 
- 
- 
+  source?: string;
+}

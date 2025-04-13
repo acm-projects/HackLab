@@ -1,9 +1,28 @@
-"use client"; 
-//changes made to this page - Apr 7
+"use client";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import AuthButtons from "./components/AuthButtons";
 import "./globals.css";
-import AuthButtons from "./components/AuthButtons"; // Import AuthButtons component
 
 export default function LandingPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    if (!session || !session.user) return;
+
+    console.log("🎯 SESSION:", session);
+
+    if (session.user.isNewUser) {
+      router.push("/Survey");
+    } else {
+      router.push("/homeScreen");
+    }
+  }, [session, status, router]);
+
+
   return (
     <div className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hidden">
       

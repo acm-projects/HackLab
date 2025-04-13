@@ -75,7 +75,7 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
  return (
    <div className="fixed inset-0 z-[40] flex items-center justify-center mt-[-80px] ml-[8%]">
      <div
-       className="relative z-10 rounded-[15px] shadow-[0_0_20px_rgba(0,0,0,1)] py-[40px]"
+       className="relative z-10 rounded-[15px] shadow-[0_0_20px_rgba(0,0,0,1)] py-[20px]"
        style={{
          backgroundColor: "#ffffff",
          width: "70vw",
@@ -113,7 +113,7 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
 
 
          {/* Team Lead Info */}
-         <div className="flex items-center mb-[12px]">
+         <div className="flex items-center mb-[12px] gap-[10px]">
            <img
              src={groupLeader.image}
              alt="Team Lead"
@@ -194,8 +194,8 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
          </div>
 
 
-         <div className="flex justify-end gap-[16px] mt-[24px]">
-           <button onClick={onBookmark} className="flex items-center outline-none border-none bg-transparent">
+         <div className="flex justify-start gap-[16px] mt-[24px]">
+           <button onClick={onBookmark} className="flex items-center outline-none border-none bg-transparent cursor-pointer">
              <svg
                xmlns="http://www.w3.org/2000/svg"
                fill={isBookmarked ? "#EFD033" : "none"}
@@ -211,7 +211,7 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
                />
              </svg>
            </button>
-           <button onClick={onLike} className="flex items-center outline-none border-none bg-transparent ml-[-15px]">
+           <button onClick={onLike} className="flex items-center outline-none border-none bg-transparent ml-[-15px] cursor-pointer">
              <svg
                xmlns="http://www.w3.org/2000/svg"
                fill={isLiked ? "#FF0000" : "none"}
@@ -232,7 +232,7 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
 
            {showJoinButton && (
              <button
-               className="border-none"
+               className="border-none cursor-pointer flex translate-x-[850px]"
                onClick={onJoin}
                style={{
                  padding: "8px 24px",

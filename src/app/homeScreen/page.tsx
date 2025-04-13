@@ -38,9 +38,9 @@ export default function HomeScreen() {
 
   const topProjectsRef = useRef<Project[]>([]); // UseRef for storing top projects, does not trigger re-renders
   const [slides, setSlides] = useState([
-    { title: "PROJECTS", description: `${totalProjects} total projects hosted.`, image: "../../../images/projects.png" },
-    { title: "USERS", description: `${totalUsers} total participants across all projects.`, image: "../../../images/community.png" },
-    { title: "MOST USED TECH", description: `${mostUsedTech} is the most used technology!`, image: "../../../images/mostUsedLanguage.png" },
+    { title: "PROJECTS", description: `90+ total projects hosted.`, image: "../../../images/projects.png" },
+    { title: "USERS", description: `50+ total participants across all projects.`, image: "../../../images/community.png" },
+    { title: "MOST USED TECH", description: `Java is the most used technology!`, image: "../../../images/mostUsedLanguage.png" },
   ]);
 
   useEffect(() => {
@@ -204,7 +204,7 @@ export default function HomeScreen() {
         {/* Hero */}
         <div className="w-[95%] h-[300px] flex flex-col items-start justify-center text-center mt-[60px]">
           <h1 className="text-[30px] font-[500] text-white font-bold mb-[0px]">
-            Hello {session?.user?.name || session?.user?.login || "USER"}!!
+            Hello {session?.user?.name || session?.user?.name || "USER"}!!
           </h1>
           <p className="mt-[-5px] mb-[40px]">Hope you are having a good day</p>
         </div>
@@ -215,6 +215,7 @@ export default function HomeScreen() {
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-[25px] h-[25px] mt-[-5px]">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
+            
           </button>
           <div className="flex w-full ml-[10%] mr-[10%] mt-[40px]">
             <div className="w-1/2 text-left pl-8">
@@ -232,11 +233,12 @@ export default function HomeScreen() {
           </button>
         </div>
 
+        <div>
         {/* Top Projects */}
         <h2 className="text-[36px] font-bold text-[#000] mt-[40px] mb-[40px] text-center flex item-start">Top Projects</h2>
         <div className="grid grid-cols-3 gap-[40px]">
           {topProjectsRef.current.map((project, index) => (
-            <div key={index} onClick={() => handleCardClick(index)}>
+            <div className="transition-transform duration-300 hover:-translate-y-[4px]" key={index} onClick={() => handleCardClick(index)}>
               <CompletedProjectCard
                 {...project}
                 isLiked={isLiked[index]}
@@ -253,9 +255,9 @@ export default function HomeScreen() {
 
         {/* Recent Projects */}
         <h2 className="text-[36px] font-bold text-[#000] mt-[40px] mb-[40px] text-left">Recent Projects</h2>
-        <div className="grid grid-cols-3 gap-[40px] mb-[50px]">
+        <div className="grid grid-cols-3 gap-[40px] mb-[50px] ">
           {recentProjects.map((project, index) => (
-            <div key={index} onClick={() => handleCardClick(index)}>
+            <div className="transition-transform duration-300 hover:-translate-y-[4px]" key={index} onClick={() => handleCardClick(index)}>
               <CompletedProjectCard
                 {...project}
                 likes={completedProjects[index].likes}
@@ -270,7 +272,7 @@ export default function HomeScreen() {
             </div>
           ))}
         </div>
-
+        </div>
         {/* Modal */}
         {showModal && selectedIndex !== null && (
           <div className="fixed inset-0 flex items-start justify-center translate-y-[150px] z-[40] translate-x-[-25px]">

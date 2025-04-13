@@ -3,7 +3,6 @@ import GitHubProvider from "next-auth/providers/github";
 import PostgresAdapter from "@auth/pg-adapter";
 import { Pool } from "pg";
 
-// PostgreSQL Pool Setup
 const pool = new Pool({
   host: process.env.DATABASE_HOST,
   user: process.env.DATABASE_USER,
@@ -16,7 +15,6 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000,
 });
 
-// GitHub OAuth credentials check
 if (!process.env.GITHUB_ID || !process.env.GITHUB_SECRET) {
   throw new Error("❌ Missing GitHub clientId or clientSecret in .env file");
 }
@@ -48,29 +46,36 @@ const authOptions: NextAuthOptions = {
       if (account?.access_token) {
         token.accessToken = account.access_token;
       }
+
       if (account?.provider === "github") {
         token.id = account.providerAccountId;
       }
 
-      // ✅ Safely attach email from account/user if available
       if (!token.email && user?.email) {
         token.email = user.email;
       }
 
-      // 🔍 Check if user is new based on email
+      // ✅ Check user creation time using your backend
       try {
         if (token.email) {
           const res = await fetch("http://52.15.58.198:3000/users");
           const users = await res.json();
-          const isExisting = users.some((u: any) => u.email === token.email);
-          token.isNewUser = !isExisting;
-          console.log("🧠 isNewUser:", token.isNewUser);
-        } else {
-          console.warn("⚠️ Email not available in token.");
-          token.isNewUser = true;
+          const thisUser = users.find((u: any) => u.email === token.email);
+
+          if (thisUser?.email) {
+            const createdAt = new Date(thisUser.created_at || thisUser.createdAt || 0).getTime();
+            const now = Date.now();
+            const threshold = 60 * 1000; // 1 minute threshold
+            token.isNewUser = (now - createdAt) < threshold;
+
+            console.log("🧠 createdAt:", createdAt);
+            console.log("🧠 isNewUser:", token.isNewUser);
+          } else {
+            token.isNewUser = true;
+          }
         }
       } catch (err) {
-        console.error("❌ Failed to check user existence:", err);
+        console.error("❌ Failed to check user creation time:", err);
         token.isNewUser = true;
       }
 
@@ -93,8 +98,9 @@ const authOptions: NextAuthOptions = {
       return !!user;
     },
 
-    async redirect({ baseUrl }) {
-      return `${baseUrl}/homeScreen`; // Do manual redirect from client using isNewUser flag
+    async redirect({ url, baseUrl }) {
+      if (url.includes("/signout")) return `${baseUrl}/`;
+      return baseUrl;
     },
   },
 

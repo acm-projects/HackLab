@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { ProjectData } from "../shared/types";
 import NavBar from "../components/NavBar";
@@ -62,7 +62,7 @@ export default function ReviewPage() {
   }
 
   if (!projectData) {
-    alert("Project data is missing. Please fill in the project details.");
+    
     return;
   }
 
@@ -139,7 +139,7 @@ export default function ReviewPage() {
     }
 
     if (createdProject?.github_repo_url) {
-      alert(`✅ Repository created successfully! You can access it here: ${createdProject.github_repo_url}`);
+      alert(`${createdProject.github_repo_url}`);
       window.open(createdProject.github_repo_url, "_blank");
     } else {
       alert("✅ Project created successfully, but no repository URL was returned.");
@@ -183,7 +183,7 @@ export default function ReviewPage() {
 
   } catch (error) {
     console.error("Error during project creation:", error);
-    alert(`⚠️ An error occurred: ${error instanceof Error ? error.message : String(error)}`);
+
   } finally {
     setIsSubmitting(false);
     router.push("/myProject");
@@ -234,9 +234,9 @@ export default function ReviewPage() {
 
       <div className="mb-4">
         <h3 className="text-lg font-bold mb-2">Tech To Be Used:</h3>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-[10px]">
           {projectData.techToBeUsed.map((tech, index) => (
-            <span key={index} className="px-[10px] py-[10px] text-sm rounded-[10px] bg-white border border-[#cfdce5]">
+            <span key={index} className="px-[10px] py-[10px] text-sm rounded-[10px] bg-white border border-[#cfdce5] gap-[10px]">
               {tech}
             </span>
           ))}
@@ -245,7 +245,7 @@ export default function ReviewPage() {
 
       <div className="mb-4">
         <h3 className="text-lg font-bold mb-2">Interests:</h3>
-        <div className="flex flex-wrap gap-[5px]">
+        <div className="flex flex-wrap gap-[10px]">
           {(projectData.interests || []).map((interest, index) => (
             <span key={index} className="px-[10px] py-[10px] text-sm rounded-[10px] bg-white border border-[#cfdce5]">
               {interest}
@@ -321,14 +321,14 @@ export default function ReviewPage() {
         <button
           onClick={handleEdit}
           disabled={isSubmitting}
-          className="px-[10px] py-[10px] text-[#385773] font-bold transition-colors bg-[#e8eff5] border border-[#385773] rounded-[10px] hover:bg-[#93a6ba] disabled:opacity-50"
+          className="px-[10px] py-[10px] text-[#385773] cursor-pointer font-bold transition-colors bg-[#e8eff5] border border-[#385773] rounded-[10px] hover:bg-[#93a6ba] disabled:opacity-50"
         >
           Edit
         </button>
         <button
           onClick={handleConfirm}
           disabled={isSubmitting}
-          className="px-[10px] py-[10px] text-white font-bold transition-colors bg-[#e8eff5] border border-[#385773] rounded-[10px] hover:bg-[#93a6ba] disabled:opacity-50"
+          className="px-[10px] py-[10px] text-white font-bold cursor-pointer transition-colors bg-[#e8eff5] border border-[#385773] rounded-[10px] hover:bg-[#93a6ba] disabled:opacity-50"
         >
           {isSubmitting ? "Processing..." : "Confirm"}
         </button>

@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import FilterBox from "./filterbox"; 
 import { useSession } from "next-auth/react";
 
+
+
 interface NavBarProps {
   onApplyFilters?: (filters: { topics: string[]; skills: string[] }) => void;
   onSearchChange?: (query: string) => void;
@@ -31,6 +33,56 @@ export default function NavBar({
   const router = useRouter();
   const { data: session } = useSession();
   const [userId, setUserId] = useState<number | null>(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (session?.user?.email) {
+        try {
+          // Get current user ID
+          const resUsers = await fetch("http://52.15.58.198:3000/users");
+          const users = await resUsers.json();
+          const user = users.find((u: any) => u.email === session.user.email);
+          if (!user) return;
+          const userId = user.id;
+  
+          // Get all projects
+          const resProjects = await fetch("http://52.15.58.198:3000/projects");
+          const projects = await resProjects.json();
+  
+          // Filter projects where current user is team_lead
+          const myProjects = projects.filter((proj: any) => proj.team_lead_id === userId);
+  
+          let allJoinRequests: any[] = [];
+  
+          for (const project of myProjects) {
+            const resReqs = await fetch(`http://52.15.58.198:3000/users/${userId}/join-requests`);
+            const joinRequests = await resReqs.json();
+  
+            // Filter join requests only for this project
+            const projectJoinRequests = joinRequests.filter(
+              (req: any) => req.project_id === project.id
+            );
+  
+            // Add project info into notification
+            projectJoinRequests.forEach((req: any) => {
+              allJoinRequests.push({
+                userId: req.user_id,
+                projectId: project.id,
+                projectTitle: project.title,
+              });
+            });
+          }
+  
+          setNotifications(allJoinRequests);
+        } catch (err) {
+          console.error("Error fetching notifications:", err);
+        }
+      }
+    };
+  
+    if (showNotifications) fetchNotifications();
+  }, [showNotifications, session]);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -117,6 +169,56 @@ export default function NavBar({
           )
         )}
       </div>
+      {/* Notifications */}
+      <div className="absolute right-[30px] top-1/2 transform -translate-y-1/2 z-50 flex items-end justify-end">
+        <div className="relative">
+          <button
+            onClick={() => setShowNotifications((prev) => !prev)}
+            className="text-[#fff] hover:text-[#d1d1d1] transition duration-300 border-none outline-none bg-transparent cursor-pointer"
+            aria-label="Notifications"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-[25px] h-[25px]"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
+              />
+            </svg>
+          </button>
+
+          {showNotifications && (
+            <div className="absolute right-[5px] mt-[15px] w-[300px] bg-[#fff] rounded-[10px] shadow-lg border border-gray-200 p-4 z-50">
+              {notifications.length === 0 ? (
+                <p className="text-[#333] text-sm text-center">No notifications</p>
+              ) : (
+                <ul className="space-y-3 max-h-[300px] overflow-y-auto">
+                  {notifications.map((notif, index) => (
+                    <li key={index} className="border-b pb-2">
+                      <p className="text-[#222] text-sm">
+                        <strong>User {notif.userId}</strong> requested to join <br />
+                        <span className="text-[#444] italic">{notif.projectTitle}</span>
+                      </p>
+                      <div className="flex justify-end mt-2 gap-2">
+                        <button className="text-green-600 text-xs hover:underline">Accept</button>
+                        <button className="text-red-500 text-xs hover:underline">Reject</button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+
 
       {isMenuOpen && (
         <div

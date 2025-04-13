@@ -27,8 +27,7 @@ export default function CreateProject() {
           />
 
           <button
-            className="w-[250px] h-[50px] bg-[#ffffff] text-[#000] hover:bg-gray-900 border-none
-              focus:ring-4 focus:outline-none focus:ring-blue-300 font-nunito text-[15px]
+            className="w-[250px] h-[50px] bg-[#ffffff] text-[#000] border-none outline-none hover:bg-[#dedede] font-nunito text-[15px]
               flex text-center justify-center items-center gap-2 rounded-[10px] cursor-pointer"
             onClick={() => router.push("/AIProject")}
           >
@@ -37,7 +36,7 @@ export default function CreateProject() {
         </div>
 
         {/* MANUAL PROJECT CARD */}
-        <div className="h-[500px] w-[400px] bg-[#385773] text-[#fff] rounded-[20px] font-nunito flex flex-col items-center px-[20px] py-[30px]">
+        <div className="h-[500px] w-[400px] bg-[#385773] text-[#fff]  rounded-[20px] font-nunito flex flex-col items-center px-[20px] py-[30px]">
           <h3 className="text-[20px] mb-[10px] text-center mt-[35px]">
             CREATE YOUR OWN PROJECT
           </h3>
@@ -53,8 +52,7 @@ export default function CreateProject() {
           />
 
           <button
-            className="w-[250px] h-[50px] bg-[#ffffff] text-[#000] hover:bg-gray-900 border-none
-              focus:ring-4 focus:outline-none focus:ring-blue-300 font-nunito text-[15px]
+            className="w-[250px] h-[50px] bg-[#ffffff] text-[#000] hover:bg-[#dedede] border-none outline-none text-[15px]
               flex text-center justify-center items-center gap-2 rounded-[10px] cursor-pointer"
             onClick={() => router.push("/ManualProject")}
           >

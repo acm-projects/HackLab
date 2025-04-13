@@ -18,11 +18,7 @@ export default function AuthButtons() {
          {/* Sign Up with GitHub (For New Users) */}
          <button
            onClick={() =>
-            signIn("github", {
-              callbackUrl: "/?isNewUser=true", // used to decide redirect
-              prompt: "login",
-            })            
-            
+            signIn("github", { prompt: "login" })         
            }
            className="bg-[#385773] text-primary font-nunito rounded-[10px] text-md px-[20px] py-[10px] text-center
                      flex items-center gap-2 me-2 mb-2 border-transparent border-none outline-none cursor-pointer transition-transform duration-200 hover:scale-105"
@@ -30,6 +26,7 @@ export default function AuthButtons() {
            <FaGithub className="w-[18px] h-[18px] text-white" />
            &nbsp; Sign In with GitHub
          </button>
+         
        </>
      ) : (
        // If the user IS logged in, show the Logout Button

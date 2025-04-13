@@ -9,7 +9,9 @@ import { useSurvey } from "../../contexts/SurveyContext";
 interface Skill {
   id: number;
   skill: string;
+  icon_url?: string; // <-- Add this line
 }
+
 
 const LanguageSelection = () => {
   const { data: session } = useSession();
@@ -158,19 +160,30 @@ const LanguageSelection = () => {
               }}
             >
               {filteredLanguages.map((lang) => (
-                <div
-                  key={lang.id}
-                  onClick={() => handleLangSelect(lang.skill)}
-                  style={{
-                    color: "#000",
-                    padding: "6px 12px",
-                    cursor: "pointer",
-                    borderRadius: "8px",
-                  }}
-                >
-                  {lang.skill}
-                </div>
-              ))}
+              <div
+                key={lang.id}
+                onClick={() => handleLangSelect(lang.skill)}
+                style={{
+                  color: "#000",
+                  padding: "6px 12px",
+                  cursor: "pointer",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                {lang.icon_url && (
+                  <img
+                    src={lang.icon_url}
+                    alt={lang.skill}
+                    style={{ width: "18px", height: "18px", borderRadius: "4px" }}
+                  />
+                )}
+                {lang.skill}
+              </div>
+            ))}
+
             </div>
           )}
         </div>
@@ -186,31 +199,40 @@ const LanguageSelection = () => {
           }}
         >
           {selected.map((lang) => (
-            <div
-              key={lang.id}
+          <div
+            key={lang.id}
+            style={{
+              backgroundColor: "#fff",
+              color: "#385773",
+              padding: "8px 12px",
+              borderRadius: "12px",
+              fontSize: "14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            {lang.icon_url && (
+              <img
+                src={lang.icon_url}
+                alt={lang.skill}
+                style={{ width: "16px", height: "16px", borderRadius: "4px" }}
+              />
+            )}
+            {lang.skill}
+            <span
+              onClick={() => handleRemoveLang(lang.id)}
               style={{
-                backgroundColor: "#fff",
-                color: "#385773",
-                padding: "8px 12px",
-                borderRadius: "12px",
-                fontSize: "14px",
-                display: "flex",
-                alignItems: "center",
+                marginLeft: "4px",
+                cursor: "pointer",
+                fontWeight: "bold",
               }}
             >
-              {lang.skill}
-              <span
-                onClick={() => handleRemoveLang(lang.id)}
-                style={{
-                  marginLeft: "8px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                ×
-              </span>
-            </div>
-          ))}
+              ×
+            </span>
+          </div>
+        ))}
+
         </div>
 
         <div

@@ -147,6 +147,7 @@ useEffect(() => {
       const usersRes = await fetch("http://52.15.58.198:3000/users");
       const users = await usersRes.json();
       const currentUser = users.find((u: any) => u.email === session.user.email);
+      
       if (!currentUser) return;
       const fetchedUserId = currentUser.id;
       setUserId(fetchedUserId);
@@ -179,6 +180,7 @@ useEffect(() => {
 
 
  const selectedProject = userProjects.find(p => p.id === selectedProjectId);
+ const isTeamLead = selectedProject && userId === selectedProject?.team_lead_id;
 
  useEffect(() => {
    const fetchTimeline = async () => {
@@ -270,9 +272,9 @@ const handleDelete = async () => {
  return (
    <div className="w-screen h-full bg-[#f5f7fa] text-nunito">
      <NavBar />
-     <div className="flex w-screen h-screen translate-[-8px]">
-     <div className="w-[270px] mt-[30px] bg-[#385773] py-[15px] text-[#fff] flex flex-col gap-[12px] overflow-y-auto border-r border-[#fff] px-[10px] rounded-br-[55px]">
-      <div className="translate-y-[35px]">
+     <div className="flex w-screen h-full translate-x-[-8px]">
+     <div className="w-[270px] mt-[50px] bg-[#385773] py-[10px] text-[#fff] flex flex-col gap-[12px] overflow-y-auto border-r border-[#fff] px-[10px] rounded-br-[55px]">
+      <div className="translate-y-[10px]">
       {userProjects.map((project) => (
         <div
           key={project.id}
@@ -300,19 +302,26 @@ const handleDelete = async () => {
 
 
        <div className="sticky top-[0px] translate-y-[-10px] bg-[#f5f7fa] z-20 py-[10px] flex gap-[10px] items-center justify-between border-b border-[#e5e7eb] px-[5px]">
-       <div className="relative bg-[#d1d5db] rounded-[8px] w-[340px] h-[40px] flex items-center justify-between px-[15px]">
-        {/* Sliding Pill Indicator */}
-                <div
-          className="absolute top-[4px] left-[4px] h-[32px] w-[112px] bg-[#6b7280] rounded-[6px] transition-transform duration-300 ease-in-out"
+       <div
+          className={`relative rounded-[8px] h-[40px] flex items-center justify-between px-[15px] bg-[#d1d5db] transition-all duration-300 ease-in-out`}
           style={{
-            transform:
-              view === "timeline"
-                ? "translateX(124px)"
-                : view === "manage"
-                ? "translateX(244px)"
-                : "translateX(4px)",
+            width: isTeamLead ? "340px" : "225px",
           }}
-        />
+        >
+          {/* Sliding Pill Indicator */}
+          <div
+            className="absolute top-[4px] left-[4px] h-[32px] bg-[#6b7280] rounded-[6px] transition-transform duration-300 ease-in-out"
+            style={{
+              width: "112px",
+              transform:
+                view === "timeline"
+                  ? "translateX(124px)"
+                  : view === "manage"
+                  ? "translateX(244px)"
+                  : "translateX(4px)",
+            }}
+          />
+
 
 
         {/* Tabs */}
@@ -325,21 +334,25 @@ const handleDelete = async () => {
           Dashboard
         </button>
         <button
-          onClick={() => setView("timeline")}
-          className={`z-10 w-[112px] h-[32px]  rounded-[6px] text-sm font-semibold hover:text-[#374151] cursor-pointer transition-colors duration-200 bg-transparent border-transparent outline-none ${
-            view === "timeline" ? "text-[#fff]" : "text-[#374151]"
-          }`}
-        >
-          Timeline
-        </button>
-        <button
-          onClick={() => setView("manage")}
-          className={`z-10 w-[112px] h-[32px] translate-x-[5px] rounded-[6px] hover:text-[#374151] cursor-pointer text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
-            view === "manage" ? "text-[#fff]" : "text-[#374151]"
-          }`}
-        >
-          Manage
-        </button>
+        onClick={() => setView("timeline")}
+        className={`z-10 w-[112px] h-[32px] rounded-[6px] text-sm font-semibold hover:text-[#374151] cursor-pointer transition-colors duration-200 bg-transparent border-transparent outline-none ${
+          view === "timeline" ? "text-[#fff]" : "text-[#374151]"
+        } `}
+      >
+        Timeline
+      </button>
+
+        {selectedProject && userId === selectedProject.team_lead_id && (
+          <button
+            onClick={() => setView("manage")}
+            className={`z-10 w-[112px] h-[32px] translate-x-[5px] rounded-[6px] hover:text-[#374151] cursor-pointer text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
+              view === "manage" ? "text-[#fff]" : "text-[#374151]"
+            }`}
+          >
+            Manage
+          </button>
+        )}
+
       </div>
 
 
@@ -350,7 +363,9 @@ const handleDelete = async () => {
             {/* Edit Button */}
             <button
               onClick={() => setIsEditing(true)}
-              className="bg-[#2869a2] hover:bg-[#385773] text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium flex justify-center items-center border-none outline-none"
+              className="bg-[#2869a2] hover:bg-[#385773] cursor-pointer text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium flex justify-center items-center border-none outline-none" style={{
+                fontFamily: "'Nunito', sans-serif",
+              }}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -372,7 +387,7 @@ const handleDelete = async () => {
             {/* Delete Button */}
             <button
                 onClick={() => setShowDeleteConfirm(true)} // JUST set the modal
-                className="bg-[#ef4444] hover:bg-[#dc2626] text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium flex justify-center items-center border-none outline-none"
+                className="bg-[#af0a0a] hover:bg-[#5c3131] cursor-pointer text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium flex justify-center items-center border-none outline-none"
               >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -392,7 +407,7 @@ const handleDelete = async () => {
             </button>
             <button
               onClick={() => setShowCompleteConfirm(true)} // JUST set the modal
-              className="bg-[#10b981] hover:bg-[#059669] text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium border-none outline-none"
+              className="bg-[#088e61] hover:bg-[#2f574a] cursor-pointer text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium border-none outline-none"
             >
           Mark Complete
         </button>
@@ -450,6 +465,34 @@ const handleDelete = async () => {
           </div>
           
         )}
+
+        {selectedProject && userId !== selectedProject.team_lead_id && (
+          <div className="flex gap-[10px]">
+            <button
+              onClick={async () => {
+                try {
+                  const res = await fetch(`http://52.15.58.198:3000/users/${userId}/projects/${selectedProject.id}`, {
+                    method: "DELETE",
+                  });
+                  if (!res.ok) {
+                    alert("Failed to leave the project.");
+                    return;
+                  }
+                  alert("You have left the project.");
+                  setUserProjects(prev => prev.filter(p => p.id !== selectedProject.id));
+                  setSelectedProjectId(null);
+                } catch (err) {
+                  console.error("Leave project error:", err);
+                  alert("An error occurred while leaving the project.");
+                }
+              }}
+              className="bg-[#af0a0a] hover:bg-[#5c3131] text-[#ffffff] cursor-pointer px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium border-none outline-none"
+            >
+              Leave Project
+            </button>
+          </div>
+        )}
+
       </div>
 
 
@@ -486,7 +529,9 @@ const handleDelete = async () => {
      </div>
 
 
-     <p className="text-[15px] text-[#374151]">{selectedProject.description}</p>
+     <p className="text-[15px] text-[#374151]" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}> {selectedProject.description} </p>
    </div>
 
 
@@ -641,15 +686,13 @@ const handleDelete = async () => {
       />
     )}
            {view === "timeline" && selectedProject && (
-          <ProjectTimeline
-          projectId={selectedProjectId!}
-          
-        />
-        
-        )}
+  <div className="bg-white p-[20px] h-[650px] rounded-[8px] shadow-md border border-[#d1d5db] overflow-y-auto">
+    <ProjectTimeline projectId={selectedProjectId!} />
+  </div>
+)}
         {view === "manage" && selectedProject && userId === selectedProject.team_lead_id && (
-          <div className="bg-white p-[20px] rounded-[8px] shadow-md border border-[#d1d5db] h-[650px] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4 text-[#385773]">Manage Members</h2>
+  <div className="bg-white p-[20px] h-[650px] rounded-[8px] shadow-md border border-[#d1d5db] overflow-y-auto">
+    <h2 className="text-xl font-bold mb-4 text-[#385773]">Manage Members</h2>
             <div className="flex flex-col gap-[10px] mb-8">
               {projectUsers.map((user) => (
                 <div
@@ -666,10 +709,11 @@ const handleDelete = async () => {
                   </div>
                   <button
                     onClick={() => handleKickUser(user.id)}
-                    className="text-[#ef4444] text-[12px] border border-[#ef4444] px-[10px] py-[4px] rounded-[6px] hover:bg-[#fee2e2]"
+                    className="text-[#ef4444] text-[12px] border border-[#ef4444] px-[10px] py-[4px] rounded-[6px] hover:bg-[#fee2e2] cursor-pointer"
                   >
-                    Kick Out
+                    {user.id === userId ? "Leave Project" : "Kick Out"}
                   </button>
+
                 </div>
               ))}
             </div>
