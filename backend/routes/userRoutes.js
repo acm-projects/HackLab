@@ -377,6 +377,7 @@ router.post('/:id/generateResume', async (req, res) => {
         // Save to user table
         await User.saveResumeData(db_name, resume, linkedin);
 
+        /*
         try {
             const { latexContent } = resume;
         
@@ -391,7 +392,9 @@ router.post('/:id/generateResume', async (req, res) => {
             console.error('Error generating PDF:', error);
             res.status(500).send('Failed to generate PDF');
           }
-
+        */
+             
+        // Send the resume as a response
         res.type('text/plain').send(resume);
     } catch (error) {
         console.error(error);
