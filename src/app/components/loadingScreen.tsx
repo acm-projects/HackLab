@@ -5,11 +5,6 @@ import { Fullscreen } from "lucide-react"
 import Image from "next/image"
 export default function LoadingPage() {
 
-
-
-
-
-
  return (
    <div className="flex flex-col items-center justify-center min-h-screen bg-[#ffffff] dark:bg-[#111827]">
      <div className="w-full max-w-[420px] px-[16px]">
@@ -18,11 +13,11 @@ export default function LoadingPage() {
        <div className="flex justify-center mb-[32px]">
        
            <Image
-             src="/images/loadingJuno.png"
+             src="/images/theo_versions_happy_sad.png"
              alt="Theo character"
              width ={200}
              height={200}
-             className="object-contain"
+             className="object-contain translate-x-[-10px]"
              priority
              style={{
                backgroundColor: "transparent",

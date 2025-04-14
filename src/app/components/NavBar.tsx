@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import LogoutButton from "../components/LogoutButton";
 import { usePathname } from "next/navigation";
 import FilterBox from "./filterbox"; 
 import { useSession } from "next-auth/react";
-
+import {io} from 'socket.io-client';
 
 
 interface NavBarProps {
@@ -34,7 +34,12 @@ export default function NavBar({
   const { data: session } = useSession();
   const [userId, setUserId] = useState<number | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
+  const socket = io('http://52.15.58.198:3000')
+  const socketref = useRef<any>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
+  
+  
+
   useEffect(() => {
     const fetchNotifications = async () => {
       if (session?.user?.email) {
@@ -43,6 +48,8 @@ export default function NavBar({
           const resUsers = await fetch("http://52.15.58.198:3000/users");
           const users = await resUsers.json();
           const user = users.find((u: any) => u.email === session.user.email);
+          
+
           if (!user) return;
           const userId = user.id;
   

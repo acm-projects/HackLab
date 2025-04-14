@@ -4,7 +4,7 @@ import NavBar from "../components/NavBar";
 import CompletedProjectCard from "../components/homePageCard";
 import ExpandedProjectModal from "../components/ExpandedProjectCard";
 import { useSession } from "next-auth/react";
-
+import LoadingPage from "../components/loadingScreen"; // adjust the path if needed
 interface Project {
   id: number;
   title: string;
@@ -26,15 +26,23 @@ interface Project {
 
 export default function HomeScreen() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  // const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [completedProjects, setCompletedProjects] = useState<Project[]>([]);
   const [totalProjects, setTotalProjects] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
   const [mostUsedTech, setMostUsedTech] = useState<string>("");
   const { data: session } = useSession();
-  const [isLiked, setIsLiked] = useState<boolean[]>([]);
-  const [isBookmarked, setIsBookmarked] = useState<boolean[]>([]);
+  const [likedMap, setLikedMap] = useState<{ [projectId: number]: boolean }>({});
+  const [bookmarkedMap, setBookmarkedMap] = useState<{ [projectId: number]: boolean }>({});
+  const [showLoadingPage, setShowLoadingPage] = useState(true);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+const [selectedListType, setSelectedListType] = useState<"top" | "recent" | null>(null);
+
+      useEffect(() => {
+        const timer = setTimeout(() => setShowLoadingPage(false), 2000);
+        return () => clearTimeout(timer);
+      }, []);
 
   const topProjectsRef = useRef<Project[]>([]); // UseRef for storing top projects, does not trigger re-renders
   const [slides, setSlides] = useState([
@@ -106,8 +114,17 @@ export default function HomeScreen() {
         );
 
         setCompletedProjects(completed);
-        setIsLiked(completed.map((p) => p.isLiked));
-        setIsBookmarked(completed.map((p) => p.isBookmarked));
+        const likedMapping: { [key: number]: boolean } = {};
+        const bookmarkedMapping: { [key: number]: boolean } = {};
+
+        completed.forEach((p) => {
+          likedMapping[p.id] = p.isLiked;
+          bookmarkedMapping[p.id] = p.isBookmarked;
+        });
+
+        setLikedMap(likedMapping);
+        setBookmarkedMap(bookmarkedMapping);
+
         setTotalUsers(completed.reduce((sum, p) => sum + p.totalMembers, 0));
 
         topProjectsRef.current = [...completed].sort((a, b) => b.likes - a.likes).slice(0, 3);
@@ -127,53 +144,50 @@ export default function HomeScreen() {
     fetchProjects();
   }, [session?.user?.id]); // Only rerun this effect when session user id changes
 
-  const handleLike = async (index: number) => {
-    const project = completedProjects[index];
-    const liked = isLiked[index];
-
+  const handleLike = async (projectId: number) => {
+    const liked = likedMap[projectId];
+  
     try {
       if (liked) {
-        await fetch(`http://52.15.58.198:3000/users/${session?.user?.id}/liked-projects/${project.id}`, { method: "DELETE" });
+        await fetch(`http://52.15.58.198:3000/users/${session?.user?.id}/liked-projects/${projectId}`, { method: "DELETE" });
       } else {
-        await fetch(`http://52.15.58.198:3000/users/${session?.user?.id}/liked-projects/${project.id}`, {
+        await fetch(`http://52.15.58.198:3000/users/${session?.user?.id}/liked-projects/${projectId}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: session?.user?.id, project_id: project.id }),
+          body: JSON.stringify({ user_id: session?.user?.id, project_id: projectId }),
         });
       }
-
-      setIsLiked((prev) => {
-        const copy = [...prev];
-        copy[index] = !liked;
-        return copy;
-      });
-
-      setCompletedProjects((prev) => {
-        const copy = [...prev];
-        copy[index] = {
-          ...copy[index],
-          likes: copy[index].likes + (liked ? -1 : 1),
-        };
-        return copy;
-      });
+  
+      setLikedMap((prev) => ({
+        ...prev,
+        [projectId]: !liked,
+      }));
+  
+      setCompletedProjects((prev) =>
+        prev.map((proj) =>
+          proj.id === projectId
+            ? { ...proj, likes: proj.likes + (liked ? -1 : 1) }
+            : proj
+        )
+      );
     } catch (err) {
       console.error("❌ Failed to toggle like:", err);
     }
   };
+  
 
-  const handleBookmark = async (index: number) => {
-    const projectId = completedProjects[index].id;
-    const bookmarked = isBookmarked[index];
-
+  const handleBookmark = async (projectId: number) => {
+    const bookmarked = bookmarkedMap[projectId];
     const method = bookmarked ? "DELETE" : "POST";
+  
     await fetch(`http://52.15.58.198:3000/users/${session?.user?.id}/bookmarked-projects/${projectId}`, { method });
-
-    setIsBookmarked((prev) => {
-      const copy = [...prev];
-      copy[index] = !bookmarked;
-      return copy;
-    });
+  
+    setBookmarkedMap((prev) => ({
+      ...prev,
+      [projectId]: !bookmarked,
+    }));
   };
+  
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
@@ -184,11 +198,12 @@ export default function HomeScreen() {
       .slice(0, 6);
   }, [completedProjects]);
 
-  const handleCardClick = (index: number) => {
+  const handleCardClick = (index: number, listType: "top" | "recent") => {
     setSelectedIndex(index);
+    setSelectedListType(listType);
     setShowModal(true);
   };
-
+  
   useEffect(() => {
     const interval = setInterval(() => setCurrentSlide((prev) => (prev + 1) % slides.length), 10000);
     return () => clearInterval(interval);
@@ -197,6 +212,14 @@ export default function HomeScreen() {
   const topProjects = [...completedProjects].sort((a, b) => b.likes - a.likes).slice(0, 3);
   const olderProjects = [...completedProjects].sort((a, b) => b.likes - a.likes).slice(3, 9);
 
+  if (showLoadingPage) {
+      return <LoadingPage />;
+    }
+
+    const selectedProject =
+    selectedListType === "top"
+      ? topProjects[selectedIndex!]
+      : recentProjects[selectedIndex!];
   return (
     <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito">
       <NavBar />
@@ -237,14 +260,14 @@ export default function HomeScreen() {
         {/* Top Projects */}
         <h2 className="text-[36px] font-bold text-[#000] mt-[40px] mb-[40px] text-center flex item-start">Top Projects</h2>
         <div className="grid grid-cols-3 gap-[40px]">
-          {topProjectsRef.current.map((project, index) => (
-            <div className="transition-transform duration-300 hover:-translate-y-[4px]" key={index} onClick={() => handleCardClick(index)}>
+        {topProjects.map((project, index) => (
+            <div className="transition-transform duration-300 hover:-translate-y-[4px]" key={index} onClick={() => handleCardClick(index, "top")}>
               <CompletedProjectCard
                 {...project}
-                isLiked={isLiked[index]}
-                isBookmarked={isBookmarked[index]}
-                onLike={() => handleLike(index)}
-                onBookmark={() => handleBookmark(index)}
+                isLiked={likedMap[project.id] || false}
+                isBookmarked={bookmarkedMap[project.id] || false}
+                onLike={() => handleLike(project.id)}
+                onBookmark={() => handleBookmark(project.id)}
                 github="https://github.com"
                 completionDate={project.completionDate}
                 isCompleted={true}
@@ -256,35 +279,44 @@ export default function HomeScreen() {
         {/* Recent Projects */}
         <h2 className="text-[36px] font-bold text-[#000] mt-[40px] mb-[40px] text-left">Recent Projects</h2>
         <div className="grid grid-cols-3 gap-[40px] mb-[50px] ">
-          {recentProjects.map((project, index) => (
-            <div className="transition-transform duration-300 hover:-translate-y-[4px]" key={index} onClick={() => handleCardClick(index)}>
-              <CompletedProjectCard
-                {...project}
-                likes={completedProjects[index].likes}
-                isLiked={isLiked[index]}
-                isBookmarked={isBookmarked[index]}
-                onLike={() => handleLike(index)}
-                onBookmark={() => handleBookmark(index)}
-                github="https://github.com"
-                completionDate={project.completionDate}
-                isCompleted={true}
-              />
-            </div>
-          ))}
+        {recentProjects.map((project, index) => (
+          <div className="transition-transform duration-300 hover:-translate-y-[4px]" key={index}onClick={() => handleCardClick(index, "recent")}>
+            <CompletedProjectCard
+              {...project}
+              likes={project.likes} // ✅ FIXED
+              isLiked={likedMap[project.id] || false}
+              isBookmarked={bookmarkedMap[project.id] || false}
+              onLike={() => handleLike(project.id)}
+              onBookmark={() => handleBookmark(project.id)}
+              github="https://github.com"
+              completionDate={project.completionDate}
+              isCompleted={true}
+            />
+          </div>
+        ))}
+
         </div>
         </div>
+        
         {/* Modal */}
+       
+
         {showModal && selectedIndex !== null && (
           <div className="fixed inset-0 flex items-start justify-center translate-y-[150px] z-[40] translate-x-[-25px]">
             <ExpandedProjectModal
-              {...completedProjects[selectedIndex]}
+              {...selectedProject}
               onClose={() => setShowModal(false)}
-              onLike={() => handleLike(selectedIndex)}
-              onBookmark={() => handleBookmark(selectedIndex)}
+              onLike={() => handleLike(selectedProject.id)}
+              onBookmark={() => handleBookmark(selectedProject.id)}
               onJoin={() => {}}
               joinRequested={false}
               showJoinButton={false}
+              // 👇 These ensure icons and count are always fresh
+              isLiked={likedMap[selectedProject.id] || false}
+              isBookmarked={bookmarkedMap[selectedProject.id] || false}
+              likes={completedProjects.find(p => p.id === selectedProject.id)?.likes || 0}
             />
+
           </div>
         )}
       </div>

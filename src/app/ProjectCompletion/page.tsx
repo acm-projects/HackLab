@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import LoadingPage from "../components/loadingScreen"; // adjust the path if needed
 import {
   Card,
   CardContent,
@@ -18,7 +19,12 @@ export default function AiResumeGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [resumeGenerated, setResumeGenerated] = useState(false);
   const [latexOutput, setLatexOutput] = useState<string>("");
+const [showLoadingPage, setShowLoadingPage] = useState(true);
 
+    useEffect(() => {
+      const timer = setTimeout(() => setShowLoadingPage(false), 2000);
+      return () => clearTimeout(timer);
+    }, []);
   const handleGenerateResume = async () => {
     setIsGenerating(true);
   
@@ -66,7 +72,9 @@ export default function AiResumeGenerator() {
       setIsGenerating(false);
     }
   };
-  
+  if (showLoadingPage) {
+      return <LoadingPage />;
+    }
   return (
     <div className="min-h-screen w-full flex flex-col text-[#0f172a] font-nunito">
       <NavBar />

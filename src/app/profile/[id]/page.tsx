@@ -9,12 +9,18 @@ import AllCreatedProjects from "../../components/Profile/profileProjects";
 import { ProjectStats, ProfileInfoCard } from "../../components/Profile/profileinfo";
 import EditProfilePage from "../edit/page";
 import { useParams } from "next/navigation";
+import LoadingPage from "../../components/loadingScreen"; // adjust the path if needed
 
 export default function DeveloperProfile() {
   const { data: session } = useSession();
   const [userId, setUserId] = useState<number | null>(null);
   const { id } = useParams();
+ const [showLoadingPage, setShowLoadingPage] = useState(true);
 
+    useEffect(() => {
+      const timer = setTimeout(() => setShowLoadingPage(false), 2000);
+      return () => clearTimeout(timer);
+    }, []);
   const [profileInfo, setProfileInfo] = useState({
     name: "",
     email: "",
@@ -352,6 +358,9 @@ export default function DeveloperProfile() {
     fetchUserData();
   }, [userId]);
 
+   if (showLoadingPage) {
+    return <LoadingPage />;
+  }
  return (
    <div className="flex flex-col h-screen">
      <NavBar />

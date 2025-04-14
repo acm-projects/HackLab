@@ -1,11 +1,22 @@
 "use client";
 import NavBar from "../components/NavBar";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import "../globals.css";
+import LoadingPage from "../components/loadingScreen"; // adjust the path if needed
 
 export default function CreateProject() {
   const router = useRouter();
+  const [showLoadingPage, setShowLoadingPage] = useState(true);
+  
+      useEffect(() => {
+        const timer = setTimeout(() => setShowLoadingPage(false), 2000);
+        return () => clearTimeout(timer);
+      }, []);
 
+      if (showLoadingPage) {
+          return <LoadingPage />;
+        }
   return (
     <div className="h-screen flex flex-col items-center justify-center">
       <NavBar />

@@ -3,7 +3,7 @@ import io, { Socket } from "socket.io-client";
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import NavBar from "../components/NavBar";
-
+import LoadingPage from "../components/loadingScreen"; // adjust the path if needed
 interface Project {
   id: number;
   title: string;
@@ -44,6 +44,12 @@ export default function MessagesPage() {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
+  const [showLoadingPage, setShowLoadingPage] = useState(true);
+  
+      useEffect(() => {
+        const timer = setTimeout(() => setShowLoadingPage(false), 2000);
+        return () => clearTimeout(timer);
+      }, []);
   useEffect(() => {
     const fetchUserId = async () => {
       if (!session?.user?.email) return;
@@ -382,7 +388,9 @@ export default function MessagesPage() {
 
 
 
-
+if (showLoadingPage) {
+    return <LoadingPage />;
+  }
   return (
     <div className="flex h-screen font-nunito">
         {/* <div className="w-screen h-full bg-[#f5f7fa] text-nunito"> */}

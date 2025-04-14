@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import ProjectTimeline from "../components/timelineComponent";
 import EditProject from "../components/EditProjectInline";
+import LoadingPage from "../components/loadingScreen"; // adjust the path if needed
 
 const MyProject = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
@@ -24,6 +25,12 @@ const MyProject = () => {
   const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
   const router = useRouter();
  
+  const [showLoadingPage, setShowLoadingPage] = useState(true);
+  
+      useEffect(() => {
+        const timer = setTimeout(() => setShowLoadingPage(false), 2000);
+        return () => clearTimeout(timer);
+      }, []);
 
  const fetchProjectUsers = async () => {
    if (!selectedProjectId) return;
@@ -282,7 +289,9 @@ const handleDelete = async () => {
     alert("An error occurred while deleting the project.");
   }
 };
-
+if (showLoadingPage) {
+    return <LoadingPage />;
+  }
  
  return (
    <div className="w-screen h-full bg-[#f5f7fa] text-nunito">

@@ -338,6 +338,8 @@ import NavBar from "../components/NavBar";
 import OngoingProjectCard from "../components/OngoingProjects";
 import ExpandedProjectModal from "../components/ExpandedProjectCard";
 import ProjectTimeline from "../components/timelineComponent";
+import LoadingPage from "../components/loadingScreen"; // adjust the path if needed
+
 
 interface Project {
   id: number;
@@ -368,6 +370,14 @@ const FindProjects = () => {
   const [filters, setFilters] = useState<{ topics: string[]; skills: string[] }>({ topics: [], skills: [] });
   const [searchQuery, setSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
+
+  const [showLoadingPage, setShowLoadingPage] = useState(true);
+
+    useEffect(() => {
+      const timer = setTimeout(() => setShowLoadingPage(false), 2000);
+      return () => clearTimeout(timer);
+    }, []);
+
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -597,7 +607,9 @@ const FindProjects = () => {
 
  const clearFilters = () => setFilters({ topics: [], skills: [] });
 
-
+ if (showLoadingPage) {
+  return <LoadingPage />;
+}
  return (
   
    <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito overflow-y-auto scrollbar-hide">
