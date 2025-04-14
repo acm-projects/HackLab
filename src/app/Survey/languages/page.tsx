@@ -90,11 +90,11 @@ const LanguageSelection = () => {
 
     try {
       const res = await fetch(
-        'http://52.15.58.198:3000/users/${userId}/skills/${skill.id}',
+        `http://52.15.58.198:3000/users/${userId}/skills/${skill.id}`,
         {
           method: "POST",
         }
-      );
+      );      
       const data = await res.json();
       console.log("✅ Skill added to backend:", data);
     } catch (error) {
@@ -263,8 +263,9 @@ const LanguageSelection = () => {
               console.log("🧠 Selected (local):", selected);
               try {
                 const res = await fetch(
-                  'http://52.15.58.198:3000/users/${userId}/skills'
+                  `http://52.15.58.198:3000/users/${userId}/skills`
                 );
+                
                 const data = await res.json();
                 console.log("📦 Skills from backend:", data);
               } catch (error) {
