@@ -1,14 +1,14 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface ProfileInfoProps {
   name: string;
   level: number;
-  profilePic: string | null;
+  profilePic: string | null; // initial fallback
   topics: string[];
   roles: string[];
-  skills: string[];
+  skills: { id: number; skill: string; icon_url?: string | null }[];
   isMyProfile: boolean;
   onEditClick: () => void;
 }
@@ -24,16 +24,36 @@ const ProfileSidebar: React.FC<ProfileInfoProps> = ({
   isMyProfile
 }) => {
   const router = useRouter();
+  const [fetchedProfilePic, setFetchedProfilePic] = useState<string | null>(profilePic);
+
+  useEffect(() => {
+    const fetchUserImage = async () => {
+      try {
+        const res = await fetch("http://52.15.58.198:3000/users");
+        const data = await res.json();
+
+        // Match by name (better to use email if available)
+        const matchedUser = data.find((user: any) => user.name === name);
+        if (matchedUser && matchedUser.image) {
+          setFetchedProfilePic(matchedUser.image);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user profile image:", error);
+      }
+    };
+
+    fetchUserImage();
+  }, [name]);
 
   return (
-    <div className="flex-shrink-0 w-[220px] h-[925px] bg-[#FFFFFF] rounded-[10px] p-[16px] border border-[#E5E7EB] text-[#111827] text-[14px] pb-[20px] mt-[40px]">
+    <div className="flex-shrink-0 w-[220px] bg-[#FFFFFF] rounded-[10px] p-[16px] border border-[#E5E7EB] text-[#111827] text-[14px] pb-[20px] mt-[40px]">
       {/* Profile Header */}
       <div className="w-full flex flex-col items-center mb-[40px]">
         <div className="w-full flex items-center gap-[16px] mb-[16px]">
           <div className="w-[80px] h-[80px] rounded-[80px] bg-[#E5E7EB] flex items-center justify-center overflow-hidden">
-            {profilePic ? (
+            {fetchedProfilePic ? (
               <img
-                src={profilePic}
+                src={fetchedProfilePic}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
@@ -82,7 +102,7 @@ const ProfileSidebar: React.FC<ProfileInfoProps> = ({
       <div className="mt-[10px]">
         <p className="text-[18px] font-[600] mb-[12px]">Topics</p>
         <div className="flex flex-wrap gap-[6px] mb-[24px]">
-          {topics.map((topic, idx) => (
+          {topics.slice(0, 5).map((topic, idx) => (
             <span
               key={idx}
               className="inline-block bg-[#EEF2F7] text-[#385773] font-medium px-[10px] py-[4px] rounded-full text-[12px] border border-[#D1D5DB]"
@@ -108,13 +128,20 @@ const ProfileSidebar: React.FC<ProfileInfoProps> = ({
         {/* Skills */}
         <p className="text-[18px] font-[600] mb-[12px]">Skills</p>
         <div className="flex flex-wrap gap-[6px]">
-          {skills.map((skill, idx) => (
-            <span
-              key={idx}
-              className="inline-block bg-[#EEF2F7] text-[#385773] font-medium px-[10px] py-[4px] rounded-full text-[12px] border border-[#D1D5DB]"
+          {skills.slice(0, 7).map((s) => (
+            <div
+              key={s.id}
+              className="inline-block bg-[#EEF2F7] text-[#385773] font-medium px-[10px] py-[4px] gap-[10px] rounded-full text-[12px] border border-[#D1D5DB]"
             >
-              {skill}
-            </span>
+              {s.icon_url && (
+                <img
+                  src={s.icon_url}
+                  alt={s.skill}
+                  className="size-[12px] rounded-[10px] px-[5px] translate-y-[2px]"
+                />
+              )}
+              {s.skill}
+            </div>
           ))}
         </div>
       </div>

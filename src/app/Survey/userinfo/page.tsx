@@ -203,16 +203,66 @@ const UserInfo = () => {
             Back
           </button>
           <button
-            onClick={() => {
+            onClick={async () => {
               const userInfo = {
                 location,
                 position: status,
                 school,
                 linkedin: linkedin.trim(),
               };
+            
               localStorage.setItem("userInfo", JSON.stringify(userInfo));
-              router.push("/homeScreen");
+            
+              try {
+                // 1. Get session and user email
+                const sessionRes = await fetch("/api/auth/session");
+                const session = await sessionRes.json();
+                const email = session?.user?.email;
+            
+                // 2. Get all users and find the one matching session
+                const res = await fetch("http://52.15.58.198:3000/users");
+                const users = await res.json();
+                const matchedUser = users.find((u: any) => u.email === email);
+            
+                if (!matchedUser?.id) throw new Error("User not found");
+            
+                // 3. Build update body with only the required fields
+                const updateBody = {
+                  name: matchedUser.name ?? "",
+                  email: matchedUser.email ?? "",
+                  emailVerified: new Date(matchedUser.emailVerified).toISOString(),
+                  image: matchedUser.image ?? "",
+                  xp: typeof matchedUser.xp === "number" ? matchedUser.xp : 0,
+                  bio: matchedUser.bio ?? "",
+                  role_preference_id: typeof matchedUser.role_preference_id === "number" ? matchedUser.role_preference_id : 0,
+                  generated_resume_latex: matchedUser.generated_resume_latex ?? "",
+                  linkedin_url: userInfo.linkedin ?? "",
+                };
+                console.log("🟡 matchedUser ID:", matchedUser.id);
+                console.log("📦 Update Body being sent:", updateBody);
+
+            
+                // 4. PUT request
+                const updateRes = await fetch(`http://52.15.58.198:3000/users/${matchedUser.id}`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(updateBody),
+                });
+            
+                if (!updateRes.ok) {
+                  const errorText = await updateRes.text();
+                  console.error("🔴 Backend error response:", errorText);
+                  throw new Error("❌ LinkedIn update failed");
+                }
+            
+                console.log("✅ LinkedIn updated successfully:", updateBody.linkedin_url);
+                router.push("/homeScreen");
+              } catch (err) {
+                console.error("❌ Failed to update or verify LinkedIn:", err);
+                alert("Something went wrong while saving your profile.");
+              }
             }}
+            
             disabled={!isFormValid}
             style={{
               backgroundColor: "#fff",

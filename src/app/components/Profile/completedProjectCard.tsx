@@ -99,14 +99,6 @@ const CompletedProjectCard: React.FC<CompletedProjectCardProps> = ({
 
      {/* Completion Tag, Date, GitHub Button */}
      <div className="absolute top-[10px] right-[10px] flex flex-col items-end gap-[6px] z-10">
-       {/* Completion Status */}
-         <span
-       className={`px-[10px] py-[4px] text-[11px] font-semibold rounded-[9999px] ${
-         isCompleted ? "bg-[#10b981]" : "bg-[#f59e0b]"
-       } text-[#ffffff] shadow-sm`}
-     >
-       {isCompleted ? "Completed" : "In Progress"}
-     </span>
 
 
        {/* Completion Date */}

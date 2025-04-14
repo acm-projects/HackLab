@@ -29,7 +29,7 @@ export default function DeveloperProfile() {
   });
 
   const [topics, setTopics] = useState<string[]>([]);
-  const [skills, setSkills] = useState<string[]>([]);
+  const [skills, setSkills] = useState<{ id: number; skill: string; icon_url?: string | null }[]>([]);
   const [role, setRole] = useState<string[]>([]);
   const [userLevel, setUserLevel] = useState<number>(1);
   const [isEditing, setIsEditing] = useState(false);
@@ -337,7 +337,12 @@ export default function DeveloperProfile() {
         setIsMyProfile(userData.email === session?.user?.email);
         setUserLevel(userData.level || 1);
         setTopics(topicsData.map((t: any) => t.topic));
-        setSkills(skillsData.map((s: any) => s.skill));
+        setSkills(skillsData.map((s: any) => ({
+          id: s.id,
+          skill: s.skill,
+          icon_url: s.icon_url || null
+        })));
+        
         setRole([roleData.role]);
       } catch (error) {
         console.error("❌ Failed to load user/project data:", error);

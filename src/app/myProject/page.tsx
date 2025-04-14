@@ -159,13 +159,17 @@ useEffect(() => {
       const allProjectsRes = await fetch("http://52.15.58.198:3000/projects");
       const allProjects = await allProjectsRes.json();
 
-      const associatedProjects = allProjects.filter((p: any) => projectIds.includes(p.id));
+      // Filter out completed projects
+      const associatedProjects = allProjects.filter((p: any) => 
+        projectIds.includes(p.id) && !p.completed
+      );
+      
       setUserProjects(associatedProjects);
+      
       if (associatedProjects.length > 0) {
         const firstProject = associatedProjects[0];
         setSelectedProjectId(firstProject.id);
 
-        // 🔥 Fetch join requests only if this user is the team leader
         if (firstProject.team_lead_id === fetchedUserId) {
           fetchJoinRequests(fetchedUserId);
         }
@@ -232,9 +236,20 @@ useEffect(() => {
   if (!selectedProjectId) return;
   try {
     const res = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}/complete`, {
-      method: "PATCH"
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
+    
     if (!res.ok) throw new Error("Failed to mark project as complete");
+    
+    // Remove the completed project from state
+    setUserProjects(prev => prev.filter(project => project.id !== selectedProjectId));
+    
+    // Reset the selected project
+    setSelectedProjectId(null);
+    
     alert("Project marked as complete!");
     setShowCompleteConfirm(false);
   } catch (err) {

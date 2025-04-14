@@ -365,3 +365,39 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+
+/* Add to your global.css or equivalent */
+.latex-output {
+  font-family: 'Times New Roman', serif;
+  line-height: 1.6;
+}
+
+.latex-output h1, .latex-output h2, .latex-output h3 {
+  font-weight: bold;
+  margin: 1em 0 0.5em 0;
+}
+
+.latex-output h1 {
+  font-size: 1.5em;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.3em;
+}
+
+.latex-output h2 {
+  font-size: 1.3em;
+}
+
+.latex-output p {
+  margin: 0.5em 0;
+}
+
+.latex-output ul, .latex-output ol {
+  margin: 0.5em 0;
+  padding-left: 2em;
+}
+
+.latex-output .katex {
+  font-size: 1.1em;
+}
