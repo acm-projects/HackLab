@@ -141,7 +141,16 @@ const getLinkedinByName = async (name) => {
         [name]
     );
     return result.rows[0]?.linkedin_url;
-}
+};
+
+// user_project_join_request interactions
+const getProjectJoinRequests = async (projectId) => {
+    const result = await pool.query(
+        'SELECT * FROM user_project_join_request WHERE project_id = $1',
+        [projectId]
+    );
+    return result.rows;
+};
 
 
 //exports
@@ -163,5 +172,6 @@ module.exports = {
     getTopicsFromProject,
     deleteTopicFromProject,
     markProjectComplete,
-    getLinkedinByName
+    getLinkedinByName,
+    getProjectJoinRequests
 };
