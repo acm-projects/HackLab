@@ -15,6 +15,7 @@ router.post('/:id', async (req, res) => {
         }
 
         await saveLatex(resume, userId);
+
         // Compile LaTeX and stream the PDF to the response
         console.log('Compiling LaTeX to PDF...');
         await compileLatexToPdfStream(resume, res);
@@ -30,13 +31,13 @@ router.get('/:id', async (req, res) => {
         const userId = req.params.id;
 
         // Retrieve the user's saved LaTeX content from the database
-        const user = await getLatex(userId);
+        const resume = await getLatex(userId);
 
-        if (!user || !user.generated_resume_latex) {
+        if (!resume) {
             return res.status(404).send('No saved LaTeX content found for this user');
         }
 
-        const latexContent = user.generated_resume_latex;
+        const latexContent = resume;
 
         // Compile LaTeX and stream the PDF to the response
         console.log('Compiling saved LaTeX to PDF...');
