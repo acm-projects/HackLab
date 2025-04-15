@@ -382,8 +382,8 @@ router.post('/:id/generateResume', async (req, res) => {
             const { latexContent } = resume;
         
             // Set the response headers for PDF
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'inline; filename="resume.pdf"');
+            //res.setHeader('Content-Type', 'application/pdf');
+            //res.setHeader('Content-Disposition', 'inline; filename="resume.pdf"');
         
             // Compile LaTeX and stream the PDF to the response
             console.log('Compiling LaTeX to PDF...');
@@ -395,7 +395,7 @@ router.post('/:id/generateResume', async (req, res) => {
         
 
         // Send the resume as a response
-        res.type('text/plain').send(resume);
+        //res.type('text/plain').send(resume);
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
