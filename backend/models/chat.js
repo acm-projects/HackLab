@@ -92,7 +92,7 @@ const Chat = {
         const result = await db.query(query, [project_id]);
         return result.rows.map((message) => ({
             ...message,
-            time: Chat.formatTime(message.time), // format time
+            time: message.time, // format time
         }));
     },
     getDMs: async (user_id) => {
@@ -101,7 +101,7 @@ const Chat = {
         const result = await db.query(query, [user_id]);
         return result.rows.map((message) => ({
             ...message,
-            time: Chat.formatTime(message.time), // format time
+            time: message.time, // format time
         }));
     },
     
@@ -110,23 +110,23 @@ const Chat = {
         const result = await db.query(query, [user_id]);
         return result.rows.map((message) => ({
             ...message,
-            time: Chat.formatTime(message.time), // format time
+            time: message.time, // format time
         }));
     },
     
-    formatTime: (timestamp) => { // converts PostgreSQL timestamp to pretty time format
-        const date = new Date(timestamp);
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    // formatTime: (timestamp) => { // converts PostgreSQL timestamp to pretty time format
+    //     const date = new Date(timestamp);
+    //     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    //     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     
-        const month = months[date.getMonth()];
-        const day = days[date.getDay()];
-        const hours = date.getHours() % 12 || 12; 
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+    //     const month = months[date.getMonth()];
+    //     const day = days[date.getDay()];
+    //     const hours = date.getHours() % 12 || 12; 
+    //     const minutes = date.getMinutes().toString().padStart(2, '0');
+    //     const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
     
-        return `${month}:${day}:${hours}:${minutes} ${ampm}`;
-    },
+    //     return `${month}:${day}:${hours}:${minutes} ${ampm}`;
+    // },
 }
 
 
