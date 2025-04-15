@@ -11,6 +11,7 @@ interface Project {
   team_lead_id: number;
 }
 
+
 interface User {
   id: number;
   name: string;
@@ -18,12 +19,14 @@ interface User {
   image: string;
 }
 
+
 interface Message {
   id: number;
   sender: User;
   content: string;
   timestamp: string;
 }
+
 
 export default function MessagesPage() {
   const { data: session } = useSession();
@@ -38,15 +41,16 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [typingUsers, setTypingUsers] = useState<number[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [unreadMessages, setUnreadMessages] = useState<Record<string, number>>({});
+
 
   const socketRef = useRef<Socket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
+
   const [showLoadingPage, setShowLoadingPage] = useState(true);
-  
+ 
       useEffect(() => {
         const timer = setTimeout(() => setShowLoadingPage(false), 2000);
         return () => clearTimeout(timer);
@@ -69,6 +73,7 @@ export default function MessagesPage() {
     fetchUserId();
   }, [session]);
 
+
   useEffect(() => {
     const fetchProjectsAndUsers = async () => {
       if (!userId) return;
@@ -82,6 +87,7 @@ export default function MessagesPage() {
         );
         setProjects(associatedProjects);
         if (associatedProjects.length > 0) setSelectedProject(associatedProjects[0]);
+
 
         const usersMap: Record<number, User[]> = {};
         const userSet = new Map<number, User>();
@@ -102,18 +108,22 @@ export default function MessagesPage() {
     fetchProjectsAndUsers();
   }, [userId]);
 
+
   useEffect(() => {
     if (!userId || (!selectedUser && !selectedProject)) return;
+
 
     const socket = io("http://52.15.58.198:3000", {
       transports: ["websocket"],
     });
+
 
     socketRef.current = socket;
     const isDM = !!selectedUser;
     const targetRoomId = isDM
       ? `dm-${[userId, selectedUser.id].sort().join("-")}`
       : `project-${selectedProject?.id}`;
+
 
     if (isDM) {
       socket.emit("joinDMRoom", userId, session?.user?.name || "Unknown", selectedUser.id, targetRoomId);
@@ -122,12 +132,15 @@ export default function MessagesPage() {
         socket.emit("getDMs", userId);
         socket.emit("sentDMs", userId);
 
+
         const [receivedDMs, sentDMs] = (await Promise.all([
           new Promise<any[]>((resolve) => socket.once("loadDMs", resolve)),
           new Promise<any[]>((resolve) => socket.once("loadSentDMs", resolve)),
         ])) as [any[], any[]];
 
+
         let chats: Message[] = [];
+
 
         for (const msg of receivedDMs) {
           if (String(msg.sender_id) === String(selectedUser.id)) {
@@ -147,6 +160,7 @@ export default function MessagesPage() {
           }
         }
 
+
         for (const msg of sentDMs) {
           if (String(msg.receiver_id) === String(selectedUser.id)) {
             const userRes = await fetch(`http://52.15.58.198:3000/users/${msg.sender_id}`);
@@ -165,13 +179,16 @@ export default function MessagesPage() {
           }
         }
 
+
         chats.sort((a, b) => {
-          const dateA = parseCustomTimestamp(a.timestamp);
-          const dateB = parseCustomTimestamp(b.timestamp);
-          console.log(dateA, dateB); // should show full dates WITH time
-          if (!dateA || !dateB) return 0;
+          const dateA = new Date(a.timestamp);
+          const dateB = new Date(b.timestamp);
           return dateA.getTime() - dateB.getTime();
         });
+
+
+
+
 
 
 
@@ -186,11 +203,13 @@ export default function MessagesPage() {
         room: targetRoomId,
       });
 
+
       socket.on("loadMessages", async (loadedMessages: any[]) => {
         const formattedMessages = await Promise.all(
           loadedMessages.map(async (msg) => {
             const userRes = await fetch(`http://52.15.58.198:3000/users/${msg.sender_id}`);
             const user = await userRes.json();
+
 
             return {
               id: Math.random(),
@@ -208,15 +227,20 @@ export default function MessagesPage() {
         setMessages(formattedMessages);
       });
     }
+
+
     socket.on("message", async (msg: any) => {
-      console.log("📨 New message received:", msg); // <== ADD THIS
       if (msg.username === session?.user?.name) return;
-    
+
+
       const res = await fetch("http://52.15.58.198:3000/users");
       const users = await res.json();
       const matchedUser = users.find((u: any) => u.name === msg.username);
+
+
       if (!matchedUser) return;
-    
+
+
       const formatted: Message = {
         id: Math.random(),
         sender: {
@@ -228,54 +252,11 @@ export default function MessagesPage() {
         content: msg.text,
         timestamp: msg.time,
       };
-    
+
+
       setMessages((prev) => [...prev, formatted]);
-    
-      // 🔥 Add this logic to increase unread count
-      const isDM = msg.isDM;
-      const otherId = matchedUser.id;
-      const msgRoomId = isDM
-        ? `dm-${[userId, otherId].sort().join("-")}`
-        : `project-${msg.project_id}`;
-    
-      const currentRoomId = selectedUser
-        ? `dm-${[userId, selectedUser.id].sort().join("-")}`
-        : selectedProject
-        ? `project-${selectedProject.id}`
-        : "";
-    
-      if (msgRoomId !== currentRoomId) {
-        setUnreadMessages((prev) => ({
-          ...prev,
-          [msgRoomId]: (prev[msgRoomId] || 0) + 1,
-        }));
-      }
     });
-    
-    
-    // socket.on("message", async (msg: any) => {
-    //   if (msg.username === session?.user?.name) return;
 
-    //   const res = await fetch("http://52.15.58.198:3000/users");
-    //   const users = await res.json();
-    //   const matchedUser = users.find((u: any) => u.name === msg.username);
-
-    //   if (!matchedUser) return;
-
-    //   const formatted: Message = {
-    //     id: Math.random(),
-    //     sender: {
-    //       id: matchedUser.id,
-    //       name: matchedUser.name,
-    //       email: matchedUser.email,
-    //       image: matchedUser.image,
-    //     },
-    //     content: msg.text,
-    //     timestamp: msg.time,
-    //   };
-
-    //   setMessages((prev) => [...prev, formatted]);
-    // });
 
     socket.on("userTyping", (typingUserId: number) => {
       if (typingUserId !== userId && !typingUsers.includes(typingUserId)) {
@@ -283,14 +264,17 @@ export default function MessagesPage() {
       }
     });
 
+
     socket.on("userStopTyping", (typingUserId: number) => {
       setTypingUsers((prev) => prev.filter((id) => id !== typingUserId));
     });
+
 
     return () => {
       socket.disconnect();
     };
   }, [userId, selectedUser, selectedProject]);
+
 
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -301,7 +285,9 @@ export default function MessagesPage() {
     }
   }, [messages]);
 
-  
+
+ 
+
 
   const emitTyping = () => {
     if (!socketRef.current || !userId) return;
@@ -310,12 +296,18 @@ export default function MessagesPage() {
       : `project-${selectedProject?.id}`;
 
 
+
+
     socketRef.current.emit("userTyping", userId, targetRoomId);
+
+
 
 
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
+
+
 
 
     typingTimeoutRef.current = setTimeout(() => {
@@ -324,13 +316,19 @@ export default function MessagesPage() {
   };
 
 
+
+
   const handleSend = () => {
     if (!newMessage.trim() || !socketRef.current || !userId) return;
+
+
 
 
     const targetRoomId = selectedUser
       ? `dm-${[userId, selectedUser.id].sort().join("-")}`
       : `project-${selectedProject?.id}`;
+
+
 
 
       socketRef.current.emit("chatMessage", userId, newMessage, selectedUser ? selectedUser.id : selectedProject?.id, selectedUser ? true: false);
@@ -340,7 +338,7 @@ export default function MessagesPage() {
         id: Math.random(),
         sender: { id: userId, name: username || "You", email: "", image: "" },
         content: newMessage,
-        timestamp: formatTime(new Date().toString()),
+        timestamp: new Date().toISOString(),
       },
     ]);
     setNewMessage("");
@@ -348,58 +346,77 @@ export default function MessagesPage() {
   };
 
 
+
+
   const handleProjectClick = (project: Project) => {
-    const roomId = `project-${project.id}`;
-    setUnreadMessages((prev) => ({ ...prev, [roomId]: 0 }));
+    if (selectedProject?.id === project.id) return; // Don't do anything if already selected
     setSelectedProject(project);
     setSelectedUser(null);
     setMessages([]);
     setTypingUsers([]);
   };
-  
+ 
   const handleUserClick = (user: User) => {
-    const roomId = `dm-${[userId, user.id].sort().join("-")}`;
-    setUnreadMessages((prev) => ({ ...prev, [roomId]: 0 }));
+    if (selectedUser?.id === user.id) return; // Don't do anything if already selected
     setSelectedUser(user);
     setSelectedProject(null);
     setMessages([]);
     setTypingUsers([]);
   };
-  
 
-  const formatTime = (timestamp: string) => {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const date = new Date(timestamp);
-    console.log(date)
-    console.log(timestamp)
-    const day = days[date.getDay()];
-    const hours = date.getHours() % 12 || 12;
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
-    return `${day}, ${hours}:${minutes} ${ampm}`
+
+
+
+  const handleKick = async (userIdToKick: number) => {
+    if (!selectedProject) return;
+    try {
+      await fetch(`http://52.15.58.198:3000/projects/${selectedProject.id}/users/${userIdToKick}`, {
+        method: "DELETE",
+      });
+      const updated = { ...projectUsersMap };
+      updated[selectedProject.id] = updated[selectedProject.id].filter(u => u.id !== userIdToKick);
+      setProjectUsersMap(updated);
+      const newUserSet = new Map<number, User>();
+      Object.values(updated).flat().forEach(u => newUserSet.set(u.id, u));
+      setAllUsers(Array.from(newUserSet.values()));
+      setKickDropdownOpen(false);
+    } catch (err) {
+      console.error("Failed to kick user:", err);
+    }
   };
 
-  function parseCustomTimestamp(timestamp: string): Date | null {
-    // Match things like "Apr:Wed:6:53 PM"
-    const match = timestamp.match(/^([A-Za-z]{3}):[A-Za-z]{3}:(\d{1,2}:\d{2} (?:AM|PM))$/);
- 
-    if (!match) {
-      console.warn("Invalid timestamp format:", timestamp);
-      return null;
+
+
+
+  const handleLeaveGroup = async () => {
+    if (!selectedProject || !userId) return;
+    try {
+      await fetch(`http://52.15.58.198:3000/users/${userId}/projects/${selectedProject.id}`, {
+        method: "DELETE",
+      });
+      setProjects(prev => prev.filter(p => p.id !== selectedProject.id));
+      setSelectedProject(null);
+    } catch (err) {
+      console.error("Failed to leave project:", err);
     }
- 
-    const [, monthStr, timeStr] = match;
- 
-    const now = new Date();
-    const day = now.getDate();
-    const year = now.getFullYear();
- 
-    const combined = `${monthStr} ${day}, ${year} ${timeStr}`;
- 
-    const parsedDate = new Date(combined);
- 
-    return isNaN(parsedDate.getTime()) ? null : parsedDate;
-  }
+  };
+
+
+
+
+  const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const day = days[date.getDay()];
+    const hours = date.getHours() % 12 || 12; // Convert to 12-hour format
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+   
+    return `${day}, ${hours}:${minutes} ${ampm}`;
+  };
+
+
+
 
 
 
@@ -412,68 +429,64 @@ if (showLoadingPage) {
              <NavBar />
              <aside className="w-[250px] bg-[#385773] text-[#ffffff] p-[16px] text-[14px] flex flex-col h-[calc(100vh-50px)] mt-[50px] overflow-y-auto ml-[-10px]">
 
+
         <div className="mb-[30px]">
           <div className="text-left w-full font-bold mb-[12px] border-none outline-none bg-transparent text-[#ffffff]">
             Projects:
           </div>
-          {projects.map((p) => {
-  const unread = unreadMessages[`project-${p.id}`];
-  return (
-    <div
-      key={p.id}
-      onClick={() => handleProjectClick(p)}
-      className={`relative cursor-pointer flex items-center gap-[8px] p-[6px] rounded-[6px] hover:bg-[#2e455c] ${selectedProject?.id === p.id ? "bg-[#2e455c]" : ""}`}
-    >
-      <img
-        src={p.thumbnail || "/placeholder.jpg"}
-        className="w-[30px] h-[30px] rounded-[4px] border border-white object-cover"
-        alt="Project Thumbnail"
-      />
-      <span className="text-[#ffffff]">{p.title}</span>
-      {unread > 0 && (
-        <span className="absolute right-[10px] top-[6px] bg-[#385773] text-white text-[10px] px-[6px] py-[2px] rounded-full">
-          {unread}
-        </span>
-      )}
-    </div>
-  );
-})}
-
+          {projects.map((p) => (
+            <div
+            key={p.id}
+            onClick={() => handleProjectClick(p)}
+            className={`cursor-pointer flex items-center gap-[8px] p-[6px] rounded-[6px] hover:bg-[#2e455c] ${selectedProject?.id === p.id ? "bg-[#2e455c] cursor-default" : ""}`}
+          >
+              <img
+                src={p.thumbnail || "/placeholder.jpg"}
+                className="w-[30px] h-[30px] rounded-[4px] border border-white object-cover"
+                alt="Project Thumbnail"
+              />
+              <span className="text-[#ffffff]">{p.title}</span>
+            </div>
+          ))}
         </div>
+
+
 
 
         <div>
           <div className="text-left w-full font-bold mb-[12px] border-none outline-none bg-transparent text-[#ffffff]">
             Users:
           </div>
-          {allUsers.map((u) => {
-  const unread = unreadMessages[`dm-${[userId, u.id].sort().join("-")}`];
-  return (
-    <div
-      key={u.id}
-      onClick={() => handleUserClick(u)}
-      className={`relative cursor-pointer flex items-center gap-[8px] p-[6px] rounded-[6px] hover:bg-[#2e455c] ${selectedUser?.id === u.id ? "bg-[#2e455c]" : ""}`}
-    >
-      <img
-        src={u.image || "/default-avatar.png"}
-        className="w-[30px] h-[30px] rounded-full border border-white object-cover"
-        alt={u.name}
-      />
-      <span className="text-[#ffffff]">{u.name}</span>
-      {unread > 0 && (
-        <span className="absolute right-[10px] top-[6px] bg-[#385773] text-white text-[10px] px-[6px] py-[2px] rounded-full">
-          {unread}
-        </span>
-      )}
-    </div>
-  );
-})}
-
+          {allUsers.map((u) => (
+            <div
+            key={u.id}
+            onClick={() => handleUserClick(u)}
+            className={`cursor-pointer flex items-center gap-[8px] p-[6px] rounded-[6px] hover:bg-[#2e455c] ${selectedUser?.id === u.id ? "bg-[#2e455c] cursor-default" : ""}`}
+          >
+              <img
+                src={u.image || "/default-avatar.png"}
+                className="w-[30px] h-[30px] rounded-full border border-white object-cover"
+                alt={u.name}
+              />
+              {typingUsers.includes(u.id) && (!selectedUser || selectedUser.id !== u.id) ? (
+                <div className="flex items-center gap-[2px]">
+                  <div className="w-[6px] h-[6px] bg-white rounded-full animate-bounce" style={{ animationDelay: "0s" }}></div>
+                  <div className="w-[6px] h-[6px] bg-white rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                  <div className="w-[6px] h-[6px] bg-white rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+                </div>
+              ) : (
+                <span className="text-[#ffffff]">{u.name}</span>
+              )}
+            </div>
+          ))}
         </div>
       </aside>
 
 
+
+
       <main className="flex-1 bg-[#e3ecf2] flex flex-col mt-[50px] h-[calc(100vh-60px)] ml-[10px] rounded-[10px] overflow-hidden">
+
 
         <div className="h-[60px] px-[20px] bg-[#cfdce6] flex justify-between items-center border-b border-[#a1b6c8] rounded-[10px]">
           <div className="flex items-center gap-[12px]">
@@ -488,8 +501,12 @@ if (showLoadingPage) {
           </div>
 
 
-          
+
+
+         
         </div>
+
+
 
 
         <div
@@ -498,59 +515,89 @@ if (showLoadingPage) {
         >
 
 
+
+
         {messages.map((msg, index) => {
   const isLast = index === messages.length - 1;
 
 
 
 
+
+
+
+
   return (
     <div
-      key={msg.id}
-      className={`flex ${msg.sender.id === userId ? "justify-end" : "justify-start"} items-end gap-[8px]`}
+  key={msg.id}
+  className={`flex ${msg.sender.id === userId ? "justify-end" : "justify-start"} items-end gap-[8px]`}
+>
+  {/* Avatar on the left (for others) */}
+  {msg.sender.id !== userId && (
+    <img
+      src={msg.sender.image || "/default-avatar.png"}
+      alt={msg.sender.name}
+      className="w-[32px] h-[32px] rounded-full object-cover border border-[#ccc]"
+    />
+  )}
+
+
+  {/* Message container */}
+  <div className="flex flex-col max-w-[70%] min-h-[32px] relative">
+    {/* Name aligned appropriately */}
+    <span
+      className={`text-[11px] text-[#6b7280] mb-[2px] ${
+        msg.sender.id === userId ? "text-right" : "text-left"
+      }`}
     >
-      {msg.sender.id !== userId && (
-        <img
-          src={msg.sender.image || "/default-avatar.png"}
-          alt={msg.sender.name}
-          className="w-[32px] h-[32px] rounded-full object-cover border border-[#ccc]"
-        />
-      )}
+      {msg.sender.name}
+    </span>
 
 
-      <div className="flex flex-col max-w-[70%]">
-        <span className="text-[11px] text-[#6b7280] mb-[2px]">{msg.sender.name}</span>
-        <div
-          className={`px-[12px] py-[8px] rounded-[12px] shadow ${
-            msg.sender.id === userId
-              ? "bg-[#ffffff] text-[#385773] self-end"
-              : "bg-[#385773] text-[#ffffff] self-start"
-          }`}
-        >
-          {msg.content}
-        </div>
-        {isLast && (
-        <div ref={messagesEndRef}>
-          <span className={`text-[10px] mt-[2px] ${msg.sender.id === userId ? "text-right text-[#6b7280]" : "text-left text-[#d1d5db]"}`}>
-            {msg.timestamp}
-          </span>
-        </div>
-      )}
-
-      </div>
-
-
-      {msg.sender.id === userId && (
-        <img
-          src={session?.user?.image || "/default-avatar.png"}
-          alt="You"
-          className="w-[32px] h-[32px] rounded-full object-cover border border-[#ccc]"
-        />
-      )}
+    {/* Message bubble */}
+    <div
+      className={`px-[12px] py-[8px] rounded-[12px] shadow ${
+        msg.sender.id === userId
+          ? "bg-[#ffffff] text-[#385773] self-end"
+          : "bg-[#385773] text-[#ffffff] self-start"
+      }`}
+    >
+      {msg.content}
     </div>
+
+
+    {/* Time aligned under the bubble */}
+    {isLast && (
+      <span
+        ref={messagesEndRef}
+        className={`text-[10px] mt-[4px] ${
+          msg.sender.id === userId
+            ? "text-right text-[#6b7280]"
+            : "text-left text-[#6b7280]"
+        }`}
+      >
+        {formatTime(msg.timestamp)}
+      </span>
+    )}
+  </div>
+
+
+  {/* Avatar on the right (for self) */}
+  {msg.sender.id === userId && (
+    <img
+      src={session?.user?.image || "/default-avatar.png"}
+      alt="You"
+      className="w-[32px] h-[32px] rounded-full object-cover border border-[#ccc]"
+    />
+  )}
+</div>
+
+
   );
 })}
         </div>
+
+
 
 
         <div className="h-[60px] px-[20px] bg-[#d9e3eb] flex items-center border-t border-[#a1b6c8] rounded-[10px]">
@@ -571,10 +618,18 @@ if (showLoadingPage) {
             </svg>
 
 
+
+
           </button>
         </div>
       </main>
     </div>
   );
 }
+
+
+
+
+
+
 
