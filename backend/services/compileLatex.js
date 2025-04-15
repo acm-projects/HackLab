@@ -11,6 +11,7 @@ async function compileLatexToPdfStream(latexContent, res) {
     // Set the response headers for PDF
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'inline; filename="resume.pdf"');
+    res.setHeader('X-Latex-Content', encodeURIComponent(latexContent)); // Encode LaTeX text for safe transmission
 
     // Pipe the PDF stream directly to the response
     pdfStream.pipe(res);

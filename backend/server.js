@@ -22,6 +22,7 @@ const topicRoutes = require('./routes/topicRoutes');
 const roleRoutes = require('./routes/roleRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const latexRoutes = require('./routes/latexRoutes');
 
 // Use the routes
 app.use('/users', userRoutes);
@@ -29,6 +30,7 @@ app.use('/projects', projectRoutes);
 app.use('/skills', skillRoutes);
 app.use('/topics', topicRoutes);
 app.use('/roles', roleRoutes);
+app.use('/recompile', latexRoutes);
 chatRoutes(io); // Pass the io instance to chatRoutes
 notificationRoutes(io);
 
