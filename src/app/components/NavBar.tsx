@@ -32,64 +32,203 @@ export default function NavBar({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const { data: session } = useSession();
-  const [userId, setUserId] = useState<number | null>(null);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const socket = io('http://52.15.58.198:3000')
+  // const [userId, setUserId] = useState<number | null>(null);
+  // const [showNotifications, setShowNotifications] = useState(false);
+  // const socket = io('http://52.15.58.198:3000')
   const socketref = useRef<any>(null);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  // const [notifications, setNotifications] = useState<any[]>([]);
   
-  
+  const [showNotifications, setShowNotifications] = useState(false);
+const [notifications, setNotifications] = useState<any[]>([]);
+const socketRef = useRef<any>(null);
+const [userId, setUserId] = useState<number | null>(null); // already exists in your code
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      if (session?.user?.email) {
-        try {
-          // Get current user ID
-          const resUsers = await fetch("http://52.15.58.198:3000/users");
-          const users = await resUsers.json();
-          const user = users.find((u: any) => u.email === session.user.email);
-          
+const unseenCount = notifications.filter((n) => n.isNew).length;
+const [messageNotifications, setMessageNotifications] = useState<any[]>([]);
+const messageUnseenCount = messageNotifications.filter((n) => n.isNew).length;
 
-          if (!user) return;
-          const userId = user.id;
-  
-          // Get all projects
-          const resProjects = await fetch("http://52.15.58.198:3000/projects");
-          const projects = await resProjects.json();
-  
-          // Filter projects where current user is team_lead
-          const myProjects = projects.filter((proj: any) => proj.team_lead_id === userId);
-  
-          let allJoinRequests: any[] = [];
-  
-          for (const project of myProjects) {
-            const resReqs = await fetch(`http://52.15.58.198:3000/users/${userId}/join-requests`);
-            const joinRequests = await resReqs.json();
-  
-            // Filter join requests only for this project
-            const projectJoinRequests = joinRequests.filter(
-              (req: any) => req.project_id === project.id
-            );
-  
-            // Add project info into notification
-            projectJoinRequests.forEach((req: any) => {
-              allJoinRequests.push({
-                userId: req.user_id,
-                projectId: project.id,
-                projectTitle: project.title,
-              });
+useEffect(() => {
+  if (!session?.user?.email) return;
+
+  const socket = io("http://52.15.58.198:3000", {
+    transports: ["websocket"],
+  });
+
+  socketRef.current = socket;
+
+  socket.on("connect", () => {
+    console.log("✅ Connected to Socket.IO");
+    socket.emit("subscribeToNotifications", { email: session.user.email });
+  });
+
+  socket.on("new-join-request", async (notification) => {
+    console.log("📩 New join request:", notification);
+
+    try {
+      const userRes = await fetch(`http://52.15.58.198:3000/users/${notification.user_id}`);
+      const user = await userRes.json();
+
+      const enrichedNotification = {
+        id: `${notification.user_id}-${notification.project_id}`,
+        userId: notification.user_id,
+        projectId: notification.project_id,
+        projectTitle: notification.projectTitle,
+        userName: user.name,
+        userImage: user.image,
+        isNew: true,
+      };
+
+      setNotifications((prev) => [enrichedNotification, ...prev]);
+    } catch (err) {
+      console.error(`Failed to enrich join request:`, err);
+    }
+  });
+
+  socket.on("notification-deleted", (deletedNotificationId: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== deletedNotificationId));
+  });
+
+  // socket.on("new-message", async (msg: any) => {
+  //   try {
+  //     const userRes = await fetch(`http://52.15.58.198:3000/users/${msg.senderId}`);
+  //     const user = await userRes.json();
+
+  //     const enriched = {
+  //       id: `msg-${Date.now()}`,
+  //       userId: user.id,
+  //       userName: user.name,
+  //       userImage: user.image,
+  //       projectTitle: msg.projectTitle || null,
+  //       isDM: msg.isDM,
+  //       isNew: true,
+  //     };
+
+  //     setMessageNotifications((prev) => [enriched, ...prev]);
+  //   } catch (err) {
+  //     console.error("❌ Failed to enrich new message:", err);
+  //   }
+  // });
+
+  socket.on("disconnect", () => {
+    console.log("❌ Disconnected from socket.io");
+  });
+
+  return () => {
+    socket.disconnect();
+  };
+}, [session]);
+
+
+
+
+useEffect(() => {
+  if (!socketRef.current) {
+    socketRef.current = io("http://52.15.58.198:3000");
+
+    socketRef.current.on("connect", () => {
+      console.log("✅ Connected to socket.io");
+    });
+
+    socketRef.current.on("new-notification", async (notification: any) => {
+      try {
+        const userRes = await fetch(`http://52.15.58.198:3000/users/${notification.user_id}`);
+        const user = await userRes.json();
+    
+        const enriched = {
+          id: `${notification.user_id}-${notification.project_id}-${Date.now()}`,
+          userId: notification.user_id,
+          projectId: notification.project_id,
+          userName: user.name,
+          userImage: user.image,
+          projectTitle: notification.projectTitle || "",
+          isNew: true,
+          type: notification.type,
+          isDM: notification.type === "dm_message",
+        };
+    
+        if (notification.type === "join_request") {
+          setNotifications((prev) => [enriched, ...prev]);
+        } else if (notification.type === "dm_message" || notification.type === "project_message") {
+          setMessageNotifications((prev) => [enriched, ...prev]);
+        }
+      } catch (err) {
+        console.error("❌ Failed to enrich notification:", err);
+      }
+    });
+    
+
+    socketRef.current.on("disconnect", () => {
+      console.log("❌ Disconnected from socket.io");
+    });
+  }
+
+  return () => {
+    socketRef.current?.disconnect();
+  };
+}, []);
+
+// 1. Marks notifications as seen when panel is opened
+useEffect(() => {
+  if (showNotifications) {
+    setNotifications((prev) =>
+      prev.map((n) => ({ ...n, isNew: false }))
+    
+    );
+  }
+}, [showNotifications]);
+
+// 2. Fetch join requests when panel is opened
+useEffect(() => {
+  const fetchJoinRequests = async () => {
+    if (!userId) return;
+
+    try {
+      const resProjects = await fetch("http://52.15.58.198:3000/projects");
+      const projects = await resProjects.json();
+      const myProjects = projects.filter((proj: any) => proj.team_lead_id === userId);
+
+      let allJoinRequests: any[] = [];
+
+      for (const project of myProjects) {
+        const resReqs = await fetch(`http://52.15.58.198:3000/projects/${project.id}/join-requests`);
+        const joinRequests = await resReqs.json();
+
+        for (const req of joinRequests) {
+          try {
+            const userRes = await fetch(`http://52.15.58.198:3000/users/${req.user_id}`);
+            const user = await userRes.json();
+
+            allJoinRequests.push({
+              id: `${req.user_id}-${req.project_id}`,
+              userId: req.user_id,
+              projectId: req.project_id,
+              projectTitle: project.title,
+              userName: user.name,
+              userImage: user.image,
+              isNew: true,
             });
+          } catch (err) {
+            console.error(`Failed to fetch user ${req.user_id}:`, err);
           }
-  
-          setNotifications(allJoinRequests);
-        } catch (err) {
-          console.error("Error fetching notifications:", err);
         }
       }
-    };
-  
-    if (showNotifications) fetchNotifications();
-  }, [showNotifications, session]);
+
+      setNotifications((prev) => {
+        const existingIds = new Set(prev.map((n) => `${n.userId}-${n.projectId}`));
+        const newOnes = allJoinRequests.filter((n) => !existingIds.has(`${n.userId}-${n.projectId}`));
+        return [...newOnes, ...prev];
+      });
+    } catch (err) {
+      console.error("❌ Error fetching join requests:", err);
+    }
+  };
+
+  if (showNotifications) {
+    fetchJoinRequests();
+  }
+}, [userId, showNotifications]);
+
+
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -109,7 +248,52 @@ export default function NavBar({
 
     fetchUserId();
   }, [session]);
-
+  
+  const handleAccept = async (notif: any) => {
+    try {
+      const res = await fetch(`http://52.15.58.198:3000/users/${notif.userId}/projects/${notif.projectId}/2`, {
+        method: "POST"
+      });
+      if (!res.ok) throw new Error("Accept failed");
+  
+      await handleReject(notif); // clean up notification
+  
+      socketRef.current?.emit("notification-handled", {
+        userId: notif.userId,
+        projectId: notif.projectId,
+        status: "accepted"
+      });
+    } catch (err) {
+      console.error("Accept error:", err);
+    }
+  };
+  
+  const handleReject = async (notif: any) => {
+    if (!socketRef.current) return;
+  
+    try {
+      // 1. Emit to delete notification via socket
+      socketRef.current.emit("delete-notification", {
+        notification_id: notif.id,
+      });
+  
+      // 2. Call backend API to delete the join request
+      const res = await fetch(`http://52.15.58.198:3000/users/${notif.userId}/join-requests/${notif.projectId}`, {
+        method: "DELETE",
+      });
+  
+      if (!res.ok) throw new Error("Failed to delete join request");
+  
+      // 3. Optimistically remove from local state
+      setNotifications((prev) => prev.filter((n) => n.id !== notif.id));
+    } catch (err) {
+      console.error("❌ Error handling rejection:", err);
+    }
+  };
+  
+  
+  
+  
   return (
     <div className="w-full fixed top-[0px] z-50">
       {/* Background image behind navbar on the left side */}
@@ -179,6 +363,11 @@ export default function NavBar({
       {/* Notifications */}
       <div className="absolute right-[30px] top-1/2 transform -translate-y-1/2 z-50 flex items-end justify-end">
         <div className="relative">
+        {unseenCount > 0 && (
+              <span className="absolute -top-[5px] -right-[1px] bg-[#0b3e72] text-[#fff] text-[10px] font-bold rounded-full w-[18px] h-[18px] flex items-center justify-center">
+                {unseenCount}
+              </span>
+            )}
           <button
             onClick={() => setShowNotifications((prev) => !prev)}
             className="text-[#fff] hover:text-[#d1d1d1] transition duration-300 border-none outline-none bg-transparent cursor-pointer"
@@ -198,30 +387,64 @@ export default function NavBar({
                 d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
               />
             </svg>
+            
+
           </button>
 
           {showNotifications && (
-            <div className="absolute right-[5px] mt-[15px] w-[300px] bg-[#fff] rounded-[10px] shadow-lg border border-gray-200 p-4 z-50">
-              {notifications.length === 0 ? (
-                <p className="text-[#333] text-sm text-center">No notifications</p>
-              ) : (
-                <ul className="space-y-3 max-h-[300px] overflow-y-auto">
-                  {notifications.map((notif, index) => (
-                    <li key={index} className="border-b pb-2">
-                      <p className="text-[#222] text-sm">
-                        <strong>User {notif.userId}</strong> requested to join <br />
-                        <span className="text-[#444] italic">{notif.projectTitle}</span>
-                      </p>
-                      <div className="flex justify-end mt-2 gap-2">
-                        <button className="text-green-600 text-xs hover:underline">Accept</button>
-                        <button className="text-red-500 text-xs hover:underline">Reject</button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
+  <div className="absolute right-[10px] mt-[15px] w-[450px] bg-[#fff] rounded-[10px] shadow-lg border border-gray-200 p-[10px] z-50">
+    {notifications.length === 0 && messageNotifications.length === 0 ? (
+  <p className="text-[#333] text-sm text-center">No notifications</p>
+) : (
+  <>
+    {notifications.length > 0 && (
+      <>
+        <h3 className="text-[13px] font-semibold text-[#385773] mb-[5px]">Join Requests</h3>
+        <ul className="space-y-[10px] mb-[10px] translate-x-[-20px]">
+          {notifications.map((notif) => (
+            <li key={notif.id} className="flex items-center justify-between border-b pb-[5px]">
+              <div className="flex items-center gap-[5px]">
+                <img src={notif.userImage || "/default-profile.png"} className="w-[30px] h-[30px] rounded-full object-cover" />
+                <div className="text-sm">
+                  <a href={`/profile/${notif.userId}`} className="text-[12px] text-[#111827]">{notif.userName}</a>
+                  <span className="ml-[2px] text-[#555] text-[12px]">requested to join</span>
+                  <span className="ml-[2px] italic text-[#333] text-[12px]">{notif.projectTitle}</span>
+                </div>
+              </div>
+              <div className="flex gap-[10px]">
+                <button onClick={() => handleAccept(notif)} className="text-[#fff] bg-[#0fe100] hover:bg-[#3e6e3a] px-[10px] py-[5px] text-[12px] rounded-[10px] border-none outline-none cursor-pointer">Accept</button>
+                <button onClick={() => handleReject(notif)} className="text-[#fff] bg-[#ca0101] hover:bg-[#573131] px-[10px] py-[5px] text-[12px] rounded-[10px] border-none outline-none cursor-pointer">Reject</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+
+    {messageNotifications.length > 0 && (
+      <>
+        <h3 className="text-[13px] font-semibold text-[#385773] mb-[5px]">Messages</h3>
+        <ul className="space-y-[10px]">
+          {messageNotifications.map((msg) => (
+            <li key={msg.id} className="flex items-start gap-2 border-b pb-[5px]">
+              <img src={msg.userImage || "/default-profile.png"} className="w-[30px] h-[30px] rounded-full object-cover" />
+              <div className="text-sm">
+                <a href={`/profile/${msg.userId}`} className="text-[12px] font-medium text-[#111827] hover:underline">{msg.userName}</a>
+                <span className="ml-1 text-[12px] text-[#555]">
+                  {msg.isDM ? "sent you a DM" : `messaged in ${msg.projectTitle}`}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+  </>
+)}
+
+  </div>
+)}
+
         </div>
       </div>
 

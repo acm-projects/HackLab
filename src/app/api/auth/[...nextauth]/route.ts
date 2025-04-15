@@ -42,52 +42,39 @@ const authOptions: NextAuthOptions = {
       },
     }),
   ],
-
   session: {
     strategy: "jwt",
     maxAge: 60 * 60,
     updateAge: 60 * 30,
   },
-
   callbacks: {
-    async jwt({ token, account, user, profile }) {
-      if (account?.access_token) {
-                token.accessToken = account.access_token;
-              }
-              
-              if (profile) {
-                token.github_username = (profile as any).login || "";
-              }
-        
-              if (user) {
-                token.id = user.id;
-                token.github_username = (user as any).github_username || (profile as any).login || "";
-              }
+    async jwt({ token, user, account, profile }) {
       if (account?.access_token) {
         token.accessToken = account.access_token;
       }
-
-      if (account?.provider === "github") {
-        token.id = account.providerAccountId;
+  
+      if (profile) {
+        token.github_username = (profile as any).login || "";
       }
-
-      if (!token.email && user?.email) {
-        token.email = user.email;
+  
+      if (user) {
+        token.id = user.id;
+        token.github_username = (user as any).github_username || (profile as any).login || "";
       }
-
-      // ✅ Check user creation time using your backend
+  
+      // ✅ Add user creation time check for isNewUser
       try {
         if (token.email) {
           const res = await fetch("http://52.15.58.198:3000/users");
           const users = await res.json();
           const thisUser = users.find((u: any) => u.email === token.email);
-
+  
           if (thisUser?.email) {
             const createdAt = new Date(thisUser.created_at || thisUser.createdAt || 0).getTime();
             const now = Date.now();
-            const threshold = 60 * 1000; // 1 minute threshold
+            const threshold = 3 * 60 * 1000; // 5 minutes in ms
             token.isNewUser = (now - createdAt) < threshold;
-
+  
             console.log("🧠 createdAt:", createdAt);
             console.log("🧠 isNewUser:", token.isNewUser);
           } else {
@@ -98,39 +85,30 @@ const authOptions: NextAuthOptions = {
         console.error("❌ Failed to check user creation time:", err);
         token.isNewUser = true;
       }
-
+  
       return token;
     },
-
+  
     async session({ session, token }) {
-      if (Date.now() / 1000 > (token.exp as number)) {
-        throw new Error("Session expired");
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.github_username = token.github_username as string;
+        session.user.isNewUser = token.isNewUser as boolean;
+        session.accessToken = token.accessToken as string;
       }
-
-      session.accessToken = token.accessToken as string;
-      session.user.id = token.id as string;
-      session.user.isNewUser = token.isNewUser as boolean;
-      
       return session;
     },
-
-    async signIn({ user }) {
-      console.log("✅ Sign in attempt from:", user.email);
-      return !!user;
-    },
-
+    
     async redirect({ url, baseUrl }) {
       if (url.includes("/signout")) return `${baseUrl}/`;
       return baseUrl;
     },
   },
-
   pages: {
     signIn: "/Survey",
     error: "/",
     signOut: "/",
   },
-
   debug: process.env.NODE_ENV !== "production",
 };
 

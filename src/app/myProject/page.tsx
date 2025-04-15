@@ -24,6 +24,8 @@ const MyProject = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
   const router = useRouter();
+  const [joinRequestUsers, setJoinRequestUsers] = useState<{ [userId: number]: any }>({});
+
  
   const [showLoadingPage, setShowLoadingPage] = useState(true);
   
@@ -44,15 +46,29 @@ const MyProject = () => {
      setProjectUsers([]);
    }
  };
- const fetchJoinRequests = async (uid: number) => {
+ const fetchJoinRequests = async (projectId: number) => {
   try {
-    const res = await fetch(`http://52.15.58.198:3000/users/${uid}/join-requests`);
+    const res = await fetch(`http://52.15.58.198:3000/projects/${projectId}/join-requests`);
     const data = await res.json();
     setJoinRequests(data);
+
+    // Fetch user details for each join request
+    const userDetails: { [userId: number]: any } = {};
+    for (const req of data) {
+      if (!userDetails[req.user_id]) {
+        const userRes = await fetch(`http://52.15.58.198:3000/users/${req.user_id}`);
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          userDetails[req.user_id] = userData;
+        }
+      }
+    }
+    setJoinRequestUsers(userDetails);
   } catch (err) {
     console.error("Failed to fetch join requests:", err);
   }
 };
+
 
 const handleAcceptJoin = async (userIdToAccept: number, projectId: number) => {
   const roleId = 2; // example roleId for 'member'
@@ -89,7 +105,8 @@ const handleRejectJoin = async (userIdToReject: number, projectId: number) => {
   if (!selectedProjectId || !userId) return;
   const currentProject = userProjects.find(p => p.id === selectedProjectId);
   if (currentProject && currentProject.team_lead_id === userId) {
-    fetchJoinRequests(userId);
+    fetchJoinRequests(selectedProjectId);
+
   }
 }, [selectedProjectId, userId]);
 
@@ -302,7 +319,11 @@ if (showLoadingPage) {
       {userProjects.map((project) => (
         <div
           key={project.id}
-          onClick={() => setSelectedProjectId(project.id)}
+          onClick={() => {
+            setSelectedProjectId(project.id);
+            setView("dashboard");
+          }}
+          
           className={`flex items-center gap-[20px] px-[15px] py-[20px] rounded-[8px] cursor-pointer transition-colors ${
             selectedProjectId === project.id ? "bg-[#ffffff20]" : "hover:bg-[#ffffff10]"
           }`}
@@ -750,24 +771,38 @@ if (showLoadingPage) {
                   className="flex justify-between items-center bg-[#e0f2fe] border border-[#38bdf8] px-[15px] py-[10px] rounded-[6px]"
                 >
                   <div className="flex items-center gap-[10px]">
-                    <button
+
+                    {joinRequestUsers[req.user_id] ? (
+                      <div className="flex items-center gap-[10px]">
+                        <button
                       onClick={() => router.push(`/profile/${req.user_id}`)}
-                      className="text-[14px] font-semibold text-[#1d4ed8] underline hover:text-[#1e40af]"
+                      className="text-[14px] font-semibold text-[#1d4ed8] underline hover:text-[#1e40af] bg-transparent border-none outline-none"
                     >
-                      View Profile
-                    </button>
-                    <span className="text-[14px] text-[#1e293b]">User ID: {req.user_id}</span>
+                        <img
+                          src={joinRequestUsers[req.user_id].image || "/default-avatar.png"}
+                          alt={joinRequestUsers[req.user_id].name}
+                          className="w-[35px] h-[35px] rounded-full border border-[#d1d5db] object-cover"
+                        />
+                        </button>
+                        <span className="text-[14px] font-medium text-[#1e293b]">
+                          {joinRequestUsers[req.user_id].name}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-[14px] text-[#9ca3af]">Loading user...</span>
+                    )}
+
                   </div>
                   <div className="flex gap-[10px]">
                     <button
                       onClick={() => handleAcceptJoin(req.user_id, req.project_id)}
-                      className="text-white bg-[#10b981] hover:bg-[#059669] px-[10px] py-[5px] text-[13px] rounded-[6px]"
+                      className="text-[#fff] bg-[#10b981] hover:bg-[#059669] px-[10px] py-[5px] text-[13px] rounded-[6px] border-none outline-none"
                     >
                       Accept
                     </button>
                     <button
                       onClick={() => handleRejectJoin(req.user_id, req.project_id)}
-                      className="text-white bg-[#ef4444] hover:bg-[#dc2626] px-[10px] py-[5px] text-[13px] rounded-[6px]"
+                      className="text-[#fff] bg-[#ef4444] hover:bg-[#dc2626] px-[10px] py-[5px] text-[13px] rounded-[6px] border-none outline-none"
                     >
                       Reject
                     </button>

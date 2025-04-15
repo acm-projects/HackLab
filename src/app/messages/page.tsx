@@ -38,6 +38,7 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [typingUsers, setTypingUsers] = useState<number[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [unreadMessages, setUnreadMessages] = useState<Record<string, number>>({});
 
   const socketRef = useRef<Socket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -207,16 +208,15 @@ export default function MessagesPage() {
         setMessages(formattedMessages);
       });
     }
-
     socket.on("message", async (msg: any) => {
+      console.log("📨 New message received:", msg); // <== ADD THIS
       if (msg.username === session?.user?.name) return;
-
+    
       const res = await fetch("http://52.15.58.198:3000/users");
       const users = await res.json();
       const matchedUser = users.find((u: any) => u.name === msg.username);
-
       if (!matchedUser) return;
-
+    
       const formatted: Message = {
         id: Math.random(),
         sender: {
@@ -228,9 +228,54 @@ export default function MessagesPage() {
         content: msg.text,
         timestamp: msg.time,
       };
-
+    
       setMessages((prev) => [...prev, formatted]);
+    
+      // 🔥 Add this logic to increase unread count
+      const isDM = msg.isDM;
+      const otherId = matchedUser.id;
+      const msgRoomId = isDM
+        ? `dm-${[userId, otherId].sort().join("-")}`
+        : `project-${msg.project_id}`;
+    
+      const currentRoomId = selectedUser
+        ? `dm-${[userId, selectedUser.id].sort().join("-")}`
+        : selectedProject
+        ? `project-${selectedProject.id}`
+        : "";
+    
+      if (msgRoomId !== currentRoomId) {
+        setUnreadMessages((prev) => ({
+          ...prev,
+          [msgRoomId]: (prev[msgRoomId] || 0) + 1,
+        }));
+      }
     });
+    
+    
+    // socket.on("message", async (msg: any) => {
+    //   if (msg.username === session?.user?.name) return;
+
+    //   const res = await fetch("http://52.15.58.198:3000/users");
+    //   const users = await res.json();
+    //   const matchedUser = users.find((u: any) => u.name === msg.username);
+
+    //   if (!matchedUser) return;
+
+    //   const formatted: Message = {
+    //     id: Math.random(),
+    //     sender: {
+    //       id: matchedUser.id,
+    //       name: matchedUser.name,
+    //       email: matchedUser.email,
+    //       image: matchedUser.image,
+    //     },
+    //     content: msg.text,
+    //     timestamp: msg.time,
+    //   };
+
+    //   setMessages((prev) => [...prev, formatted]);
+    // });
 
     socket.on("userTyping", (typingUserId: number) => {
       if (typingUserId !== userId && !typingUsers.includes(typingUserId)) {
@@ -304,53 +349,23 @@ export default function MessagesPage() {
 
 
   const handleProjectClick = (project: Project) => {
+    const roomId = `project-${project.id}`;
+    setUnreadMessages((prev) => ({ ...prev, [roomId]: 0 }));
     setSelectedProject(project);
     setSelectedUser(null);
     setMessages([]);
     setTypingUsers([]);
   };
-
-
+  
   const handleUserClick = (user: User) => {
+    const roomId = `dm-${[userId, user.id].sort().join("-")}`;
+    setUnreadMessages((prev) => ({ ...prev, [roomId]: 0 }));
     setSelectedUser(user);
     setSelectedProject(null);
     setMessages([]);
     setTypingUsers([]);
   };
-
-
-  const handleKick = async (userIdToKick: number) => {
-    if (!selectedProject) return;
-    try {
-      await fetch(`http://52.15.58.198:3000/projects/${selectedProject.id}/users/${userIdToKick}`, {
-        method: "DELETE",
-      });
-      const updated = { ...projectUsersMap };
-      updated[selectedProject.id] = updated[selectedProject.id].filter(u => u.id !== userIdToKick);
-      setProjectUsersMap(updated);
-      const newUserSet = new Map<number, User>();
-      Object.values(updated).flat().forEach(u => newUserSet.set(u.id, u));
-      setAllUsers(Array.from(newUserSet.values()));
-      setKickDropdownOpen(false);
-    } catch (err) {
-      console.error("Failed to kick user:", err);
-    }
-  };
-
-
-  const handleLeaveGroup = async () => {
-    if (!selectedProject || !userId) return;
-    try {
-      await fetch(`http://52.15.58.198:3000/users/${userId}/projects/${selectedProject.id}`, {
-        method: "DELETE",
-      });
-      setProjects(prev => prev.filter(p => p.id !== selectedProject.id));
-      setSelectedProject(null);
-    } catch (err) {
-      console.error("Failed to leave project:", err);
-    }
-  };
-
+  
 
   const formatTime = (timestamp: string) => {
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -401,20 +416,29 @@ if (showLoadingPage) {
           <div className="text-left w-full font-bold mb-[12px] border-none outline-none bg-transparent text-[#ffffff]">
             Projects:
           </div>
-          {projects.map((p) => (
-            <div
-              key={p.id}
-              onClick={() => handleProjectClick(p)}
-              className={`cursor-pointer flex items-center gap-[8px] p-[6px] rounded-[6px] hover:bg-[#2e455c] ${selectedProject?.id === p.id ? "bg-[#2e455c]" : ""}`}
-            >
-              <img
-                src={p.thumbnail || "/placeholder.jpg"}
-                className="w-[30px] h-[30px] rounded-[4px] border border-white object-cover"
-                alt="Project Thumbnail"
-              />
-              <span className="text-[#ffffff]">{p.title}</span>
-            </div>
-          ))}
+          {projects.map((p) => {
+  const unread = unreadMessages[`project-${p.id}`];
+  return (
+    <div
+      key={p.id}
+      onClick={() => handleProjectClick(p)}
+      className={`relative cursor-pointer flex items-center gap-[8px] p-[6px] rounded-[6px] hover:bg-[#2e455c] ${selectedProject?.id === p.id ? "bg-[#2e455c]" : ""}`}
+    >
+      <img
+        src={p.thumbnail || "/placeholder.jpg"}
+        className="w-[30px] h-[30px] rounded-[4px] border border-white object-cover"
+        alt="Project Thumbnail"
+      />
+      <span className="text-[#ffffff]">{p.title}</span>
+      {unread > 0 && (
+        <span className="absolute right-[10px] top-[6px] bg-[#385773] text-white text-[10px] px-[6px] py-[2px] rounded-full">
+          {unread}
+        </span>
+      )}
+    </div>
+  );
+})}
+
         </div>
 
 
@@ -422,28 +446,29 @@ if (showLoadingPage) {
           <div className="text-left w-full font-bold mb-[12px] border-none outline-none bg-transparent text-[#ffffff]">
             Users:
           </div>
-          {allUsers.map((u) => (
-            <div
-              key={u.id}
-              onClick={() => handleUserClick(u)}
-              className={`cursor-pointer flex items-center gap-[8px] p-[6px] rounded-[6px] hover:bg-[#2e455c] ${selectedUser?.id === u.id ? "bg-[#2e455c]" : ""}`}
-            >
-              <img
-                src={u.image || "/default-avatar.png"}
-                className="w-[30px] h-[30px] rounded-full border border-white object-cover"
-                alt={u.name}
-              />
-              {typingUsers.includes(u.id) && (!selectedUser || selectedUser.id !== u.id) ? (
-                <div className="flex items-center gap-[2px]">
-                  <div className="w-[6px] h-[6px] bg-white rounded-full animate-bounce" style={{ animationDelay: "0s" }}></div>
-                  <div className="w-[6px] h-[6px] bg-white rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                  <div className="w-[6px] h-[6px] bg-white rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
-                </div>
-              ) : (
-                <span className="text-[#ffffff]">{u.name}</span>
-              )}
-            </div>
-          ))}
+          {allUsers.map((u) => {
+  const unread = unreadMessages[`dm-${[userId, u.id].sort().join("-")}`];
+  return (
+    <div
+      key={u.id}
+      onClick={() => handleUserClick(u)}
+      className={`relative cursor-pointer flex items-center gap-[8px] p-[6px] rounded-[6px] hover:bg-[#2e455c] ${selectedUser?.id === u.id ? "bg-[#2e455c]" : ""}`}
+    >
+      <img
+        src={u.image || "/default-avatar.png"}
+        className="w-[30px] h-[30px] rounded-full border border-white object-cover"
+        alt={u.name}
+      />
+      <span className="text-[#ffffff]">{u.name}</span>
+      {unread > 0 && (
+        <span className="absolute right-[10px] top-[6px] bg-[#385773] text-white text-[10px] px-[6px] py-[2px] rounded-full">
+          {unread}
+        </span>
+      )}
+    </div>
+  );
+})}
+
         </div>
       </aside>
 

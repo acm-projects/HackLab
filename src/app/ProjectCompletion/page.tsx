@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import LoadingPage from "../components/loadingScreen"; // adjust the path if needed
+import LoadingPage from "../components/loadingScreen";
 import {
   Card,
   CardContent,
@@ -17,82 +17,187 @@ import NavBar from "../components/NavBar";
 export default function AiResumeGenerator() {
   const { data: session } = useSession();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [resumeGenerated, setResumeGenerated] = useState(false);
-  const [latexOutput, setLatexOutput] = useState<string>("");
-const [showLoadingPage, setShowLoadingPage] = useState(true);
+  const [latexOutput, setLatexOutput] = useState("");
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [showLoadingPage, setShowLoadingPage] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-    useEffect(() => {
-      const timer = setTimeout(() => setShowLoadingPage(false), 2000);
-      return () => clearTimeout(timer);
-    }, []);
-  const handleGenerateResume = async () => {
-    setIsGenerating(true);
+  const user = session?.user as any;
+  const id = user?.id;
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoadingPage(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const fetchResume = async () => {
+      if (!id) return;
+  
+      try {
+        // Get full user
+        const userRes = await fetch(`http://52.15.58.198:3000/users/${id}`);
+        const user = await userRes.json();
+  
+        let latex = user.generated_resume_latex;
+  
+        console.log("📥 Raw fetched LaTeX:", latex);
+  
+        // Try to unwrap if it's double-encoded
+        if (typeof latex === "string" && latex.trim().startsWith("{")) {
+          try {
+            const parsed = JSON.parse(latex);
+            latex = parsed.generated_resume_latex || latex;
+            console.log("✅ LaTeX unwrapped:", latex.slice(0, 300));
+          } catch (err) {
+            console.warn("⚠️ Failed to parse nested LaTeX. Using raw string.");
+          }
+        }
+  
+        setLatexOutput(latex);
+  
+        // Fetch PDF
+        const pdfRes = await fetch(`http://52.15.58.198:3000/recompile/${id}`);
+        const blob = await pdfRes.blob();
+        setPdfUrl(URL.createObjectURL(blob));
+      } catch (err) {
+        console.error("Failed to load saved resume:", err);
+      }
+    };
+  
+    if (session?.user?.id) fetchResume();
+  }, [session]);
+  
+
+  const handleSaveChanges = async () => {
+    if (!id || !latexOutput) return;
+    setIsSaving(true);
   
     try {
-      console.log("🧠 Full session object:", session);
-
-      if (!session?.user) {
-        throw new Error("No active session found");
+      console.log("📝 Starting Save Changes flow...");
+  
+      // 🔁 STEP 1 — Fetch current user data so we can preserve all required fields (e.g., xp, name, etc.)
+      console.log("📥 Fetching full user data before update...");
+      const userDataRes = await fetch(`http://52.15.58.198:3000/users/${id}`);
+      const userData = await userDataRes.json();
+  
+      if (!userData || userData.error) {
+        throw new Error("Failed to fetch user data");
       }
-
-      const user = session.user as any;
+  
+      // 🛠 STEP 2 — Create full update payload, only overriding generated_resume_latex
+      console.log("📤 Merging user data with updated LaTeX...");
+      const updatePayload = {
+        ...userData,
+        generated_resume_latex: latexOutput, //this could be causing error I am guessing
+      };
+  
+      console.log("📦 Final payload to PUT /users/:id:", updatePayload);
+  
+      // 📡 STEP 3 — Save updated user object with LaTeX
+      const userUpdateRes = await fetch(`http://52.15.58.198:3000/users/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatePayload),
+      });
+  
+      console.log("✅ PUT /users/:id response:", userUpdateRes.status);
       
-      // Fallback values if not in session
-      const github_username = user.github_username ;
-      const db_name = user.name;
-      const id = user.id;
-
-      if (!id) {
-        throw new Error("Missing user ID in session");
+      if (!userUpdateRes.ok) {
+        const errorText = await userUpdateRes.text();
+        console.error("❌ Failed to save LaTeX to user record:", errorText);
+        throw new Error("Failed to save LaTeX to user record");
       }
+  
+      // 🚀 STEP 4 — Trigger resume recompile with GET /recompile/:id
+      console.log("🚀 Calling GET /recompile/:id to regenerate PDF...");
+      const recompileRes = await fetch(`http://52.15.58.198:3000/recompile/${id}`);
+      
+      console.log("✅ GET /recompile/:id response:", recompileRes.status);
+  
+      if (!recompileRes.ok) {
+        const errorText = await recompileRes.text();
+        console.error("❌ Failed to fetch recompiled resume:", errorText);
+        throw new Error("Failed to recompile resume");
+      }
+  
+      // 📥 STEP 5 — Decode LaTeX from header and update UI
+      const encodedHeader = recompileRes.headers.get("X-Latex-Code") || "";
+      console.log("📥 Raw X-Latex-Code from header:", encodedHeader);
+      const decodedLatex = decodeURIComponent(encodedHeader);
+      console.log("🧪 Decoded LaTeX (preview):", decodedLatex.slice(0, 200) + "...");
+  
+      const blob = await recompileRes.blob();
+      const pdfUrl = URL.createObjectURL(blob);
+      console.log("📄 PDF Blob URL generated:", pdfUrl);
+  
+      // 🎯 Final UI update
+      setLatexOutput(decodedLatex);
+      setPdfUrl(pdfUrl);
+  
+      console.log("✅ Resume successfully saved and recompiled!");
+    } catch (err) {
+      console.error("❌ Save or recompile failed:", err);
+      alert("Something went wrong while saving or recompiling.");
+    } finally {
+      setIsSaving(false);
+      console.log("🧯 Save flow ended.");
+    }
+  };
+  
+  
 
-      console.log("📦 Sending to backend:", { github_username, db_name, id });
+  const handleGenerateResume = async () => {
+    setIsGenerating(true);
+    try {
+      if (!session?.user) throw new Error("No active session");
+      const { github_username, name: db_name, id } = session.user as any;
 
       const res = await fetch(`http://52.15.58.198:3000/users/${id}/generateResume`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ github_username, db_name }),
       });
-  
-      if (!res.ok) {
-        const errText = await res.text();
-        console.error("❌ Backend Error:", errText);
-        throw new Error("Failed to generate resume.");
-      }
-  
-      const latex = await res.text();
-      setLatexOutput(latex);
-      setResumeGenerated(true);
+
+      if (!res.ok) throw new Error("Failed to generate resume");
+
+      const encodedLatex = res.headers.get("X-Latex-Code") || "";
+      const decodedLatex = decodeURIComponent(encodedLatex);
+      const blob = await res.blob();
+
+      setLatexOutput(decodedLatex);
+      setPdfUrl(URL.createObjectURL(blob));
     } catch (err) {
-      console.error("Resume generation error:", err);
-      alert("Something went wrong while generating the resume.");
+      console.error(err);
+      alert("Something went wrong while generating resume.");
     } finally {
       setIsGenerating(false);
     }
   };
-  if (showLoadingPage) {
-      return <LoadingPage />;
-    }
+
+  if (showLoadingPage) return <LoadingPage />;
+
   return (
-    <div className="min-h-screen w-full flex flex-col text-[#0f172a] font-nunito">
+    <div className="h-screen w-full flex flex-col text-[#0f172a] font-nunito overflow-y-scroll">
       <NavBar />
       <div className="flex flex-col px-[24px] md:px-[64px] pt-[32px] gap-[32px]">
         {/* Header */}
         <section className="flex flex-row items-center justify-between mt-[-20px] ml-[-50px]">
-        <img src="/images/resumeJuno.png" alt="Image 1" className="w-[340px] h-[250px]"/>
+          <img src="/images/resumeJuno.png" alt="resume" className="w-[340px] h-[250px]" />
           <div className="bg-[#fff] translate-x-[-300px]">
             <h2 className="text-[24px] font-bold mt-[60px]">Create Resume with Juno</h2>
-            <p className="text-[#64748b] mt-[4px] text-[13px] max-w-[600px]">
-              Generate a professional resume based on your GitHub contributions and LinkedIn profile.
+            <p className="text-[#64748b] mt-[4px] text-[13px] max-w-[600px] translate-y-[-20px]">
+              Generate a personalized resume based on your GitHub contributions and LinkedIn profile.
             </p>
           </div>
-          
-          <Button onClick={handleGenerateResume} disabled={isGenerating} className="w-[180px] bg-[#385773] border-none outline-none cursor-pointer hover:bg-[#739fc5]">
+          <Button
+            onClick={handleGenerateResume}
+            disabled={isGenerating}
+            className="w-[180px] bg-[#385773] border-none outline-none cursor-pointer hover:bg-[#739fc5]"
+          >
             {isGenerating ? (
               <>
-                <Loader2 className="mr-[10px] h-[10px] w-[10px] animate-spin" />
+                <Loader2 className="mr-2 h-[16px] w-[16px] animate-spin" />
                 Generating...
               </>
             ) : (
@@ -101,66 +206,58 @@ const [showLoadingPage, setShowLoadingPage] = useState(true);
           </Button>
         </section>
 
-        {/* Side-by-side content */}
         <section className="flex flex-row gap-[32px] h-[calc(100vh-140px)] mt-[-80px]">
-          {/* Left: Resume Output (70%) */}
-          <div className="w-[70%] h-[85%] flex flex-col gap-4">
+          {/* Left */}
+          <div className="w-[100%] flex flex-col gap-[10px]">
             <Card className="bg-[#fff] mb-[10px]">
-              <CardHeader>
-                <CardTitle className="text-[18px]">Personalized Resume created with Juno</CardTitle>
-                <CardDescription className="text-[14px]">
-                  LaTeX code output for your professional resume
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-[18px]">Your Resume (Editable)</CardTitle>
+                  <CardDescription className="text-[14px]">
+                    Edit LaTeX below and click "Save Changes" to update your resume.
+                  </CardDescription>
+                </div>
+                <Button
+                  onClick={handleSaveChanges}
+                  disabled={isSaving}
+                  className="text-[14px] px-[16px] bg-[#385773] hover:bg-[#739fc5] border-none outline-none"
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-[16px] w-[16px] animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </Button>
               </CardHeader>
             </Card>
-            <Card className="bg-[#fff] flex-grow overflow-y-auto">
-              <CardContent className="p-[30px]">
-                <pre className="whitespace-pre-wrap text-[15px] font-mono text-[#334155] bg-[#f8fafc] p-[15px] rounded-md" style={{
-      fontFamily: "'Nunito', sans-serif",
-    }}>
-                  {latexOutput || "Your resume LaTeX code will appear here once generated."}
-                </pre>
-              </CardContent>
-            </Card>
-          </div>
+            <div className="w-[100%] h-full flex flex-col gap-[10px] pr-[8px]">
+              <Card className="bg-[#fff] min-h-[300px] overflow-y-scroll">
+                <CardContent className="p-[20px]">
+                  <textarea
+                    value={latexOutput}
+                    onChange={(e) => setLatexOutput(e.target.value)}
+                    className="w-full h-[240px] text-[14px] font-mono bg-[#f8fafc] p-[12px] rounded-md resize-none outline-none"
+                    placeholder="Your resume LaTeX code will appear here."
+                  />
+                </CardContent>
+              </Card>
 
-          {/* Right: How It Works (30%) */}
-          <div className="w-[30%] h-[78%] min-w-[300px]">
-            <Card className="bg-[#f8fafc] h-full overflow-auto">
-              <CardHeader>
-                <CardTitle className="text-[18px]">How We Build Your Resume</CardTitle>
-                <CardDescription className="text-[14px] text-[#475569]">
-                  Combining your GitHub and LinkedIn data for a comprehensive profile
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-[50%] flex flex-col gap-[28px] items-center justify-start">
-                {[
-                  {
-                    icon: <Github className="h-[24px] w-[24px] text-[#334155]" />,
-                    title: "GitHub Analysis",
-                    text: "We analyze your repositories, commit history, and contributions to understand your technical skills and project experience.",
-                  },
-                  {
-                    icon: <Linkedin className="h-[24px] w-[24px] text-[#0a66c2]" />,
-                    title: "LinkedIn Integration",
-                    text: "Your professional experience, education, and skills from LinkedIn help us create a well-rounded profile.",
-                  },
-                  {
-                    icon: <FileText className="h-[24px] w-[24px] text-[#334155]" />,
-                    title: "Smart Compilation",
-                    text: "We combine both data sources with AI analysis to highlight your strongest qualifications in a professional format.",
-                  },
-                ].map((item, index) => (
-                  <div key={index} className="flex flex-col items-center text-center p-[16px] max-w-full">
-                    <div className="bg-white p-[12px] rounded-full mb-[16px] shadow-sm">
-                      {item.icon}
-                    </div>
-                    <h3 className="font-medium mb-[8px] text-[15px]">{item.title}</h3>
-                    <p className="text-[13px] text-[#64748b]">{item.text}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+              <h1>Preview</h1>
+              {pdfUrl && (
+                <Card className="bg-[#fff] flex-grow">
+                  <CardContent className="p-[10px] h-full">
+                    <iframe
+                      src={pdfUrl}
+                      className="w-full h-[600px] rounded-md"
+                      title="Resume Preview"
+                    />
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
         </section>
       </div>
