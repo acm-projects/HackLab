@@ -14,11 +14,13 @@ router.post('/:id', async (req, res) => {
             return res.status(400).send('LaTeX content (resume) is required');
         }
 
-        await saveLatex(resume, userId);
+        const decodedLatex = decodeURIComponent(resume);
+
+        await saveLatex(decodedLatex, userId);
 
         // Compile LaTeX and stream the PDF to the response
         console.log('Compiling LaTeX to PDF...');
-        await compileLatexToPdfStream(resume, res);
+        await compileLatexToPdfStream(decodedLatex, res);
     } catch (error) {
         console.error('Error generating PDF:', error);
         res.status(500).send('Failed to generate PDF');
