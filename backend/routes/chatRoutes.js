@@ -164,3 +164,6 @@ module.exports = (io) => {
         });
     });
 };
+
+
+module.exports = router;
