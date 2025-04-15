@@ -10,7 +10,9 @@ const app = express();
 const server = http.createServer(app); // Create an HTTP server
 const io = socketio(server); // Initialize socket.io with the server
 
-app.use(cors());
+app.use(cors({
+    exposedHeaders: ['X-Latex-Content'], // Expose the custom header to the frontend
+}));
 app.use(express.json()); // Middleware to parse JSON requests
 app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
 
