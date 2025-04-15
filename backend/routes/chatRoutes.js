@@ -114,8 +114,7 @@ module.exports = (io) => {
                     // Construct the DM room name
                     const senderName = await Chat.getUserName(UID);
                     const receiverName = await Chat.getUserName(PID);
-                    const roomName = senderName > receiverName ? `${receiverName + ' and ' + senderName}` : `${senderName + ' and ' + receiverName}`;
-        
+                     const roomName = `dm-${[UID, PID].sort().join("-")}`;
                     // Emit the message to the DM room
                     io.to(roomName).emit('message', { username, text: msg, time: Chat.formatTime(new Date()) });
                 } else {
