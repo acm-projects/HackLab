@@ -1,6 +1,5 @@
 // chatRoutes.js
 const Chat = require('../models/chat'); // Import the Chat model
-
 const botName = 'HackLab Bot'; // for sending server messages
 
 module.exports = (io) => {
@@ -166,4 +165,3 @@ module.exports = (io) => {
 };
 
 
-module.exports = router;

@@ -46,3 +46,5 @@ router.get('/:id', async (req, res) => {
         res.status(500).send('Failed to recompile saved LaTeX');
     }
 });
+
+module.exports = router;
