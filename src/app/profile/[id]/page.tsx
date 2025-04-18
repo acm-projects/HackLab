@@ -201,6 +201,28 @@ export default function DeveloperProfile() {
              const skillNames = skillsData.map((s: any) => s.skill);
              const topicsData = await topicsRes.json();
              const topicNames = topicsData.map((t: any) => t.topic);
+const handleDeleteAccount = async () => {
+  if (!userId) return;
+
+  const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
+  if (!confirmDelete) return;
+
+  try {
+    const res = await fetch(`http://52.15.58.198:3000/users/${userId}`, {
+      method: "DELETE",
+    });
+
+    if (res.status === 204) {
+      alert("Account deleted successfully.");
+      window.location.href = "/"; // redirect to landing or login
+    } else {
+      alert("Failed to delete account.");
+    }
+  } catch (error) {
+    console.error("❌ Error deleting account:", error);
+    alert("Something went wrong.");
+  }
+};
 
 
              return {
@@ -358,6 +380,30 @@ export default function DeveloperProfile() {
     fetchUserData();
   }, [userId]);
 
+  const handleDeleteAccount = async () => {
+    if (!userId) return;
+  
+    const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
+    if (!confirmDelete) return;
+  
+    try {
+      const res = await fetch(`http://52.15.58.198:3000/users/${userId}`, {
+        method: "DELETE",
+      });
+  
+      if (res.status === 204) {
+        alert("Account deleted successfully.");
+        window.location.href = "/"; // redirect to landing or login
+      } else {
+        alert("Failed to delete account.");
+      }
+    } catch (error) {
+      console.error("❌ Error deleting account:", error);
+      alert("Something went wrong.");
+    }
+  };
+  
+
    if (showLoadingPage) {
     return <LoadingPage />;
   }
@@ -365,17 +411,28 @@ export default function DeveloperProfile() {
    <div className="flex flex-col h-screen">
      <NavBar />
      <div className="flex flex-1 overflow-y-auto mt-[60px] ml-[80px] mr-[80px]">
-       <ProfileSidebar
-         name={profileInfo.name}
-         level={userLevel}
-         profilePic={profileInfo.profilePic}
-         topics={topics}
-         roles={role}
-         skills={skills}
-         onEditClick={() => setIsEditing(true)}
-          isMyProfile={isMyProfile} // ✅ Add this line
-       />
+     <div className="flex flex-col items-center">
+    <ProfileSidebar
+      name={profileInfo.name}
+      level={userLevel}
+      profilePic={profileInfo.profilePic}
+      topics={topics}
+      roles={role}
+      skills={skills}
+      onEditClick={() => setIsEditing(true)}
+      isMyProfile={isMyProfile}
+    />
 
+    {/* ✅ Delete Account Button */}
+    {isMyProfile && (
+      <button
+        onClick={handleDeleteAccount}
+        className="mt-[20px] bg-[#ef4444] hover:bg-[#dc2626] text-[#fff] text-sm px-[80px] py-[5px] rounded-[6px] border-none outline-none"
+      >
+        Delete Account
+      </button>
+    )}
+  </div>
 
        <div className="flex-1 flex flex-col gap-[16px] p-[20px] mt-[20px]">
          {isEditing ? (
