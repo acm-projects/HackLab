@@ -112,15 +112,14 @@ module.exports = (io) => {
         
                 if (isDM) {
                     // Construct the DM room name
-                    const senderName = await Chat.getUserName(UID);
-                    const receiverName = await Chat.getUserName(PID);
-                    const roomName = senderName > receiverName ? `${receiverName + ' and ' + senderName}` : `${senderName + ' and ' + receiverName}`;
-        
+                    //const senderName = await Chat.getUserName(UID);
+                    //const receiverName = await Chat.getUserName(PID);
+                     const roomName = `dm-${[UID, PID].sort().join("-")}`;
                     // Emit the message to the DM room
-                    io.to(roomName).emit('message', { username, text: msg, time: Chat.formatTime(new Date()) });
+                    io.to(roomName).emit('message', { username, text: msg, time: new Date().toISOString() });
                 } else {
                     // Emit the message to the project room
-                    io.to(PID).emit('message', { username, text: msg, time: Chat.formatTime(new Date()) });
+                    io.to(PID).emit('message', { username, text: msg, time: new Date().toISOString() });
                 }
             } catch (error) {
                 console.error('Error saving message:', error);
@@ -163,5 +162,3 @@ module.exports = (io) => {
         });
     });
 };
-
-
