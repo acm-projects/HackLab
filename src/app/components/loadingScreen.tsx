@@ -28,8 +28,8 @@ export default function LoadingPage() {
 
 
        {/* Loading Text */}
-       <h2 className="text-[24px] font-bold text-center text-[#0f766e] dark:text-[#2dd4bf] mb-[32px] animate-pulse">
-         Loading...
+       <h2 className="text-[24px] font-bold text-center text-[#0f766e] dark:text-[#2dd4bf] mb-[32px] animate-pulse ml-[10px]">
+         Loading
        </h2>
 
 

@@ -68,7 +68,7 @@ const EditProjectInline = ({
   if (!project) return <div className="p-[20px] text-[#374151]">Loading...</div>;
 
   return (
-    <div className="w-[95%] h-full py-[40px] px-[20px] bg-[#efefef] flex justify-center overflow-y-auto text-nunito">
+    <div className="w-[95%] h-[75%] py-[40px] px-[20px] bg-[#fff] border-1 rounded-[20px] flex justify-center overflow-y-auto text-nunito">
       <div className="w-[90%] max-w-[1000px] bg-white rounded-[10px] shadow-lg px-[40px] py-[20px] mb-[30px]">
 
         <h1 className="text-[28px] font-bold text-[#1f2937] mb-[24px]">Edit Project</h1>
@@ -197,7 +197,7 @@ const EditProjectInline = ({
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="py-[10px] px-[18px] bg-[#385773] hover:bg-[#3a4651] text-[#fff] rounded-[6px] text-[15px] font-medium border-none outline-none mb-[50px] translate-x-[25px]"
+            className="py-[10px] px-[18px] bg-[#385773] hover:bg-[#3a4651] text-[#fff] rounded-[6px] text-[15px] font-medium border-none outline-none mb-[50px] translate-x-[25px] cursor-pointer"
           >
             {loading ? "Saving..." : "Save Project"}
           </button>

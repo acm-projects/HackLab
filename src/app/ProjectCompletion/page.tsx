@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { FileText, Loader2, Github, Linkedin } from "lucide-react";
 import NavBar from "../components/NavBar";
 
+
 export default function AiResumeGenerator() {
   const { data: session } = useSession();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -186,8 +187,8 @@ export default function AiResumeGenerator() {
           <img src="/images/resumeJuno.png" alt="resume" className="w-[340px] h-[250px]" />
           <div className="bg-[#fff] translate-x-[-300px]">
             <h2 className="text-[24px] font-bold mt-[60px]">Create Resume with Juno</h2>
-            <p className="text-[#64748b] mt-[4px] text-[13px] max-w-[600px] translate-y-[-20px]">
-              Generate a personalized resume based on your GitHub contributions and LinkedIn profile.
+            <p className="text-[#64748b] mt-[4px] text-[13px] max-w-[600px] translate-y-[-30px]">
+              Generate a professional resume based on your GitHub contributions and LinkedIn profile.
             </p>
           </div>
           <Button
@@ -249,11 +250,18 @@ export default function AiResumeGenerator() {
               {pdfUrl && (
                 <Card className="bg-[#fff] flex-grow">
                   <CardContent className="p-[10px] h-full">
-                    <iframe
-                      src={pdfUrl}
-                      className="w-full h-[600px] rounded-md"
-                      title="Resume Preview"
-                    />
+                  <iframe
+                  src={pdfUrl}
+                  className="w-full h-[600px] rounded-md bg-white border-none"
+                  style={{
+                    backgroundColor: "white",
+                    border: "none",
+                    margin: 0,
+                    padding: 0,
+                  }}
+                  title="Resume Preview"
+                />
+
                   </CardContent>
                 </Card>
               )}

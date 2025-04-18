@@ -416,21 +416,7 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
   return (
     <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito mt-[20px]">
           <NavBar />
-      {/* Gradient bubbles */}
-      <div
-        style={{
-          position: "absolute",
-          top: "100px",
-          left: "0px",
-          width: "100%",
-          height: "100%",
-          overflow: "hidden",
-          pointerEvents: "none"
-        }}>
-        <div style={{ position: "absolute", top: "10%", left: "5%", width: "300px", height: "300px", borderRadius: "50%", background: "#60a5fa", opacity: "0.1", filter: "blur(80px)" }}></div>
-        <div style={{ position: "absolute", bottom: "15%", right: "10%", width: "250px", height: "250px", borderRadius: "50%", background: "#a5b4fc", opacity: "0.1", filter: "blur(60px)" }}></div>
-        <div style={{ position: "absolute", top: "40%", right: "20%", width: "200px", height: "200px", borderRadius: "50%", background: "#c084fc", opacity: "0.1", filter: "blur(70px)" }}></div>
-      </div>
+      
 
       {/* Fixed Header */}
       <h2
@@ -1052,10 +1038,9 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
 
 
            {/* Thumbnail Upload - Full Width */}
-      <div style={{ width: "100%" }}>
+      <div className="w-full">
         <label style={{ marginBottom: "8px", display: "block" }}>Upload Project Thumbnail</label>
 
-            {/* 👇👇 Add this block here 👇👇 */}
             {typeof thumbnail === "string" && (thumbnail as string).startsWith("http") && (
               <div style={{ marginBottom: "12px" }}>
                 <img
@@ -1063,8 +1048,8 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
                   alt="AI-generated Thumbnail"
                   style={{
                     width: "100%",
-                    maxHeight: "250px",
-                    objectFit: "cover",
+                    maxHeight: "350px",
+                    objectFit: "fill",
                     borderRadius: "8px",
                     border: "1px solid #ccc",
                   }}

@@ -34,7 +34,7 @@ export default function CreateProject() {
           <img
             src="/images/JUNOAI.png"
             alt="Juno AI"
-            className="w-[280px] h-[250px] object-contain mb-[10px] ml-[10px]"
+            className="w-[280px] h-[250px] object-contain mb-[10px] ml-[10px] translate-y-[-30px]"
           />
 
           <button

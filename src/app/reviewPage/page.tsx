@@ -311,7 +311,7 @@ export default function ReviewPage() {
           <img
             src={projectData.thumbnail}
             alt="Project Thumbnail"
-            className="object-cover w-full max-h-[200px] rounded-[12px] border border-[#cfdce5]"
+            className="object-fill w-full max-h-[350px] rounded-[12px] border border-[#cfdce5]"
           />
         </div>
       )}

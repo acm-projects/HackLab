@@ -24,7 +24,7 @@ export default function AuthButtons() {
   }, [session, status, router]);
 
   return (
-    <div className="flex gap-[10px] items-center">
+    <div className="flex gap-[10px] items-center px-[50px]">
       {!session ? (
         <button
           onClick={() => signIn("github", { prompt: "login" })}

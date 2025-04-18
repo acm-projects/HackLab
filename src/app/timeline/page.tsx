@@ -124,7 +124,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({ projectId, userId, te
                             : toggleTooltip(`${idx}-frontend`)
                         }
                       />
-                      <div className="mt-[8px] text-[12px] text-[#6b7280]">{task.date}</div>
+                   
 
                       {selectedTask === `${idx}-frontend` && (
                         <div className="absolute -bottom-[80px] w-[160px] bg-white text-black text-[12px] border border-gray-300 shadow rounded px-[12px] py-[8px] z-20">

@@ -30,9 +30,9 @@ export default function LandingPage() {
       <div id="landingPage" className="h-screen w-full flex flex-col justify-between bg-black text-tertiary font-nunito snap-start">
          
         {/* Top Bar */}
-        <div className="fixed left-[50px] right-[50px] z-50 flex justify-between bg-[#ffffff] mt-[-10px] ">
-          <h1 className="text-hacklab-title font-nunito">HackLab</h1> 
-          <AuthButtons /> {/* Imported Sign In & Sign Up Buttons */}
+        <div className="fixed left-[0px]  z-50 flex justify-between w-screen bg-[#ffffff] mt-[-10px] ">
+          <h1 className="text-hacklab-title font-nunito px-[50px]">HackLab</h1> 
+          <AuthButtons/> {/* Imported Sign In & Sign Up Buttons */}
         </div>
 
         {/* Content Section */}
@@ -92,6 +92,16 @@ export default function LandingPage() {
           <h1 className="font-[300]">Let Juno do it for you</h1>
           <p className="text-lg text-tertiary flex text-left">AI kickstarts your project with a dynamic timeline and overview, then refines your success into a compelling resume-worthy description—transforming effort into impact with smart, seamless storytelling.</p>
         </div>
+        {/* <div className="w-[70%] h-[85%] translate-y-[50px] rounded-xl overflow-hidden shadow-lg bg-[#385773] py-[10px] mb-[10px]">
+          <video
+            src="/images/letJuno.mov"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-[75%] h-[75%] object-fill justify-center translate-x-[18px]"
+          />
+        </div> */}
       </div>
     </div>
   );

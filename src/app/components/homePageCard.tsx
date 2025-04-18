@@ -95,23 +95,7 @@ const CompletedProjectCard: React.FC<CompletedProjectCardProps> = ({
        <img src={image} alt={title} className="h-full w-full object-cover" />
      </div>
 
-
-     {/* Completion Tag, Date, GitHub Button */}
-     <div className="absolute top-[10px] right-[10px] flex flex-col items-end gap-[6px] z-10">
-       {/* Completion Status */}
-         <span
-       className={`px-[10px] py-[4px] text-[11px] font-semibold rounded-[9999px] ${
-         isCompleted ? "bg-[#10b981]" : "bg-[#f59e0b]"
-       } text-[#ffffff] shadow-sm`}
-     >
-       {isCompleted ? "Completed" : "In Progress"}
-     </span>
-
-
-       {/* GitHub Button */}
-     </div>
-
-
+  
      {/* Bottom Content */}
      <div className="h-560%] w-full px-[15px] py-[10px] flex mt-[-10px] gap-[4px]">
        {/* Left Side */}
@@ -122,12 +106,13 @@ const CompletedProjectCard: React.FC<CompletedProjectCardProps> = ({
        </h2>
 
 
-        <div className="min-h-[28px] overflow-x-auto whitespace-nowrap scrollbar-hide">
-       {topics.length > 0 && <TagRow items={topics} color="#426c98" />}
-     </div>
-     <div className="mt-[-5px] min-h-[28px] overflow-x-auto whitespace-nowrap scrollbar-hide">
-       {skills.length > 0 && <TagRow items={skills} color="#5888b5" />}
-     </div>
+       <div className="min-h-[28px] overflow-x-auto whitespace-nowrap scrollbar-hide">
+  {topics.length > 0 && <TagRow items={topics.slice(0, 1)} color="#426c98" />}
+</div>
+<div className="mt-[-5px] min-h-[28px] overflow-x-auto whitespace-nowrap scrollbar-hide">
+  {skills.length > 0 && <TagRow items={skills} color="#5888b5" />}
+</div>
+
       
 
 

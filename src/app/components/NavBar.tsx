@@ -298,7 +298,7 @@ useEffect(() => {
     <div className="w-full fixed top-[0px] z-50">
       {/* Background image behind navbar on the left side */}
 
-      <div className={`h-[60px] bg-[#385773] flex items-center justify-start px-4 transition-all duration-500 ${isMenuOpen ? "pl-[200px]" : "pl-4"}`}>
+      <div className={`h-[60px] bg-[#385773] flex items-center justify-start transition-all duration-500 ${isMenuOpen ? "pl-[200px]" : "pl-4"} `} style={{boxShadow: "10px 0 30px rgba(0,0,0,0.3)" }}>
         <button
           className="bg-[#385773] text-primary border-transparent border-none outline-none cursor-pointer font-nunito text-md px-[35px] py-[16px] text-center z-50 ml-[-10px]"
           onClick={() => setIsMenuOpen(!isMenuOpen)}

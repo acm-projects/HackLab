@@ -423,29 +423,29 @@ export default function MessagesPage() {
 if (showLoadingPage) {
     return <LoadingPage />;
   }
-  return (
-    <div className="flex h-screen font-nunito">
+return (
+    <div className="flex h-screen font-nunito bg-[#cfdce6]">
         {/* <div className="w-screen h-full bg-[#f5f7fa] text-nunito"> */}
              <NavBar />
-             <aside className="w-[250px] bg-[#385773] text-[#ffffff] p-[16px] text-[14px] flex flex-col h-[calc(100vh-50px)] mt-[50px] overflow-y-auto ml-[-10px]">
+             <aside className="w-[220px] h-[91%] bg-[#cfdce6] rounded-r-[23px] text-[#385773] p-[16px] text-[14px] flex flex-col mt-[50px] overflow-y-auto ml-[-10px]">
 
 
         <div className="mb-[30px]">
-          <div className="text-left w-full font-bold mb-[12px] border-none outline-none bg-transparent text-[#ffffff]">
+          <div className="text-left w-full font-bold mb-[12px] border-none outline-none bg-transparent text-[#385773] mt-[20px]">
             Projects:
           </div>
           {projects.map((p) => (
             <div
             key={p.id}
             onClick={() => handleProjectClick(p)}
-            className={`cursor-pointer flex items-center gap-[8px] p-[6px] rounded-[6px] hover:bg-[#2e455c] ${selectedProject?.id === p.id ? "bg-[#2e455c] cursor-default" : ""}`}
+            className={`cursor-pointer flex items-center gap-[8px] mt-[10px] p-[6px] rounded-[6px] hover:bg-[#2e455c49] ${selectedProject?.id === p.id ? "bg-[#2e455c49] cursor-default" : ""}`}
           >
               <img
                 src={p.thumbnail || "/placeholder.jpg"}
                 className="w-[30px] h-[30px] rounded-[4px] border border-white object-cover"
                 alt="Project Thumbnail"
               />
-              <span className="text-[#ffffff]">{p.title}</span>
+              <span className="text-[#385773]">{p.title}</span>
             </div>
           ))}
         </div>
@@ -454,14 +454,14 @@ if (showLoadingPage) {
 
 
         <div>
-          <div className="text-left w-full font-bold mb-[12px] border-none outline-none bg-transparent text-[#ffffff]">
+          <div className="text-left w-full font-bold mb-[12px] border-none outline-none bg-transparent text-[#385773]">
             Users:
           </div>
           {allUsers.map((u) => (
             <div
             key={u.id}
             onClick={() => handleUserClick(u)}
-            className={`cursor-pointer flex items-center gap-[8px] p-[6px] rounded-[6px] hover:bg-[#2e455c] ${selectedUser?.id === u.id ? "bg-[#2e455c] cursor-default" : ""}`}
+            className={`cursor-pointer flex items-center gap-[8px] mt-[10px] p-[6px] rounded-[6px] hover:bg-[#2e455c49] ${selectedUser?.id === u.id ? "bg-[#2e455c49] cursor-default" : ""}`}
           >
               <img
                 src={u.image || "/default-avatar.png"}
@@ -475,7 +475,7 @@ if (showLoadingPage) {
                   <div className="w-[6px] h-[6px] bg-white rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
                 </div>
               ) : (
-                <span className="text-[#ffffff]">{u.name}</span>
+                <span className="text-[#385773]">{u.name}</span>
               )}
             </div>
           ))}
@@ -485,7 +485,7 @@ if (showLoadingPage) {
 
 
 
-      <main className="flex-1 bg-[#e3ecf2] flex flex-col mt-[50px] h-[calc(100vh-60px)] ml-[10px] rounded-[10px] overflow-hidden">
+      <main className="flex-1 bg-[#e3ecf2] translate-x-[11px] flex flex-col mt-[60px] h-[calc(100vh-60px)] ml-[10px] rounded-[10px] overflow-hidden">
 
 
         <div className="h-[60px] px-[20px] bg-[#cfdce6] flex justify-between items-center border-b border-[#a1b6c8] rounded-[10px]">
@@ -610,7 +610,7 @@ if (showLoadingPage) {
           }}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder="Type your message..."
-          className="flex-1 px-[12px] py-[8px] rounded-[8px] border border-[#ccc] outline-none text-[14px]"
+          className="flex-1 px-[12px] py-[13px] rounded-[8px] border border-[#ccc] outline-none text-[14px]"
         />
           <button onClick={handleSend} className="ml-[12px] px-[15px] py-[8px] bg-[#385773] text-[#fff] rounded-[8px] text-[14px] border-none outline-none flex justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[20px]">

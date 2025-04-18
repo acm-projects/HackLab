@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { Sparkles, Lightbulb } from "lucide-react";
 import { useRouter } from "next/navigation";
 import NavBar from "../components/NavBar";
+import LoadingGears from "../components/LoadingGears";
+
+
 export default function CreateProjectWithAI() {
   const [description, setDescription] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -61,6 +64,9 @@ export default function CreateProjectWithAI() {
     setTimeout(() => setIsTyping(false), 1000);
   };
 
+  
+  if (generating) return <LoadingGears />;
+
   return (
     <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito">
               <NavBar />
@@ -80,7 +86,7 @@ export default function CreateProjectWithAI() {
         <div style={{ height: "4px", width: "100%", background: "linear-gradient(to right, #5fa8e0, #9bbcf0, #5fa8e0)" }}></div>
 
         <div style={{ padding: "32px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
+          <div className="mt-[-30px]" style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
             <img
               src="/images/AIPROJECTTT.png"
               alt="Manual Project"

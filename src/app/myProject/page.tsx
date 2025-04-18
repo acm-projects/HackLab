@@ -314,8 +314,8 @@ if (showLoadingPage) {
    <div className="w-screen h-full bg-[#f5f7fa] text-nunito">
      <NavBar />
      <div className="flex w-screen h-full translate-x-[-8px]">
-     <div className="w-[270px] mt-[50px] bg-[#385773] py-[10px] text-[#fff] flex flex-col gap-[12px] overflow-y-auto border-r border-[#fff] px-[10px] rounded-br-[55px]">
-      <div className="translate-y-[10px]">
+     <div className="w-[250px] mt-[50px] bg-transparent py-[10px] border-2 text-[#385773] flex flex-col gap-[12px] overflow-y-auto px-[10px]">
+      <div className="translate-y-[10px] ">
       {userProjects.map((project) => (
         <div
           key={project.id}
@@ -324,16 +324,16 @@ if (showLoadingPage) {
             setView("dashboard");
           }}
           
-          className={`flex items-center gap-[20px] px-[15px] py-[20px] rounded-[8px] cursor-pointer transition-colors ${
-            selectedProjectId === project.id ? "bg-[#ffffff20]" : "hover:bg-[#ffffff10]"
-          }`}
+          className={`flex items-center gap-[10px] mt-[10px] px-[15px] py-[10px] rounded-[8px] cursor-pointer transition-colors ${
+            selectedProjectId === project.id ? "bg-[#38577381] text-[#fff]" : "hover:bg-[#38577381] text-[#fff]"
+          }` }
         >
           <img
             src={project.thumbnail}
             alt="thumbnail"
             className="w-[50px] h-[50px] object-cover rounded-[6px] border border-white"
           />
-          <span className="text-[14px] font-medium text-[#fff] whitespace-nowrap overflow-hidden text-ellipsis max-w-[130px]">
+          <span className="text-[14px] font-medium text-[#385773] whitespace-nowrap overflow-hidden text-ellipsis max-w-[130px]">
             {project.title}
           </span>
         </div>
@@ -452,8 +452,12 @@ if (showLoadingPage) {
             </button>
             <button
               onClick={() => setShowCompleteConfirm(true)} // JUST set the modal
-              className="bg-[#088e61] hover:bg-[#2f574a] cursor-pointer text-[#ffffff] px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium border-none outline-none"
+              className="bg-[#088e61] hover:bg-[#2f574a] cursor-pointer text-[#ffffff] px-[14px] py-[8px] flex justify-center items-center rounded-[6px] text-[14px] font-medium border-none outline-none gap-[5px]"
             >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+              </svg>
+
           Mark Complete
         </button>
 
@@ -550,27 +554,32 @@ if (showLoadingPage) {
      <h2 className="text-[22px] font-bold text-[#111827] mb-[5px]">{selectedProject.title}</h2>
 
 
-     <div className="flex items-center gap-[10px] mb-[5px]">
+     <div className="flex items-center justify-between gap-[10px] mb-[5px]">
        {selectedProject.type && (
          <span className="text-[12px] font-medium text-[#ffffff] bg-[#385773] px-[10px] py-[4px] rounded-[999px]">
            {selectedProject.type}
          </span>
        )}
-
-
-       {selectedProject.github_repo_url && (
-         <a
-           href={selectedProject.github_repo_url}
-           target="_blank"
-           rel="noopener noreferrer"
-           className="text-[#2563eb] text-[13px] underline hover:text-[#1e40af] break-all flex justify-center items-center d"
-         >
-           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
-           <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-           </svg>
-           GITHUB LINK
-         </a>
-       )}
+        {selectedProject.github_repo_url && (
+          <a
+            href={selectedProject.github_repo_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-[6px] p-[5px] text-[#fff] hover:text-[#dcdcdc] text-[13px] font-medium underline bg-[#000] rounded-[10px]"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 256 256"
+              className="w-[18px] h-[18px]"
+              fill="white"
+            >
+              <g transform="scale(8,8)">
+                <path d="M16,4c-6.62891,0 -12,5.37109 -12,12c0,5.30078 3.4375,9.80078 8.20703,11.38672c0.60156,0.10938 0.82031,-0.25781 0.82031,-0.57812c0,-0.28516 -0.01172,-1.03906 -0.01562,-2.03906c-3.33984,0.72266 -4.04297,-1.60937 -4.04297,-1.60937c-0.54687,-1.38672 -1.33203,-1.75781 -1.33203,-1.75781c-1.08984,-0.74219 0.08203,-0.72656 0.08203,-0.72656c1.20313,0.08594 1.83594,1.23438 1.83594,1.23438c1.07031,1.83594 2.80859,1.30469 3.49219,1c0.10938,-0.77734 0.42188,-1.30469 0.76172,-1.60547c-2.66406,-0.30078 -5.46484,-1.33203 -5.46484,-5.92969c0,-1.3125 0.46875,-2.38281 1.23438,-3.22266c-0.12109,-0.30078 -0.53516,-1.52344 0.11719,-3.17578c0,0 1.00781,-0.32031 3.30078,1.23047c0.95703,-0.26562 1.98438,-0.39844 3.00391,-0.40234c1.01953,0.00391 2.04688,0.13672 3.00391,0.40234c2.29297,-1.55078 3.29688,-1.23047 3.29688,-1.23047c0.65625,1.65234 0.24609,2.875 0.12109,3.17578c0.76953,0.83984 1.23047,1.91016 1.23047,3.22266c0,4.60938 -2.80469,5.62109 -5.47656,5.92188c0.42969,0.36719 0.8125,1.10156 0.8125,2.21875c0,1.60547 -0.01172,2.89844 -0.01172,3.29297c0,0.32031 0.21484,0.69531 0.82422,0.57813c4.76563,-1.58984 8.19922,-6.08594 8.19922,-11.38672c0,-6.62891 -5.37109,-12 -12,-12z" />
+              </g>
+            </svg>
+            Link to GitHub
+          </a>
+        )}
      </div>
 
 
@@ -732,7 +741,8 @@ if (showLoadingPage) {
     )}
            {view === "timeline" && selectedProject && (
   <div className="bg-white p-[20px] h-[650px] rounded-[8px] shadow-md border border-[#d1d5db] overflow-y-auto">
-    <ProjectTimeline projectId={selectedProjectId!} />
+    <ProjectTimeline projectId={selectedProjectId!} isTeamLead={isTeamLead} />
+
   </div>
 )}
         {view === "manage" && selectedProject && userId === selectedProject.team_lead_id && (

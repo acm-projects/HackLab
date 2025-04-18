@@ -99,12 +99,12 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
 
 
        <div style={{ overflowY: "auto", padding: "20px" }}>
-         <img
-           src={image}
-           alt={title}
-           className="object-cover rounded-[10px]"
-           style={{ width: "100%", height: "250px" }}
-         />
+       <img
+          src={image}
+          alt={title}
+          className="w-full h-[500px] rounded-[10px] object-fill"
+        />
+
 
 
          <h2 className="text-[28px] font-bold mt-[15px]">{title}</h2>

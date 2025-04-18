@@ -98,11 +98,11 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
 
 
      {/* Bottom Content */}
-     <div className="h-[60%] w-full px-[15px] py-[10px] flex mt-[-10px] gap-[4px]">
+     <div className="h-[60%] w-full px-[15px] py-[10px] flex mt-[-5px] gap-[4px]">
        {/* Left Side */}
-       <div className="flex flex-col w-1/2 pr-[8px] ml-[10px]">
-         <h2 className="text-[18px] font-bold text-[#000000] mt-[4px] mb-[3px]">{title}</h2>
-         {topics.length > 0 && <TagRow items={topics} color="#426c98" />}
+       <div className="flex flex-col w-2/3 pr-[8px] ml-[10px]">
+         <h2 className="text-[18px] font-bold text-[#000000] mt-[5px] mb-[3px]">{title}</h2>
+         {topics.length > 0 && <TagRow items={topics.slice(0, 1)} color="#426c98" />}
          <div className = "mt-[-5px]">
          {skills.length > 0 && <TagRow items={skills} color="#5888b5" />}
          </div>
