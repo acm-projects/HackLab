@@ -10,6 +10,7 @@ import { ProjectStats, ProfileInfoCard } from "../../components/Profile/profilei
 import EditProfilePage from "../edit/page";
 import { useParams } from "next/navigation";
 import LoadingPage from "../../components/loadingScreen"; // adjust the path if needed
+import { signOut } from "next-auth/react";
 
 export default function DeveloperProfile() {
   const { data: session } = useSession();
@@ -201,28 +202,8 @@ export default function DeveloperProfile() {
              const skillNames = skillsData.map((s: any) => s.skill);
              const topicsData = await topicsRes.json();
              const topicNames = topicsData.map((t: any) => t.topic);
-const handleDeleteAccount = async () => {
-  if (!userId) return;
-
-  const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
-  if (!confirmDelete) return;
-
-  try {
-    const res = await fetch(`http://52.15.58.198:3000/users/${userId}`, {
-      method: "DELETE",
-    });
-
-    if (res.status === 204) {
-      alert("Account deleted successfully.");
-      window.location.href = "/"; // redirect to landing or login
-    } else {
-      alert("Failed to delete account.");
-    }
-  } catch (error) {
-    console.error("❌ Error deleting account:", error);
-    alert("Something went wrong.");
-  }
-};
+             
+            
 
 
              return {
@@ -381,27 +362,46 @@ const handleDeleteAccount = async () => {
   }, [userId]);
 
   const handleDeleteAccount = async () => {
-    if (!userId) return;
-  
-    const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
-    if (!confirmDelete) return;
+    if (!session?.user?.email) {
+      console.error("❌ No session email found.");
+      return;
+    }
   
     try {
-      const res = await fetch(`http://52.15.58.198:3000/users/${userId}`, {
+      // 1. Fetch all users
+      const res = await fetch("http://52.15.58.198:3000/users");
+      if (!res.ok) throw new Error("Failed to fetch users list");
+  
+      const users = await res.json();
+  
+      // 2. Find user by email from session
+      const matchedUser = users.find((user: any) => user.email === session.user?.email);
+      if (!matchedUser || !matchedUser.id) {
+        console.error("❌ No matching user found for email:", session.user?.email);
+        return;
+      }
+  
+      const userId = matchedUser.id;
+  
+      // 3. Delete user by ID
+      const deleteRes = await fetch(`http://52.15.58.198:3000/users/${userId}`, {
         method: "DELETE",
       });
   
-      if (res.status === 204) {
-        alert("Account deleted successfully.");
-        window.location.href = "/"; // redirect to landing or login
+      if (deleteRes.ok) {
+        console.log("✅ Account deleted successfully");
+        await signOut({ callbackUrl: "/" }); // Force sign out to landing
       } else {
-        alert("Failed to delete account.");
+        const errorText = await deleteRes.text();
+        console.error("❌ Failed to delete account:", deleteRes.status, errorText);
       }
-    } catch (error) {
-      console.error("❌ Error deleting account:", error);
-      alert("Something went wrong.");
+    } catch (err) {
+      console.error("❌ Error during account deletion:", err);
     }
   };
+  
+  
+  
   
 
    if (showLoadingPage) {
