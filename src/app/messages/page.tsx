@@ -423,6 +423,18 @@ export default function MessagesPage() {
 if (showLoadingPage) {
     return <LoadingPage />;
   }
+
+  if (projects.length === 0 && allUsers.length === 0) {
+    return (
+      <div className="w-screen h-screen bg-[#e3ecf2] flex flex-col items-center justify-center text-nunito">
+        <NavBar />
+        <div className="flex-1 flex items-center justify-center w-full mt-[50px]">
+          <p className="text-2xl text-[#6b7280] font-semibold">You have no messages or projects yet. 💬</p>
+        </div>
+      </div>
+    );
+  }
+  
 return (
     <div className="flex h-screen font-nunito bg-[#cfdce6]">
         {/* <div className="w-screen h-full bg-[#f5f7fa] text-nunito"> */}

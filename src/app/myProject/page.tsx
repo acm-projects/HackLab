@@ -283,61 +283,79 @@ useEffect(() => {
 };
 
 const handleDelete = async () => {
-  if (!selectedProjectId || !userId) return;
+  if (!selectedProjectId) return;
+
   try {
-    const unlinkRes = await fetch(`http://52.15.58.198:3000/users/${userId}/projects/${selectedProjectId}`, {
-      method: "DELETE"
-    });
-    if (!unlinkRes.ok) {
-      alert("Failed to remove project from user.");
-      return;
-    }
     const deleteRes = await fetch(`http://52.15.58.198:3000/projects/${selectedProjectId}`, {
       method: "DELETE"
     });
+
     if (!deleteRes.ok) {
       alert("Failed to delete the project.");
       return;
     }
+
     alert("Project deleted successfully.");
+    setUserProjects(prev => prev.filter(project => project.id !== selectedProjectId));
+    setSelectedProjectId(null);
     setShowDeleteConfirm(false);
+
   } catch (err) {
     console.error("Delete error:", err);
     alert("An error occurred while deleting the project.");
   }
 };
+
 if (showLoadingPage) {
     return <LoadingPage />;
   }
- 
+  if (userProjects.length === 0) {
+    return (
+      <div className="w-screen h-screen bg-[#f5f7fa] flex flex-col items-center justify-center text-nunito">
+        <NavBar />
+        <div className="flex-1 flex items-center justify-center w-full mt-[50px]">
+          <p className="text-2xl text-[#6b7280] font-semibold">You are not part of any projects yet. 🛠️</p>
+        </div>
+      </div>
+    );
+  }
+  
  return (
    <div className="w-screen h-full bg-[#f5f7fa] text-nunito">
      <NavBar />
      <div className="flex w-screen h-full translate-x-[-8px]">
      <div className="w-[250px] mt-[50px] bg-transparent py-[10px] border-2 text-[#385773] flex flex-col gap-[12px] overflow-y-auto px-[10px]">
       <div className="translate-y-[10px] ">
-      {userProjects.map((project) => (
-        <div
-          key={project.id}
-          onClick={() => {
-            setSelectedProjectId(project.id);
-            setView("dashboard");
-          }}
-          
-          className={`flex items-center gap-[10px] mt-[10px] px-[15px] py-[10px] rounded-[8px] cursor-pointer transition-colors ${
-            selectedProjectId === project.id ? "bg-[#38577381] text-[#fff]" : "hover:bg-[#38577381] text-[#fff]"
-          }` }
-        >
-          <img
-            src={project.thumbnail}
-            alt="thumbnail"
-            className="w-[50px] h-[50px] object-cover rounded-[6px] border border-white"
-          />
-          <span className="text-[14px] font-medium text-[#385773] whitespace-nowrap overflow-hidden text-ellipsis max-w-[130px]">
-            {project.title}
-          </span>
-        </div>
-      ))}
+      {userProjects.length === 0 ? (
+  <p className="text-center text-sm text-[#6b7280] px-2 mt-[20px]">
+    You are not part of any projects yet. 🛠️
+  </p>
+) : (
+  userProjects.map((project) => (
+    <div
+      key={project.id}
+      onClick={() => {
+        setSelectedProjectId(project.id);
+        setView("dashboard");
+      }}
+      className={`flex items-center gap-[10px] mt-[10px] px-[15px] py-[10px] rounded-[8px] cursor-pointer transition-colors ${
+        selectedProjectId === project.id
+          ? "bg-[#38577381] text-[#fff]"
+          : "hover:bg-[#38577381] text-[#fff]"
+      }`}
+    >
+      <img
+        src={project.thumbnail}
+        alt="thumbnail"
+        className="w-[50px] h-[50px] object-cover rounded-[6px] border border-white"
+      />
+      <span className="text-[14px] font-medium text-[#385773] whitespace-nowrap overflow-hidden text-ellipsis max-w-[130px]">
+        {project.title}
+      </span>
+    </div>
+  ))
+)}
+
       </div>
     </div>
 
@@ -545,7 +563,6 @@ if (showLoadingPage) {
       </div>
 
 
-
       {view === "dashboard" && selectedProject && !isEditing && (
  <div className="bg-[#ffffff] p-[20px] rounded-[8px] shadow-md border border-[#d1d5db] h-[650px] overflow-hidden">
   <div className="h-full overflow-y-auto pr-[10px]">
@@ -733,12 +750,14 @@ if (showLoadingPage) {
 
  </div>
 )}
+
     {view === "dashboard" && selectedProject && isEditing && (
       <EditProject
         projectId={selectedProjectId!.toString()}
         onClose={() => setIsEditing(false)}
       />
     )}
+
            {view === "timeline" && selectedProject && (
   <div className="bg-white p-[20px] h-[650px] rounded-[8px] shadow-md border border-[#d1d5db] overflow-y-auto">
     <ProjectTimeline projectId={selectedProjectId!} isTeamLead={isTeamLead} />
