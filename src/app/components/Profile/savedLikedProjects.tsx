@@ -106,7 +106,7 @@ const SavedLikedProjectCard: React.FC<SavedLikedProjectProps> = ({
 
 
        <div className="min-h-[28px] overflow-x-auto whitespace-nowrap scrollbar-hide ">
-       {topics.length > 0 && <TagRow items={topics} color="#426c98" />}
+       {topics.length > 0 && <TagRow items={topics.slice(0, 1)} color="#426c98" />}
      </div>
      <div className="mt-[-5px] min-h-[28px] overflow-x-auto whitespace-nowrap scrollbar-hide">
        {skills.length > 0 && <TagRow items={skills} color="#5888b5" />}
