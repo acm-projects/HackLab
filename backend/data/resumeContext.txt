@@ -21,9 +21,10 @@ For locations, only put the city and state, for example: Dallas, TX
 Do not have any empty lines on the resume. There should be no extra space between lines and bullet points.
 For the user's phone number, put an template value like 123-456-7890
 Projects provided to you from github commit history must take priority as we try to account for 3 projects in total, but
-If an additional project is provided or talked about in the user's experiences other than the ones given with the commit history, and the commit history did not provide 3 projects already, list that one below the ones with the commit history. 
+If an additional project is provided or talked about in the user's experiences other than the ones given with the commit history, and the commit history did not provide 3 projects already, list that one below the ones with the commit history.
+If no date for the project is available, do not write N/A. Instead use 2025 as the default.
 Otherwise, if no additional projects are mentioned, just only include the ones with the commit history. Also do not add a 3rd project if it will cause the resume to go over 1 page.
-THIS IS VERY IMPORTANT, ANY TIME YOU INCLUDE A PERCENTAGE (%), YOU MUST PUT A FORWARD SLASH BEFORE IT (\%)
+THIS IS VERY IMPORTANT, ANY TIME YOU INCLUDE A PERCENTAGE (%), YOU MUST PUT A FORWARD SLASH BEFORE IT (\%), BUT NOT AFTER IT
 Here is the template LaTex file to replace with user data. DO NOT CHANGE ANY OF THE CODE BEFORE "\begin{document}". LEAVE EVERYTHING BEFORE THAT THE SAME:
 \documentclass[letterpaper,11pt]{article}
 
