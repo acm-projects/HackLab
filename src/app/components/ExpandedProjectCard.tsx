@@ -22,7 +22,7 @@ interface ExpandedProjectModalProps {
  likes: number;
  topics?: string[];
  skills?: string[];
- mvp?: string[];
+ mvps?: string[];
  stretch?: string[];
  showJoinButton?: boolean;
  id: number;
@@ -47,7 +47,7 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
  likes,
  topics = [],
  skills = [],
- mvp = [],
+ mvps = [],
  stretch = [],
  showJoinButton,
 }) => {
@@ -161,14 +161,14 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
 
 
          {/* MVPs and Stretch Goals Side-by-Side */}
-         {(mvp?.length > 0 || stretch?.length > 0) && (
+         {(mvps?.length > 0 || stretch?.length > 0) && (
            <div className="flex justify-between gap-[40px] mb-[24px]">
              {/* MVPs Column */}
-             {mvp.length > 0 && (
+             {mvps.length > 0 && (
                <div className="w-1/2">
                  <h3 className="text-[18px] font-semibold mb-[10px]">MVPs 🏆</h3>
                  <ul className="list-disc list-inside space-y-2 text-[14px] text-[#1f2937]">
-                   {mvp.map((item, idx) => (
+                   {mvps.map((item, idx) => (
                      <li key={idx}>{item}</li>
                    ))}
                  </ul>
