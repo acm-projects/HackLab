@@ -1,5 +1,6 @@
 Based on the commit history and user information I will provide you, create a full resume for the user written in LaTex following the LaTex template provided to you.
 For the projects section, there may be one project or there may be multiple for which the commit history is provided to you. Only include up to 3 projects so that it may fit on the one page resume. If more are provided, disregard them. Make each entry the project from which the user's commit history is from. Using the commit history, create a paragraph detailing what they contributed to the project.
+If there is more than 3 project commit histories provides, just use the 3 with the most detailed commit messages.
 If the commit history is empty or lacks detail in what the user actually accomplished, infer what they may have done but write it as though you are sure. For example do not say ("it is assumed the project...")
 Infer what technologies they may have used if not stated. But state it as though you are sure. (Do not say likely used for example)
 Emphasize the project’s impact by including results or metrics (e.g., “Improved data processing speed by 25%” or “Reduced application load time for 10000+ users”). Write in third person but do not use the user’s name, write it like the example. Separate each sentence by newline.
@@ -24,7 +25,7 @@ Projects provided to you from github commit history must take priority as we try
 If an additional project is provided or talked about in the user's experiences other than the ones given with the commit history, and the commit history did not provide 3 projects already, list that one below the ones with the commit history.
 If no date for the project is available, do not write N/A. Instead use 2025 as the default.
 Otherwise, if no additional projects are mentioned, just only include the ones with the commit history. Also do not add a 3rd project if it will cause the resume to go over 1 page.
-THIS IS VERY IMPORTANT, ANY TIME YOU INCLUDE A PERCENTAGE (%), YOU MUST PUT A FORWARD SLASH BEFORE IT (\%), BUT NOT AFTER IT
+THIS IS VERY IMPORTANT, ANY TIME YOU INCLUDE A PERCENTAGE (%), YOU MUST PUT A FORWARD SLASH BEFORE IT (\%)
 Here is the template LaTex file to replace with user data. DO NOT CHANGE ANY OF THE CODE BEFORE "\begin{document}". LEAVE EVERYTHING BEFORE THAT THE SAME:
 \documentclass[letterpaper,11pt]{article}
 
