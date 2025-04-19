@@ -34,30 +34,44 @@ function extractOwnerAndRepo(github) {
 
 async function fetchFullCommitHistory(octokit, owner, repo) {
   let allCommits = [];
-  let page = 1;
 
   try {
-    while (true) {
-      console.log(`Fetching page ${page} of commit history for ${owner}/${repo}`);
+    // Step 1: Fetch all branches
+    console.log(`Fetching branches for ${owner}/${repo}`);
+    const branchesResponse = await octokit.request('GET /repos/{owner}/{repo}/branches', {
+      owner: owner,
+      repo: repo,
+    });
 
-      // Fetch a single page of commits
-      const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
-        owner: owner,
-        repo: repo,
-        per_page: 100, // Maximum allowed by GitHub API
-        page: page,
-      });
+    const branches = branchesResponse.data.map(branch => branch.name);
+    console.log(`Branches found for ${owner}/${repo}:`, branches);
 
-      // Add the current page of commits to the full list
-      allCommits = allCommits.concat(response.data);
+    // Step 2: Fetch commits for each branch
+    for (const branch of branches) {
+      console.log(`Fetching commits for branch ${branch} in ${owner}/${repo}`);
+      let page = 1;
 
-      // Check if there are more pages
-      if (response.data.length < 100) {
-        // If the number of commits returned is less than `per_page`, we've reached the last page
-        break;
+      while (true) {
+        // Fetch a single page of commits for the current branch
+        const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+          owner: owner,
+          repo: repo,
+          sha: branch, // Specify the branch name
+          per_page: 100, // Maximum allowed by GitHub API
+          page: page,
+        });
+
+        // Add the current page of commits to the full list
+        allCommits = allCommits.concat(response.data);
+
+        // Check if there are more pages
+        if (response.data.length < 100) {
+          // If the number of commits returned is less than `per_page`, we've reached the last page
+          break;
+        }
+
+        page++;
       }
-
-      page++;
     }
 
     console.log(`Fetched ${allCommits.length} commits for ${owner}/${repo}`);
