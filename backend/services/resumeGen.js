@@ -33,8 +33,6 @@ function extractOwnerAndRepo(github) {
 }
 
 async function fetchFullCommitHistory(octokit, owner, repo) {
-  let allCommits = [];
-
   try {
     // Step 1: Fetch all branches
     console.log(`Fetching branches for ${owner}/${repo}`);
@@ -46,41 +44,51 @@ async function fetchFullCommitHistory(octokit, owner, repo) {
     const branches = branchesResponse.data.map(branch => branch.name);
     console.log(`Branches found for ${owner}/${repo}:`, branches);
 
-    // Step 2: Fetch commits for each branch
-    for (const branch of branches) {
-      console.log(`Fetching commits for branch ${branch} in ${owner}/${repo}`);
-      let page = 1;
+    // Step 2: Fetch commits for all branches in parallel
+    const allCommits = await Promise.all(
+      branches.map(async (branch) => {
+        let branchCommits = [];
+        let page = 1;
 
-      while (true) {
-        // Fetch a single page of commits for the current branch
-        const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
-          owner: owner,
-          repo: repo,
-          sha: branch, // Specify the branch name
-          per_page: 100, // Maximum allowed by GitHub API
-          page: page,
-        });
+        while (true) {
+          console.log(`Fetching commits for branch ${branch}, page ${page} in ${owner}/${repo}`);
 
-        // Add the current page of commits to the full list
-        allCommits = allCommits.concat(response.data);
+          // Fetch a single page of commits for the current branch
+          const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+            owner: owner,
+            repo: repo,
+            sha: branch, // Specify the branch name
+            per_page: 100, // Maximum allowed by GitHub API
+            page: page,
+          });
 
-        // Check if there are more pages
-        if (response.data.length < 100) {
-          // If the number of commits returned is less than `per_page`, we've reached the last page
-          break;
+          // Add the current page of commits to the branch's commit list
+          branchCommits = branchCommits.concat(response.data);
+
+          // Check if there are more pages
+          if (response.data.length < 100) {
+            // If the number of commits returned is less than `per_page`, we've reached the last page
+            break;
+          }
+
+          page++;
         }
 
-        page++;
-      }
-    }
+        console.log(`Fetched ${branchCommits.length} commits for branch ${branch} in ${owner}/${repo}`);
+        return branchCommits;
+      })
+    );
 
-    console.log(`Fetched ${allCommits.length} commits for ${owner}/${repo}`);
-    return allCommits;
+    // Flatten the array of arrays into a single array of commits
+    const flattenedCommits = allCommits.flat();
+
+    console.log(`Fetched ${flattenedCommits.length} total commits for ${owner}/${repo}`);
+    return flattenedCommits;
   } catch (error) {
     console.error(`Failed to fetch commit history for ${owner}/${repo}:`, error.message);
     return []; // Return an empty array if the request fails
   }
-}
+};
 
 async function generateResume(githubRepos, userDetails) {
   const octokit = await getOctokitInstance();
