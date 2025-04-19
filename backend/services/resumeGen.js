@@ -32,59 +32,86 @@ function extractOwnerAndRepo(github) {
   }
 }
 
+async function fetchFullCommitHistory(octokit, owner, repo) {
+  let allCommits = [];
+  let page = 1;
+
+  try {
+    while (true) {
+      console.log(`Fetching page ${page} of commit history for ${owner}/${repo}`);
+
+      // Fetch a single page of commits
+      const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+        owner: owner,
+        repo: repo,
+        per_page: 100, // Maximum allowed by GitHub API
+        page: page,
+      });
+
+      // Add the current page of commits to the full list
+      allCommits = allCommits.concat(response.data);
+
+      // Check if there are more pages
+      if (response.data.length < 100) {
+        // If the number of commits returned is less than `per_page`, we've reached the last page
+        break;
+      }
+
+      page++;
+    }
+
+    console.log(`Fetched ${allCommits.length} commits for ${owner}/${repo}`);
+    return allCommits;
+  } catch (error) {
+    console.error(`Failed to fetch commit history for ${owner}/${repo}:`, error.message);
+    return []; // Return an empty array if the request fails
+  }
+}
+
 async function generateResume(githubRepos, userDetails) {
   const octokit = await getOctokitInstance();
 
   // Limit the number of repositories to 3
- // const limitedRepos = githubRepos.slice(0, 3);
-  const limitedRepos = githubRepos; // Use all repositories for now
+  const limitedRepos = githubRepos.slice(0, 3);
 
   console.log("Repos to be used in resume:", limitedRepos);
 
-  // Helper function to fetch commit history for a single repository
-  async function fetchCommitHistory(github) {
-    try {
-      console.log("Fetching commit history for:", github);
-
-      const { owner, repo } = extractOwnerAndRepo(github);
-
-      // Fetch commit history for the current repository
-      const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
-        owner: owner,
-        repo: repo,
-      });
-
-      console.log("Response data for this repo from GitHub API:", response.data);
-
-      // Filter commits by the user's GitHub name
-      const commitHistory = response.data
-        .filter(commit => {
-          const authorName = commit.commit.author?.name?.toLowerCase();
-          const expectedUsername = userDetails.db_name.toLowerCase();
-
-          // Log the author name and expected username for debugging
-          console.log(`Author Name: ${authorName}, Expected Username: ${expectedUsername}`);
-
-          return authorName === expectedUsername;
-        })
-        .map(commit => ({
-          repo: repo, // Include the repository name for context
-          author: commit.commit.author.name,
-          message: commit.commit.message,
-        }));
-
-      console.log("Commit history for repo:", repo, commitHistory);
-
-      return commitHistory;
-    } catch (error) {
-      console.error(`Failed to fetch commit history for repository ${github}:`, error.message);
-      return []; // Return an empty array if the request fails
-    }
-  }
-
   // Fetch commit histories in parallel
   const allCommitHistories = await Promise.all(
-    limitedRepos.map(github => fetchCommitHistory(github))
+    limitedRepos.map(async (github) => {
+      try {
+        console.log("Fetching commit history for:", github);
+
+        const { owner, repo } = extractOwnerAndRepo(github);
+
+        // Fetch the full commit history
+        const fullCommitHistory = await fetchFullCommitHistory(octokit, owner, repo);
+
+        // Filter commits by the user's GitHub name
+        const filteredCommits = fullCommitHistory
+          .filter(commit => {
+            const authorName = commit.commit.author?.name?.toLowerCase();
+            const expectedUsername = userDetails.db_name.toLowerCase();
+
+            // Log the author name and expected username for debugging
+            console.log(`Author Name: ${authorName}, Expected Username: ${expectedUsername}`);
+
+            return authorName === expectedUsername;
+          })
+          .map(commit => ({
+            repo: repo, // Include the repository name for context
+            author: commit.commit.author.name,
+            message: commit.commit.message,
+          }));
+
+        console.log("Filtered commit history for repo:", repo, filteredCommits);
+
+        return filteredCommits;
+      } catch (error) {
+        console.error(`Failed to fetch commit history for repository ${github}:`, error.message);
+        return []; // Return an empty array if the request fails
+      }
+    })
   );
 
   // Flatten the array of arrays into a single array
