@@ -98,7 +98,7 @@ Topics Lookup Table:
 	}
 }
 
-Make sure to only respond with the json
+Make sure to only respond with the json. Use standard straight double quotes, no use of smart quotes is permitted.
 
 
 
