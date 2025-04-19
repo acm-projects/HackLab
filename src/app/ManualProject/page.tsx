@@ -46,7 +46,6 @@ export default function ManualProject() {
   const [topicMap, setTopicMap] = useState<{ [id: number]: string }>({});
   const lowercaseTechOptions = techOptions.map(opt => opt.toLowerCase());
   const lowercaseInterestOptions = interestOptions.map(opt => opt.toLowerCase());
-
   const [reverseSkillMap, setReverseSkillMap] = useState<{ [skill: string]: number }>({});
 const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number }>({});
 
@@ -435,7 +434,7 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
           paddingBottom: "20px",
           color: "#385773"
         }}>
-        BRING YOUR IDEAS TO LIFE!
+        Bring your ideas to life!
       </h2>
 
       {/* Fixed Form Container */}
@@ -1038,7 +1037,7 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
 
 
            {/* Thumbnail Upload - Full Width */}
-      <div className="w-full">
+      <div className="w-[99%]">
         <label style={{ marginBottom: "8px", display: "block" }}>Upload Project Thumbnail</label>
 
             {typeof thumbnail === "string" && (thumbnail as string).startsWith("http") && (

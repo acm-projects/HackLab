@@ -38,6 +38,25 @@ export default function HomeScreen() {
   const [showLoadingPage, setShowLoadingPage] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 const [selectedListType, setSelectedListType] = useState<"top" | "recent" | null>(null);
+const [skillIconMap, setSkillIconMap] = useState<{ [name: string]: string }>({});
+
+useEffect(() => {
+  const fetchSkillIcons = async () => {
+    try {
+      const res = await fetch("http://52.15.58.198:3000/skills");
+      const data = await res.json();
+      const map: { [name: string]: string } = {};
+      data.forEach((s: any) => {
+        map[s.skill.trim().toLowerCase()] = s.icon_url;
+      });
+      setSkillIconMap(map);
+    } catch (err) {
+      console.error("❌ Failed to fetch skill icons:", err);
+    }
+  };
+
+  fetchSkillIcons();
+}, []);
 
       useEffect(() => {
         const timer = setTimeout(() => setShowLoadingPage(false), 2000);
@@ -46,9 +65,9 @@ const [selectedListType, setSelectedListType] = useState<"top" | "recent" | null
 
   const topProjectsRef = useRef<Project[]>([]); // UseRef for storing top projects, does not trigger re-renders
   const [slides, setSlides] = useState([
-    { title: "PROJECTS", description: `90+ total projects hosted.`, image: "../../../images/projects.png" },
-    { title: "USERS", description: `50+ total participants across all projects.`, image: "../../../images/community.png" },
-    { title: "MOST USED TECH", description: `Java is the most used technology!`, image: "../../../images/mostUsedLanguage.png" },
+    { title: "Projects", description: `90+ total projects hosted.`, image: "../../../images/projects.png" },
+    { title: "Users", description: `50+ total participants across all projects.`, image: "../../../images/community.png" },
+    { title: "Most Tech Used", description: `Java is the most used technology!`, image: "../../../images/mostUsedLanguage.png" },
   ]);
 
   useEffect(() => {
@@ -223,30 +242,31 @@ const [selectedListType, setSelectedListType] = useState<"top" | "recent" | null
   return (
     <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito">
       <NavBar />
-      <div className="h-screen flex flex-col items-center overflow-y-scroll w-[90%] scrollbar-hide mb-[100px]">
+      <div className="h-screen flex flex-col items-center overflow-y-scroll w-[100%] scrollbar-hide mb-[100px]">
         {/* Hero */}
-        <div className="w-[95%] h-[300px] flex flex-col items-start justify-center text-center mt-[60px]">
+        <div className="w-[93%] h-[300px] flex flex-col items-start justify-center text-center mt-[60px]">
           <h1 className="text-[30px] font-[500] text-white font-bold mb-[0px]">
-            Hello {session?.user?.name || session?.user?.name || "USER"}!!
+            Hello {session?.user?.name || session?.user?.name || "USER"}
           </h1>
-          <p className="mt-[-5px] mb-[40px]">Hope you are having a good day</p>
+          <p className="mt-[-5px] mb-[40px]">Hope you are having a good day!</p>
         </div>
 
         {/* Slider */}
-        <div className="w-[95%] h-[350px] bg-[#385773] flex items-center justify-center rounded-[15px]">
+        <div className="w-[93%] h-[350px] bg-[#385773] flex items-center justify-evenly rounded-[15px]">
           <button onClick={prevSlide} className="text-[#fff] px-[10px] ml-[5px] border-transparent border-none outline-none bg-transparent">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-[25px] h-[25px] mt-[-5px]">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
             
           </button>
-          <div className="flex w-full ml-[10%] mr-[10%] mt-[40px]">
-            <div className="w-1/2 text-left pl-8">
+          <div className="flex flex-1 mx-[30px] h-[230px] ml-[15%] mr-[15%] justify-evenly items-center">
+
+            <div className="w-1/2 text-left pl-[10px]">
               <h2 className="text-2xl font-bold text-[#fff]">{slides[currentSlide].title}</h2>
-              <p className="mt-2 text-[#d1d5db]">{slides[currentSlide].description}</p>
+              <p className="mt-[-10px] text-[#d1d5db]">{slides[currentSlide].description}</p>
             </div>
             <div className="w-1/2 flex justify-end pr-8">
-              <img src={slides[currentSlide].image} alt="slide" className="h-[200px] mt-[-50px]" />
+              <img src={slides[currentSlide].image} alt="slide" className="h-[200px]" />
             </div>
           </div>
           <button onClick={nextSlide} className="text-[#fff] px-[10px] mr-[5px] border-transparent border-none outline-none bg-transparent">
@@ -271,13 +291,15 @@ const [selectedListType, setSelectedListType] = useState<"top" | "recent" | null
                 github="https://github.com"
                 completionDate={project.completionDate}
                 isCompleted={true}
+                skillIconMap={skillIconMap}
+
               />
             </div>
           ))}
         </div>
 
         {/* Recent Projects */}
-        <h2 className="text-[36px] font-bold text-[#000] mt-[40px] mb-[40px] text-left">Recent Projects</h2>
+        <h2 className="text-[36px] font-bold text-[#000] mt-[40px] mb-[40px] text-left">Recently Completed Projects</h2>
         <div className="grid grid-cols-3 gap-[40px] mb-[50px] ">
         {recentProjects.map((project, index) => (
           <div className="transition-transform duration-300 hover:-translate-y-[4px]" key={index}onClick={() => handleCardClick(index, "recent")}>
@@ -291,6 +313,8 @@ const [selectedListType, setSelectedListType] = useState<"top" | "recent" | null
               github="https://github.com"
               completionDate={project.completionDate}
               isCompleted={true}
+              skillIconMap={skillIconMap}
+
             />
           </div>
         ))}
@@ -315,6 +339,7 @@ const [selectedListType, setSelectedListType] = useState<"top" | "recent" | null
               isLiked={likedMap[selectedProject.id] || false}
               isBookmarked={bookmarkedMap[selectedProject.id] || false}
               likes={completedProjects.find(p => p.id === selectedProject.id)?.likes || 0}
+              skillIconMap={skillIconMap} 
             />
 
           </div>

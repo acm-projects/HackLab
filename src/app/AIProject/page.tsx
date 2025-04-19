@@ -68,7 +68,7 @@ export default function CreateProjectWithAI() {
   if (generating) return <LoadingGears />;
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito">
+    <div className="min-h-screen flex flex-col items-center text-white font-nunito">
               <NavBar />
       <form className="mt-[150px]"
         onSubmit={handleSubmit}
@@ -83,7 +83,7 @@ export default function CreateProjectWithAI() {
           position: "relative",
         }}
       >
-        <div style={{ height: "4px", width: "100%", background: "linear-gradient(to right, #5fa8e0, #9bbcf0, #5fa8e0)" }}></div>
+        <div style={{ height: "4px", width: "100%"}}></div>
 
         <div style={{ padding: "32px" }}>
           <div className="mt-[-30px]" style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
@@ -147,27 +147,12 @@ export default function CreateProjectWithAI() {
           </div>
 
           <button 
-          className="cursor-pointer"
+          
             type="submit"
             disabled={generating}
-            style={{
-              width: "100%",
-              height: "56px",
-              background: "#385773",
-              border: "none",
-              borderRadius: "16px",
-              fontSize: "16px",
-              color: "#fff",
-              fontWeight: "500",
-              cursor: generating ? "not-allowed" : "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              position: "relative",
-              overflow: "hidden",
-              opacity: generating ? 0.6 : 1,
-            }}
+            className={`w-full h-[56px] bg-[#385773] rounded-[16px] text-[#fff] text-[16px] font-medium 
+              flex items-center justify-center gap-2 cursor-pointer relative overflow-hidden transition-opacity duration-200 hover:bg-[#5b7a9b] border-none outline-none
+              `}
           >
             <Sparkles style={{ height: "20px", width: "20px" }} />
             {generating ? "Generating..." : "Generate Project with AI"}

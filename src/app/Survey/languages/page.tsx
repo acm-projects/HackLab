@@ -284,7 +284,7 @@ const LanguageSelection = () => {
               transition: "background-color 0.3s",
             }}
             onMouseOver={(e) =>
-              (e.currentTarget.style.backgroundColor = "#fff")
+              (e.currentTarget.style.backgroundColor = "#cecece")
             }
             onMouseOut={(e) =>
               (e.currentTarget.style.backgroundColor = "#fff")

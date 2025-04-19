@@ -51,6 +51,9 @@ const NameForm = () => {
             opacity: name.trim() ? 1 : 0.5,
             transition: "background-color 0.3s",
           }}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.backgroundColor = "#cecece")
+          }
         >
           Next
         </button>

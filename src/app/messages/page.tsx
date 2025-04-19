@@ -497,7 +497,7 @@ return (
 
 
 
-      <main className="flex-1 bg-[#e3ecf2] translate-x-[11px] flex flex-col mt-[60px] h-[calc(100vh-60px)] ml-[10px] rounded-[10px] overflow-hidden">
+      <main className="flex-1 bg-[#e3ecf2] translate-x-[11px] flex flex-col mt-[50px] h-[calc(100vh-60px)] ml-[10px] rounded-[10px] overflow-hidden">
 
 
         <div className="h-[60px] px-[20px] bg-[#cfdce6] flex justify-between items-center border-b border-[#a1b6c8] rounded-[10px]">

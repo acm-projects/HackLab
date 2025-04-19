@@ -114,10 +114,10 @@ const RoleSelection = () => {
           <div
             key={r.id}
             onClick={() => selectRole(r.role)} // ✅ fixed this line
-            className="w-[150px] h-[200px] shadow-md cursor-pointer transition-all duration-300 rounded-xl"
+            className="w-[150px] h-[200px] shadow-md cursor-pointer rounded-xl"
             style={{
               backgroundColor: selectedRole === r.role ? "#385773" : "#fff",
-              border: selectedRole === r.role ? "3px solid #fff" : "none",
+              border: selectedRole === r.role ? "2px solid #fff" : "none",
               color: selectedRole === r.role ? "#fff" : "#1f2937",
               display: "flex",
               flexDirection: "column",
@@ -171,8 +171,14 @@ const RoleSelection = () => {
             fontSize: "14px",
             border: "none",
             cursor: "pointer",
-            transition: "background-color 0.3s",
+            
           }}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.backgroundColor = "#cecece")
+          }
+          onMouseOut={(e) =>
+            (e.currentTarget.style.backgroundColor = "#fff")
+          }
         >
           Next
         </button>

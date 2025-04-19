@@ -32,61 +32,17 @@ export default function NavBar({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const { data: session } = useSession();
-  // const [userId, setUserId] = useState<number | null>(null);
-  // const [showNotifications, setShowNotifications] = useState(false);
-  // const socket = io('http://52.15.58.198:3000')
-  const socketref = useRef<any>(null);
-  // const [notifications, setNotifications] = useState<any[]>([]);
-  
-  const [showNotifications, setShowNotifications] = useState(false);
-const [notifications, setNotifications] = useState<any[]>([]);
-const socketRef = useRef<any>(null);
+
 const [userId, setUserId] = useState<number | null>(null); // already exists in your code
 
-const unseenCount = notifications.filter((n) => n.isNew).length;
-const [messageNotifications, setMessageNotifications] = useState<any[]>([]);
-const messageUnseenCount = messageNotifications.filter((n) => n.isNew).length;
+
+const [appliedFilters, setAppliedFilters] = useState<{ topics: string[]; skills: string[] }>({
+  topics: [],
+  skills: [],
+});
 
 useEffect(() => {
   if (!session?.user?.email) return;
-
-  const socket = io("http://52.15.58.198:3000", {
-    transports: ["websocket"],
-  });
-
-  socketRef.current = socket;
-
-  socket.on("connect", () => {
-    console.log("✅ Connected to Socket.IO");
-    socket.emit("subscribeToNotifications", { email: session.user.email });
-  });
-
-  socket.on("new-join-request", async (notification) => {
-    console.log("📩 New join request:", notification);
-
-    try {
-      const userRes = await fetch(`http://52.15.58.198:3000/users/${notification.user_id}`);
-      const user = await userRes.json();
-
-      const enrichedNotification = {
-        id: `${notification.user_id}-${notification.project_id}`,
-        userId: notification.user_id,
-        projectId: notification.project_id,
-        projectTitle: notification.projectTitle,
-        userName: user.name,
-        userImage: user.image,
-        isNew: true,
-      };
-
-      setNotifications((prev) => [enrichedNotification, ...prev]);
-    } catch (err) {
-      console.error(`Failed to enrich join request:`, err);
-    }
-  });
-
-  socket.on("notification-deleted", (deletedNotificationId: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== deletedNotificationId));
-  });
 
   // socket.on("new-message", async (msg: any) => {
   //   try {
@@ -109,126 +65,9 @@ useEffect(() => {
   //   }
   // });
 
-  socket.on("disconnect", () => {
-    console.log("❌ Disconnected from socket.io");
-  });
-
-  return () => {
-    socket.disconnect();
-  };
+  
 }, [session]);
-
-
-
-
-useEffect(() => {
-  if (!socketRef.current) {
-    socketRef.current = io("http://52.15.58.198:3000");
-
-    socketRef.current.on("connect", () => {
-      console.log("✅ Connected to socket.io");
-    });
-
-    socketRef.current.on("new-notification", async (notification: any) => {
-      try {
-        const userRes = await fetch(`http://52.15.58.198:3000/users/${notification.user_id}`);
-        const user = await userRes.json();
-    
-        const enriched = {
-          id: `${notification.user_id}-${notification.project_id}-${Date.now()}`,
-          userId: notification.user_id,
-          projectId: notification.project_id,
-          userName: user.name,
-          userImage: user.image,
-          projectTitle: notification.projectTitle || "",
-          isNew: true,
-          type: notification.type,
-          isDM: notification.type === "dm_message",
-        };
-    
-        if (notification.type === "join_request") {
-          setNotifications((prev) => [enriched, ...prev]);
-        } else if (notification.type === "dm_message" || notification.type === "project_message") {
-          setMessageNotifications((prev) => [enriched, ...prev]);
-        }
-      } catch (err) {
-        console.error("❌ Failed to enrich notification:", err);
-      }
-    });
-    
-
-    socketRef.current.on("disconnect", () => {
-      console.log("❌ Disconnected from socket.io");
-    });
-  }
-
-  return () => {
-    socketRef.current?.disconnect();
-  };
-}, []);
-
-// 1. Marks notifications as seen when panel is opened
-useEffect(() => {
-  if (showNotifications) {
-    setNotifications((prev) =>
-      prev.map((n) => ({ ...n, isNew: false }))
-    
-    );
-  }
-}, [showNotifications]);
-
-// 2. Fetch join requests when panel is opened
-useEffect(() => {
-  const fetchJoinRequests = async () => {
-    if (!userId) return;
-
-    try {
-      const resProjects = await fetch("http://52.15.58.198:3000/projects");
-      const projects = await resProjects.json();
-      const myProjects = projects.filter((proj: any) => proj.team_lead_id === userId);
-
-      let allJoinRequests: any[] = [];
-
-      for (const project of myProjects) {
-        const resReqs = await fetch(`http://52.15.58.198:3000/projects/${project.id}/join-requests`);
-        const joinRequests = await resReqs.json();
-
-        for (const req of joinRequests) {
-          try {
-            const userRes = await fetch(`http://52.15.58.198:3000/users/${req.user_id}`);
-            const user = await userRes.json();
-
-            allJoinRequests.push({
-              id: `${req.user_id}-${req.project_id}`,
-              userId: req.user_id,
-              projectId: req.project_id,
-              projectTitle: project.title,
-              userName: user.name,
-              userImage: user.image,
-              isNew: true,
-            });
-          } catch (err) {
-            console.error(`Failed to fetch user ${req.user_id}:`, err);
-          }
-        }
-      }
-
-      setNotifications((prev) => {
-        const existingIds = new Set(prev.map((n) => `${n.userId}-${n.projectId}`));
-        const newOnes = allJoinRequests.filter((n) => !existingIds.has(`${n.userId}-${n.projectId}`));
-        return [...newOnes, ...prev];
-      });
-    } catch (err) {
-      console.error("❌ Error fetching join requests:", err);
-    }
-  };
-
-  if (showNotifications) {
-    fetchJoinRequests();
-  }
-}, [userId, showNotifications]);
-
-
+  
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -249,53 +88,10 @@ useEffect(() => {
     fetchUserId();
   }, [session]);
   
-  const handleAccept = async (notif: any) => {
-    try {
-      const res = await fetch(`http://52.15.58.198:3000/users/${notif.userId}/projects/${notif.projectId}/2`, {
-        method: "POST"
-      });
-      if (!res.ok) throw new Error("Accept failed");
-  
-      await handleReject(notif); // clean up notification
-  
-      socketRef.current?.emit("notification-handled", {
-        userId: notif.userId,
-        projectId: notif.projectId,
-        status: "accepted"
-      });
-    } catch (err) {
-      console.error("Accept error:", err);
-    }
-  };
-  
-  const handleReject = async (notif: any) => {
-    if (!socketRef.current) return;
-  
-    try {
-      // 1. Emit to delete notification via socket
-      socketRef.current.emit("delete-notification", {
-        notification_id: notif.id,
-      });
-  
-      // 2. Call backend API to delete the join request
-      const res = await fetch(`http://52.15.58.198:3000/users/${notif.userId}/join-requests/${notif.projectId}`, {
-        method: "DELETE",
-      });
-  
-      if (!res.ok) throw new Error("Failed to delete join request");
-  
-      // 3. Optimistically remove from local state
-      setNotifications((prev) => prev.filter((n) => n.id !== notif.id));
-    } catch (err) {
-      console.error("❌ Error handling rejection:", err);
-    }
-  };
-  
-  
-  
-  
   return (
-    <div className="w-full fixed top-[0px] z-50">
+    <div className="w-full fixed top-[0px] z-50" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>
       {/* Background image behind navbar on the left side */}
 
       <div className={`h-[60px] bg-[#385773] flex items-center justify-start transition-all duration-500 ${isMenuOpen ? "pl-[200px]" : "pl-4"} `} style={{boxShadow: "10px 0 30px rgba(0,0,0,0.3)" }}>
@@ -306,11 +102,16 @@ useEffect(() => {
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px] text-white">
             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
           </svg>
+          
         </button>
 
         {showSearch ? (
           <div className="flex flex-1 justify-start">
-            <div className="bg-[#ffffff] text-[#38577368] border-none outline-none font-nunito rounded-[10px] ml-[20px] text-md px-[20px] py-[7px] text-center flex items-center justify-start w-[500px]">
+            {!isMenuOpen && (
+            <span className="text-[#fff] text-[35px] font-bold ml-[25px] font-nunito flex justify-start items-start" >HackLab</span>
+            
+          )}
+            <div className="bg-[#ffffff] text-[#38577368] border-none outline-none font-nunito rounded-[10px] ml-[20px] text-md px-[20px] py-[7px] text-center flex items-center justify-start mt-[1px] w-[500px] h-[30px]">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px] mr-2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
@@ -325,29 +126,43 @@ useEffect(() => {
                     onClearFilters?.();
                   }
                 }}
-                className="bg-transparent border-none outline-none focus:outline-none w-full text-[#385773]"
+                className="bg-transparent border-none outline-none focus:outline-none w-full text-[#385773]" 
+                style={{
+                  fontFamily: "'Nunito', sans-serif",
+                }}
               />
             </div>
             {pathname === "/findProjects" && (
               <div className="relative">
                 <button
-                  className="ml-8 w-[80px] flex items-center gap-[1px] px-[13px] py-[8px] bg-[#fff] text-[#2e2e2e] rounded-[10px] shadow border border-gray-300 text-sm border-transparent border-none outline-none ml-[20px]"
+                  className="mt-[2px] w-[80px] flex items-center gap-[1px] px-[13px] py-[8px] bg-[#fff] text-[#2e2e2e] rounded-[10px] cursor-pointer shadow border border-gray-300 text-sm border-transparent border-none outline-none ml-[20px]"
                   onClick={() => setShowFilterBox(!showFilterBox)}
                 >
                   Filter
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-[25px]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    className={`size-[25px] transition-transform duration-300 ${showFilterBox ? "rotate-180" : ""}`}
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
+
                 </button>
 
                 {showFilterBox && (
                   <FilterBox
                     onClose={() => setShowFilterBox(false)}
                     onApply={(filters) => {
-                      console.log("Apply filters:", filters);
+                      setAppliedFilters(filters); // ✅ Save selected filters
                       onApplyFilters?.(filters);
-                      setShowFilterBox(false);
+                      setShowFilterBox(false); // Optional: close after applying
+                      
                     }}
+                    selected={appliedFilters} 
+                    
                   />
                 )}
               </div>
@@ -355,7 +170,7 @@ useEffect(() => {
           </div>
         ) : (
           !isMenuOpen && (
-            <span className="text-[#fff] text-[35px] font-bold ml-[10px] font-nunito flex justify-start items-start">HackLab</span>
+            <span className="text-[#fff] text-[35px] font-bold ml-[10px] font-nunito flex justify-start items-start" >HackLab</span>
             
           )
         )}
@@ -390,7 +205,9 @@ useEffect(() => {
       >
         <button
           className="w-full bg-[#385773] text-[#fff] border-none outline-none font-nunito rounded-[10px] text-[30px] text-start flex items-center gap-2 justify-start mt-[15px] px-[50px]"
-          onClick={() => router.push("/homeScreen")}
+          onClick={() => router.push("/homeScreen")} style={{
+            fontFamily: "'Nunito', sans-serif",
+          }}
         >
           HackLab
         </button>
@@ -406,6 +223,16 @@ useEffect(() => {
               </svg>
               &nbsp; Home
             </button>
+            <button
+            className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] pr-[80px] py-[15px]  pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
+            onClick={() => router.push("/findProjects")}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
+  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+</svg>
+
+            &nbsp; Find Projects
+          </button>
           <button
             className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[90px] pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
             onClick={() => router.push("/myProject")}
@@ -417,25 +244,14 @@ useEffect(() => {
           </button>
 
           <button
-            className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] pr-[80px] py-[15px]  pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
-            onClick={() => router.push("/findProjects")}
+            className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[100px] pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
+            onClick={() => router.push("/messages")}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
             </svg>
-            &nbsp; Find Projects
+            &nbsp; Messages
           </button>
-
-          <button
-            className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[70px] pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
-            onClick={() => router.push("/CreateProject")}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-            </svg>
-            &nbsp; Create Project
-          </button>
-
           <button
             className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[45px] pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
             onClick={() => router.push("/ProjectCompletion")}
@@ -446,17 +262,20 @@ useEffect(() => {
 
             &nbsp; Generate Resume
           </button>
-
-          
-            <button
-            className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[100px] pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
-            onClick={() => router.push("/messages")}
+          <button
+            className=" bg-[#385773] hover:text-[#d3e8ff] hover:bg-[#8383831a] py-[15px] pr-[70px] pl-[10px] cursor-pointer text-primary border-none outline-none font-nunito rounded-[10px] text-[15px] text-center flex items-center"
+            onClick={() => router.push("/CreateProject")}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px]">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
             </svg>
-            &nbsp; Messages
+            &nbsp; Create Project
           </button>
+          
+          
+
+          
+            
         </div>
 
         <button

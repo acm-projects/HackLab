@@ -54,9 +54,9 @@ const ProjectTimeline: React.FC<{ projectId: number; isTeamLead?: boolean }> = (
   };
 
   return (
-    <div className="flex flex-col items-center mt-[14px] bg-[#ffffff] px-[20px] py-[24px] rounded-[12px] border border-[#fff] overflow-x-auto h-[85%]">
-      <h2 className="text-[20px] font-[700] text-[#385773] mb-[24px]">Project Timeline</h2>
-      <div className="flex w-full">
+    <div className="flex flex-col items-center mt-[14px] bg-[#ffffff] px-[20px] py-[24px] rounded-[12px] border border-[#fff] overflow-x-auto h-[90%]">
+      <h2 className="absolute text-[20px] font-[700] text-[#385773] mb-[24px] flex">Project Timeline</h2>
+      <div className="flex w-full mt-[150px]">
         <div className="flex flex-col justify-center gap-[140px] pr-[24px]">
           <div className="text-[#385773] font-[600] text-[14px] text-right">Frontend</div>
           <div className="text-[#385773] font-[600] text-[14px] text-right">Backend</div>
@@ -70,7 +70,7 @@ const ProjectTimeline: React.FC<{ projectId: number; isTeamLead?: boolean }> = (
               <div key={idx} className="relative flex flex-col items-center w-[120px]">
                 {task.side === "frontend" && (
                   <div className="relative flex flex-col items-center w-[140px] h-[160px]">
-                    <div className="absolute top-[-40px] text-[13px] text-[#1f2937] text-center px-[4px]">
+                    <div className="absolute top-[-40px] text-[13px] text-[#1f2937] mt-[-35px] text-center px-[4px]">
                       {task.label}
                     </div>
                     <div className="mt-[32px] w-[2px] h-[40px] border-l border-dotted border-[#9ca3af]" />

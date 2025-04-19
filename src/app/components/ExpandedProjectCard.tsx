@@ -26,6 +26,8 @@ interface ExpandedProjectModalProps {
  stretch?: string[];
  showJoinButton?: boolean;
  id: number;
+ skillIconMap?: { [name: string]: string };
+
 }
 
 
@@ -50,32 +52,47 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
  mvps = [],
  stretch = [],
  showJoinButton,
+ skillIconMap,
 }) => {
- const renderTags = (items: string[], color: string) => {
-   const validItems = items.filter((item) => typeof item === "string" && item.trim() !== "");
-   if (!validItems.length) return null;
-
-
-   return (
-     <div className="flex flex-wrap gap-[6px] mb-[10px]">
-       {validItems.slice(0, 3).map((item, index) => (
-         <span
-           key={index}
-           className="text-[11px] px-[8px] py-[4px] rounded-[8px]"
-           style={{ backgroundColor: color, color: "#fff" }}
-         >
-           {item}
-         </span>
-       ))}
-     </div>
-   );
- };
+  const renderTags = (
+    items: string[],
+    color: string,
+    iconMap?: { [name: string]: string }
+  ) => {
+    const validItems = items.filter((item) => typeof item === "string" && item.trim() !== "");
+    if (!validItems.length) return null;
+  
+    return (
+      <div className="flex flex-wrap gap-[6px] mb-[10px]">
+        {validItems.slice(0, 3).map((item, index) => {
+          const normalizedKey = item.trim().toLowerCase();
+          return (
+            <span
+              key={index}
+              className="text-[11px] px-[8px] py-[4px] rounded-[8px] flex items-center gap-[4px]"
+              style={{ backgroundColor: color, color: "#fff" }}
+            >
+              {iconMap && iconMap[normalizedKey] && (
+                <img
+                  src={iconMap[normalizedKey]}
+                  alt={`${item} icon`}
+                  className="w-[12px] h-[12px]"
+                />
+              )}
+              {item}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+  
 
 
  return (
-   <div className="fixed inset-0 z-[40] flex items-center justify-center mt-[-80px] ml-[8%]">
+   <div className="fixed inset-0 z-[40] flex items-center justify-center mt-[-80px] ml-[8%] rounded-[10px]">
      <div
-       className="relative z-10 rounded-[15px] shadow-[0_0_20px_rgba(0,0,0,1)] py-[20px]"
+       className="relative z-10 rounded-[15px] shadow-[0_0_20px_rgba(0,0,0,1)] px-[20px] py-[30px]"
        style={{
          backgroundColor: "#ffffff",
          width: "70vw",
@@ -86,11 +103,11 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
      >
        <button
          onClick={onClose}
-         className="absolute font-bold z-[20] border-none bg-transparent mt-[-10px]"
+         className="absolute font-bold z-[20] border-none bg-transparent mt-[-10px] translate-x-[10px] cursor-pointer"
          style={{
            top: "16px",
            right: "16px",
-           fontSize: "24px",
+           fontSize: "20px",
            color: "#000",
          }}
        >
@@ -98,18 +115,19 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
        </button>
 
 
-       <div style={{ overflowY: "auto", padding: "20px" }}>
+       <div className="overflow-y-scroll scrollbar-hide">
        <img
           src={image}
           alt={title}
-          className="w-full h-[500px] rounded-[10px] object-fill"
+          className="w-full h-[500px] rounded-[15px] object-fill"
         />
 
 
-
+         <div className="px-[25px] rounded-[10px]">
          <h2 className="text-[28px] font-bold mt-[15px]">{title}</h2>
          {renderTags(topics, "#426c98")}
-         {renderTags(skills, "#5888b5")}
+        {renderTags(skills, "#5888b5", skillIconMap)}
+
 
 
          {/* Team Lead Info */}
@@ -119,13 +137,17 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
              alt="Team Lead"
              className="w-[36px] h-[36px] rounded-full object-cover mr-3"
            />
-           <p className="text-[16px] text-[#4B5563]">Led by: {groupLeader.name}</p>
+           <p className="text-[16px] text-[#4B5563]" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>Led by: {groupLeader.name}</p>
          </div>
 
 
          {/* Members */}
          <div className="flex items-center mb-[20px]">
-           <div className="flex mr-[8px]">
+           <div className="flex mr-[8px] " style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>
            {members.slice(0, 5).map((m, idx) => {
            const imageSrc = typeof m === "string" ? m : m.image;
            const altText = typeof m === "string" ? `member-${idx}` : m.name;
@@ -149,15 +171,18 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
            );
          })}
                    </div>
-           <span className="text-[14px] text-[#374151]">{totalMembers} members</span>
+           <span className="text-[14px] text-[#374151]" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>{totalMembers} members</span>
          </div>
 
 
          {/* Tags Section */}
        
 
-
-         <p className="text-[15px] mb-[24px] leading-[1.6]">{description}</p>
+         <p className="text-[15px] mb-[24px] leading-[1.6]" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>{description}</p>
 
 
          {/* MVPs and Stretch Goals Side-by-Side */}
@@ -166,8 +191,12 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
              {/* MVPs Column */}
              {mvps.length > 0 && (
                <div className="w-1/2">
-                 <h3 className="text-[18px] font-semibold mb-[10px]">MVPs 🏆</h3>
-                 <ul className="list-disc list-inside space-y-2 text-[14px] text-[#1f2937]">
+                 <h3 className="text-[18px] font-semibold mb-[10px]" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>MVPs 🏆</h3>
+                 <ul className="list-disc list-inside space-y-2 text-[14px] text-[#1f2937]" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>
                    {mvps.map((item, idx) => (
                      <li key={idx}>{item}</li>
                    ))}
@@ -179,8 +208,12 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
              {/* Stretch Goals Column */}
              {stretch.length > 0 && (
                <div className="w-1/2">
-                 <h3 className="text-[18px] font-semibold mb-[10px]">Stretch Goals 🏃</h3>
-                 <ul className="list-disc list-inside space-y-2 text-[14px] text-[#1f2937]">
+                 <h3 className="text-[18px] font-semibold mb-[10px]" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>Stretch Goals 🏃</h3>
+                 <ul className="list-disc list-inside space-y-2 text-[14px] text-[#1f2937]" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>
                    {stretch.map((item, idx) => (
                      <li key={idx}>{item}</li>
                    ))}
@@ -190,7 +223,13 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
            </div>
          )}
          <div>
+         <h3 className="text-[18px] font-semibold translate-y-[50px] mb-[-50px]" style={{
+            fontFamily: "'Nunito', sans-serif",
+          }}>
+          Project Timeline
+          </h3>
          <ProjectTimeline projectId={id} />
+       
          </div>
 
 
@@ -232,7 +271,7 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
 
            {showJoinButton && (
              <button
-               className="border-none cursor-pointer flex translate-x-[850px]"
+               className="border-none cursor-pointer flex translate-x-[800px]"
                onClick={onJoin}
                style={{
                  padding: "8px 24px",
@@ -248,6 +287,7 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
              </button>
            )}
          </div>
+       </div>
        </div>
      </div>
    </div>

@@ -1,21 +1,33 @@
 import React, { useState, useEffect, useRef } from "react";
 
 interface FilterBoxProps {
+  selected?: { topics: string[]; skills: string[]; roles?: string[] };
   onClose: () => void;
-  onApply: (filters: any) => void;
+  onApply: (filters: { topics: string[]; skills: string[]; roles?: string[] }) => void;
 }
 
-export default function FilterBox({ onClose, onApply }: FilterBoxProps) {
+
+
+export default function FilterBox({ onClose, onApply, selected }: FilterBoxProps)  {
   const boxRef = useRef<HTMLDivElement>(null);
   const [skills, setSkills] = useState<string[]>([]);
   const [topics, setTopics] = useState<string[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
 
-  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  // const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  // const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
-
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  
+  useEffect(() => {
+    if (selected) {
+      setSelectedTopics(selected.topics || []);
+      setSelectedSkills(selected.skills || []);
+    }
+  }, [selected]);
+  
   useEffect(() => {
     const fetchFilterData = async () => {
       try {
@@ -70,6 +82,7 @@ export default function FilterBox({ onClose, onApply }: FilterBoxProps) {
       topics: selectedTopics,
       skills: selectedSkills,
       roles: selectedRoles,
+
     });
   };
 

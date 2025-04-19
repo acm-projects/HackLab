@@ -228,15 +228,7 @@ const InterestSelection = () => {
       >
         <button
           onClick={() => router.push("/Survey/languages")}
-          style={{
-            backgroundColor: "#fff",
-            padding: "10px 24px",
-            borderRadius: "12px",
-            color: "#385773",
-            fontSize: "14px",
-            border: "none",
-            cursor: "pointer",
-          }}
+          className="bg-[#fff] px-[10px] py-[24px] text-[#385773] font-[14px] border-none outline-none cursor-pointer hover:bg-[#cecece] hover:text-[#fff]"
         >
           Back
         </button>
@@ -254,7 +246,7 @@ const InterestSelection = () => {
             transition: "background-color 0.3s",
           }}
           onMouseOver={(e) =>
-            (e.currentTarget.style.backgroundColor = "#fff")
+            (e.currentTarget.style.backgroundColor = "#cecece")
           }
           onMouseOut={(e) =>
             (e.currentTarget.style.backgroundColor = "#fff")

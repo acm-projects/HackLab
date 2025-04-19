@@ -67,7 +67,7 @@ const UserInfo = () => {
               </label>
               <input
                 type="text"
-                placeholder="City, Country"
+                placeholder="City, State"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 style={{
@@ -117,7 +117,7 @@ const UserInfo = () => {
                   display: "block",
                 }}
               >
-                Company/School
+                School
               </label>
               <input
                 type="text"
@@ -276,7 +276,7 @@ const UserInfo = () => {
             }}
             onMouseOver={(e) => {
               if (isFormValid)
-                e.currentTarget.style.backgroundColor = "#fff";
+                e.currentTarget.style.backgroundColor = "#cecece";
             }}
             onMouseOut={(e) => {
               e.currentTarget.style.backgroundColor = "#fff";

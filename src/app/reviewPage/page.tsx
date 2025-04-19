@@ -32,7 +32,27 @@ export default function ReviewPage() {
  const { data: session } = useSession();
  const [projectData, setProjectData] = React.useState<ProjectData | null>(null);
  const [isSubmitting, setIsSubmitting] = React.useState(false);
+ const [skillIconMap, setSkillIconMap] = React.useState<{ [name: string]: string }>({});
 
+ React.useEffect(() => {
+   const fetchSkillIcons = async () => {
+     try {
+       const res = await fetch("http://52.15.58.198:3000/skills");
+       if (!res.ok) throw new Error("Failed to fetch skills");
+       const skills = await res.json();
+       const map: { [name: string]: string } = {};
+       for (const skill of skills) {
+         map[skill.skill] = skill.icon_url;
+       }
+       setSkillIconMap(map);
+     } catch (err) {
+       console.error("Error fetching skill icons:", err);
+     }
+   };
+ 
+   fetchSkillIcons();
+ }, []);
+ 
 
  React.useEffect(() => {
    const saved = localStorage.getItem("projectReviewData");
@@ -212,7 +232,7 @@ export default function ReviewPage() {
 
     {/* Title */}
     <h2 className="absolute top-[20px] text-[25px] py-[50px] font-bold text-[#385773] z-10 mt-[10px]">
-      REVIEW YOUR PROJECT
+      Review your project
     </h2>
 
     {/* Review Card */}
@@ -235,11 +255,21 @@ export default function ReviewPage() {
       <div className="mb-4">
         <h3 className="text-lg font-bold mb-2">Tech To Be Used:</h3>
         <div className="flex flex-wrap gap-[10px]">
-          {projectData.techToBeUsed.map((tech, index) => (
-            <span key={index} className="px-[10px] py-[10px] text-sm rounded-[10px] bg-white border border-[#cfdce5] gap-[10px]">
-              {tech}
-            </span>
-          ))}
+        {projectData.techToBeUsed.map((tech, index) => (
+      <div
+        key={index}
+        className="flex items-center gap-[8px] px-[10px] py-[10px] text-sm rounded-[10px] bg-white border border-[#cfdce5]"
+      >
+        {skillIconMap[tech] && (
+          <img
+            src={skillIconMap[tech]}
+            alt={`${tech} icon`}
+            className="w-[18px] h-[18px] object-contain"
+          />
+        )}
+        <span>{tech}</span>
+      </div>
+    ))}
         </div>
       </div>
 
