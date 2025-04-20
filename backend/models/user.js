@@ -14,11 +14,11 @@ const User = {
     },
 
     updateUser: async (id, userData) => {
-        const { name, real_name, email, emailVerified, image, xp, bio, role_preference_id, generated_resume_latex, linkedin_url } = userData;
+        const { name, real_name, email, emailVerified, image, xp, bio, role_preference_id, generated_resume_latex, linkedin_url, school, location } = userData;
         const { rows } = await db.query(
-            'UPDATE users SET name = $1, real_name = $2, email = $3, "emailVerified" = $4, image = $5, xp = $6, bio = $7, role_preference_id = $8, generated_resume_latex = $9, linkedin_url = $10 WHERE id = $11 RETURNING *',
-            [name, real_name, email, emailVerified, image, xp, bio, role_preference_id, generated_resume_latex, linkedin_url, id]
-        );
+            'UPDATE users SET name = $1, real_name = $2, email = $3, "emailVerified" = $4, image = $5, xp = $6, bio = $7, role_preference_id = $8, generated_resume_latex = $9, linkedin_url = $10, school = $11, location = $12 WHERE id = $13 RETURNING *',
+            [name, real_name, email, emailVerified, image, xp, bio, role_preference_id, generated_resume_latex, linkedin_url, school, location, id]
+        ); 
         return rows[0];
     },
 
