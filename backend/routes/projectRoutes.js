@@ -253,10 +253,10 @@ router.delete('/:projectId/topics/:topicId', async (req, res) => {
 router.post('/:projectId/teamPreference', async (req, res) => {
     console.log('Received request to add team preference to project');
     const { projectId } = req.params;
-    const { rolePreferenceId, xp } = req.body; // Expecting rolePreferenceId and xp in the request body
+    const { role_preference_id, xp } = req.body; // Expecting rolePreferenceId and xp in the request body
 
     try {
-        const result = await addTeamPreferenceToProject(projectId, rolePreferenceId, xp);
+        const result = await addTeamPreferenceToProject(projectId, role_preference_id, xp);
         res.status(201).json(result);
     } catch (error) {
         console.error('Error adding team preference to project:', error);
