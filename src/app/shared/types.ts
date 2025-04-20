@@ -13,4 +13,9 @@ export interface ProjectData {
   };
   thumbnail?: string;
   source?: string;
+  // rolePreferences?: {
+  //   roleId: number;
+  //   roleName: string;
+  //   xp: number;
+  // }[];
 }

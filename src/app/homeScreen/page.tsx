@@ -228,7 +228,7 @@ useEffect(() => {
     return () => clearInterval(interval);
   }, []);
 
-  const topProjects = [...completedProjects].sort((a, b) => b.likes - a.likes).slice(0, 3);
+  const topProjects = [...completedProjects].sort((a, b) => b.likes - a.likes).slice(0, 2);
   const olderProjects = [...completedProjects].sort((a, b) => b.likes - a.likes).slice(3, 9);
 
   if (showLoadingPage) {
@@ -242,9 +242,9 @@ useEffect(() => {
   return (
     <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito">
       <NavBar />
-      <div className="h-screen flex flex-col items-center overflow-y-scroll w-[100%] scrollbar-hide mb-[100px]">
+      <div className="h-screen w-[90%] flex flex-col items-center overflow-y-scroll scrollbar-hide mb-[100px]">
         {/* Hero */}
-        <div className="w-[93%] h-[300px] flex flex-col items-start justify-center text-center mt-[60px]">
+        <div className="w-[93%] h-[300px] flex flex-col items-start justify-center text-center mb-[10px]">
           <h1 className="text-[30px] font-[500] text-white font-bold mb-[0px]">
             Hello {session?.user?.name || session?.user?.name || "USER"}
           </h1>
@@ -252,7 +252,7 @@ useEffect(() => {
         </div>
 
         {/* Slider */}
-        <div className="w-[93%] h-[350px] bg-[#385773] flex items-center justify-evenly rounded-[15px]">
+        <div className="w-[93%] h-[350px] bg-[#385773] flex items-center justify-evenly rounded-[15px] -translate-y-[25%]">
           <button onClick={prevSlide} className="text-[#fff] px-[10px] ml-[5px] border-transparent border-none outline-none bg-transparent">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-[25px] h-[25px] mt-[-5px]">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -276,10 +276,10 @@ useEffect(() => {
           </button>
         </div>
 
-        <div>
+        <div className="w-[93%] h-[350px] rounded-[15px] -translate-y-[25%]">
         {/* Top Projects */}
         <h2 className="text-[36px] font-bold text-[#000] mt-[40px] mb-[40px] text-center flex item-start">Top Projects</h2>
-        <div className="grid grid-cols-3 gap-[40px]">
+        <div className="grid grid-cols-2 gap-[80px]">
         {topProjects.map((project, index) => (
             <div className="transition-transform duration-300 hover:-translate-y-[4px]" key={index} onClick={() => handleCardClick(index, "top")}>
               <CompletedProjectCard
@@ -299,8 +299,9 @@ useEffect(() => {
         </div>
 
         {/* Recent Projects */}
+
         <h2 className="text-[36px] font-bold text-[#000] mt-[40px] mb-[40px] text-left">Recently Completed Projects</h2>
-        <div className="grid grid-cols-3 gap-[40px] mb-[50px] ">
+        <div className="grid grid-cols-2 gap-[80px]">
         {recentProjects.map((project, index) => (
           <div className="transition-transform duration-300 hover:-translate-y-[4px]" key={index}onClick={() => handleCardClick(index, "recent")}>
             <CompletedProjectCard
@@ -316,17 +317,19 @@ useEffect(() => {
               skillIconMap={skillIconMap}
 
             />
+            
           </div>
         ))}
 
         </div>
+        <div className="translate-y-[50px] text-[#fff]">.</div>
         </div>
         
         {/* Modal */}
        
 
         {showModal && selectedIndex !== null && (
-          <div className="fixed inset-0 flex items-start justify-center translate-y-[150px] z-[40] translate-x-[-25px]">
+          <div className="fixed inset-0 flex items-start justify-center translate-y-[150px] z-[40]">
             <ExpandedProjectModal
               {...selectedProject}
               onClose={() => setShowModal(false)}

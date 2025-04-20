@@ -42,6 +42,7 @@ export default function FilterBox({ onClose, onApply, selected }: FilterBoxProps
           topicsRes.json(),
           rolesRes.json(),
         ]);
+        
 
         setSkills(skillsData.map((s: any) => s.skill).filter(Boolean));
         setTopics(topicsData.map((t: any) => t.topic).filter(Boolean));

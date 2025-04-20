@@ -7,7 +7,6 @@ import ExpandedProjectModal from "../components/ExpandedProjectCard";
 import ProjectTimeline from "../components/timelineComponent";
 import LoadingPage from "../components/loadingScreen"; // adjust the path if needed
 
-
 interface Project {
   id: number;
   title: string;
@@ -24,6 +23,8 @@ interface Project {
   stretch: string[];
   frontendTasks: string[];
   backendTasks: string[];
+  rolePreference?: { role_preference_id: number; xp: number }[];
+
 }
 
 const FindProjects = () => {
@@ -34,11 +35,30 @@ const FindProjects = () => {
   const [isLiked, setIsLiked] = useState<boolean[]>([]);
   const [isBookmarked, setIsBookmarked] = useState<boolean[]>([]);
   const [joinRequested, setJoinRequested] = useState<boolean[]>([]);
-  const [filters, setFilters] = useState<{ topics: string[]; skills: string[] }>({ topics: [], skills: [] });
+  const [filters, setFilters] = useState<{ topics: string[]; skills: string[]; roles?: string[] }>({ topics: [], skills: [], roles: [] });
   const [searchQuery, setSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [skillIconMap, setSkillIconMap] = useState<{ [name: string]: string }>({});
   const [showLoadingPage, setShowLoadingPage] = useState(true);
+  const [roleMap, setRoleMap] = useState<{ [id: number]: string }>({});
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch("http://52.15.58.198:3000/roles");
+        const data = await res.json();
+        const map: { [id: number]: string } = {};
+        data.forEach((r: any) => {
+          map[r.id] = r.role;
+        });
+        setRoleMap(map);
+      } catch (err) {
+        console.error("Failed to fetch roles:", err);
+      }
+    };
+    fetchRoles();
+  }, []);
+
   useEffect(() => {
     const fetchSkillIcons = async () => {
       try {
@@ -53,14 +73,13 @@ const FindProjects = () => {
         console.error("❌ Failed to fetch skill icons:", err);
       }
     };
-  
     fetchSkillIcons();
   }, []);
-    useEffect(() => {
-      const timer = setTimeout(() => setShowLoadingPage(false), 2000);
-      return () => clearTimeout(timer);
-    }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoadingPage(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -69,42 +88,32 @@ const FindProjects = () => {
         const res = await fetch("http://52.15.58.198:3000/users");
         const allUsers = await res.json();
         const currentUser = allUsers.find((u: any) => u.email === session.user.email);
-        if (currentUser) {
-          setCurrentUserId(currentUser.id);
-        }
+        if (currentUser) setCurrentUserId(currentUser.id);
       } catch (err) {
         console.error("❌ Failed to fetch user ID:", err);
       }
     };
-
     fetchUserId();
   }, [session]);
 
   useEffect(() => {
     if (!currentUserId) return;
-
     const fetchProjects = async () => {
       try {
         const res = await fetch("http://52.15.58.198:3000/projects");
-        const data = await res.json(); // ← THIS LINE is missing
-        const filteredByLead = data.filter((p: any) => p.team_lead_id !== currentUserId);
+        const data = await res.json();
+        const filteredByLead = data.filter((p: any) => !p.completed && p.team_lead_id !== currentUserId);
 
-        // Fetch user memberships
         const memberships = await Promise.all(
           filteredByLead.map(async (project: any) => {
             const resMembers = await fetch(`http://52.15.58.198:3000/projects/${project.id}/users`);
             const members = await resMembers.json();
             const isMember = Array.isArray(members) && members.some((m: any) => m.id === currentUserId);
-
-            // const isMember = members.some((m: any) => m.id === currentUserId);
             return isMember ? null : project;
           })
         );
 
-        // Filter out nulls (projects the user is a member of)
         const visibleProjects = memberships.filter(Boolean);
-
-    
 
         const [likedRes, bookmarkedRes, joinRes] = await Promise.all([
           fetch(`http://52.15.58.198:3000/users/${currentUserId}/liked-projects`),
@@ -116,26 +125,34 @@ const FindProjects = () => {
         const bookmarkedProjectIds = bookmarkedRes.ok ? (await bookmarkedRes.json()).map((item: any) => Number(item.project_id)) : [];
         const joinRequestedProjectIds = joinRes.ok ? (await joinRes.json()).map((item: any) => Number(item.project_id)) : [];
 
-        const enrichedProjects = await Promise.all(
+        const enrichedProjects: Project[] = await Promise.all(
           visibleProjects.map(async (p: any) => {
             const projectId = p.id;
-            let membersData = [];
-            let skillsData = [];
-            let topicsData = [];
-            let teamLeadData = { name: "Unknown", image: "../../../images/default.jpg" };
+            let membersData = [], skillsData = [], topicsData = [], teamLeadData = { name: "Unknown", image: "../../../images/default.jpg" };
+            let rolePreferenceData: { role_preference_id: number; xp: number }[] = [];
 
             try {
-              const [teamLeadRes, membersRes, skillsRes, topicsRes] = await Promise.all([
+              const [teamLeadRes, membersRes, skillsRes, topicsRes, rolePrefRes] = await Promise.all([
                 fetch(`http://52.15.58.198:3000/users/${p.team_lead_id}`),
                 fetch(`http://52.15.58.198:3000/projects/${projectId}/users`),
                 fetch(`http://52.15.58.198:3000/projects/${projectId}/skills`),
-                fetch(`http://52.15.58.198:3000/projects/${projectId}/topics`)
+                fetch(`http://52.15.58.198:3000/projects/${projectId}/topics`),
+                fetch(`http://52.15.58.198:3000/projects/${projectId}/teamPreference`),
               ]);
 
               if (teamLeadRes.ok) teamLeadData = await teamLeadRes.json();
               if (membersRes.ok) membersData = await membersRes.json();
               if (skillsRes.ok) skillsData = (await skillsRes.json()).map((s: any) => s.skill);
               if (topicsRes.ok) topicsData = (await topicsRes.json()).map((t: any) => t.topic);
+              if (rolePrefRes.ok) {
+                const rolePrefs = await rolePrefRes.json();
+                if (Array.isArray(rolePrefs)) {
+                  rolePreferenceData = rolePrefs.map((pref: any) => ({
+                    role_preference_id: pref.role_preference_id,
+                    xp: pref.xp,
+                  }));
+                }
+              }
             } catch (err) {
               console.error("Fetch error:", err);
             }
@@ -156,6 +173,7 @@ const FindProjects = () => {
               stretch: p.stretch || [],
               frontendTasks: [],
               backendTasks: [],
+              rolePreference: rolePreferenceData
             };
           })
         );
@@ -164,23 +182,26 @@ const FindProjects = () => {
         setIsLiked(enrichedProjects.map((p) => likedProjectIds.includes(p.id)));
         setIsBookmarked(enrichedProjects.map((p) => bookmarkedProjectIds.includes(p.id)));
         setJoinRequested(enrichedProjects.map((p) => joinRequestedProjectIds.includes(p.id)));
-
       } catch (err) {
         console.error("❌ Failed to load projects:", err);
       }
     };
-
     fetchProjects();
   }, [currentUserId]);
   
   
-   const filteredProjects = projects.filter((project) => {
-   const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase());
-   const topicMatch = filters.topics.length === 0 || filters.topics.some((t) => project.topics.includes(t));
-   const skillMatch = filters.skills.length === 0 || filters.skills.some((s) => project.skills.includes(s));
-   return matchesSearch && topicMatch && skillMatch;
- });
-
+  const filteredProjects = projects.filter((project) => {
+    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const topicMatch = filters.topics.length === 0 || filters.topics.some((t) => project.topics.includes(t));
+    const skillMatch = filters.skills.length === 0 || filters.skills.some((s) => project.skills.includes(s));
+    
+    // ✅ New role match check
+    const roleNames = project.rolePreference?.map(pref => roleMap[pref.role_preference_id]) || [];
+    const roleMatch = filters.roles?.length === 0 || filters.roles?.some((r) => roleNames.includes(r));
+  
+    return matchesSearch && topicMatch && skillMatch && roleMatch;
+  });
+  
 
  const handleLike = async (index: number) => {
    const project = projects[index];
@@ -295,7 +316,7 @@ const FindProjects = () => {
 }
  return (
   
-   <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito overflow-y-auto scrollbar-hide">
+  <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito overflow-y-auto scrollbar-hide">
      <NavBar
        searchInput={searchInput}
        setSearchInput={setSearchInput}
@@ -307,7 +328,7 @@ const FindProjects = () => {
      />
 
 
-     <div className="h-screen flex flex-col items-center bg-blue-900 text-white w-[90%] scrollbar-hide">
+<div className="h-screen flex flex-col items-center bg-blue-900 text-white w-[90%] scrollbar-hide">
        {filteredProjects.length > 0 ? (
          <div className="text-[#000000] font-[700] text-[24px] mt-[100px] mb-[-100px] mr-[950px]">
            Found {filteredProjects.length} project{filteredProjects.length !== 1 ? "s" : ""} just for you
@@ -322,11 +343,11 @@ const FindProjects = () => {
 
 
        {filteredProjects.length > 0 && (
-         <div className="grid grid-cols-2 gap-[50px] w-[85vw] mt-[150px] mx-auto">
+         <div className="grid grid-cols-2 gap-[80px] w-[85vw] mt-[150px] mx-auto">
            {filteredProjects.map((project, index) => (
              <div
                key={project.id}
-               className="transition-transform duration-300 hover:-translate-y-[4px] cursor-pointer mb-[30px]"
+               className="transition-transform duration-300 hover:-translate-y-[4px] cursor-pointer"
                onClick={() => openProjectModal(index)}
              >
                <OngoingProjectCard
@@ -340,20 +361,22 @@ const FindProjects = () => {
                  onBookmark={() => handleBookmark(index)}
                  onJoin={() => handleJoin(index)}
                  skillIconMap={skillIconMap} 
+                 roleMap={roleMap} // 👈 Add this
                />
              </div>
            ))}
          </div>
        )}
+       <div className="translate-y-[50px] text-[#fff]">.</div>
      </div>
 
 
      {expandedProjectIndex !== null && (
-       <div className="fixed inset-0 z-40 bg-black bg-opacity-50 translate-y-[150px] translate-x-[-520px] flex items-center justify-center">
-         <div className="z-50">
+       <div className="fixed inset-0 z-40 bg-black bg-opacity-50">
+         <div className="z-50 flex justify-center translate-y-[160px]">
          <ExpandedProjectModal
             {...filteredProjects[expandedProjectIndex]}
-            mvps={filteredProjects[expandedProjectIndex].mvp}  // 👈 Explicitly pass it as `mvps`
+            mvps={filteredProjects[expandedProjectIndex].mvp}
             onClose={closeProjectModal}
             isLiked={isLiked[expandedProjectIndex]}
             isBookmarked={isBookmarked[expandedProjectIndex]}
@@ -363,11 +386,15 @@ const FindProjects = () => {
             onJoin={() => handleJoin(expandedProjectIndex)}
             showJoinButton={true}
             skillIconMap={skillIconMap}
+            roleMap={roleMap} // ✅ add this
+            rolePreference={filteredProjects[expandedProjectIndex].rolePreference} // ✅ and this
           />
+
 
          </div>
        </div>
      )}
+
    </div>
  );
 };

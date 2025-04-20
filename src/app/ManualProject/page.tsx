@@ -38,16 +38,32 @@ export default function ManualProject() {
   const [interestOptions, setInterestOptions] = useState<string[]>([])
   const [filteredInterestOptions, setFilteredInterestOptions] = useState<string[]>([])
   const [showInterestDropdown, setShowInterestDropdown] = useState<boolean>(false)
-  const [thumbnail, setThumbnail] = useState<File | null>(null)
+  const [thumbnail, setThumbnail] = useState<File | string | null>(null);
+
 
   const [showMvpWarning, setShowMvpWarning] = useState<boolean>(false)
   const [showStretchGoalWarning, setShowStretchGoalWarning] = useState<boolean>(false)
   const [skillMap, setSkillMap] = useState<{ [id: number]: string }>({});
   const [topicMap, setTopicMap] = useState<{ [id: number]: string }>({});
-  const lowercaseTechOptions = techOptions.map(opt => opt.toLowerCase());
-  const lowercaseInterestOptions = interestOptions.map(opt => opt.toLowerCase());
   const [reverseSkillMap, setReverseSkillMap] = useState<{ [skill: string]: number }>({});
 const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number }>({});
+//const [roleOptions, setRoleOptions] = useState<{ id: number; role: string }[]>([]);
+//const [selectedRole, setSelectedRole] = useState<{ roleId: number; roleName: string; xp: number } | null>(null);
+
+
+
+// useEffect(() => {
+//   const fetchRoles = async () => {
+//     try {
+//       const res = await fetch("http://52.15.58.198:3000/roles");
+//       const data = await res.json();
+//       setRoleOptions(data);
+//     } catch (err) {
+//       console.error("❌ Failed to fetch roles", err);
+//     }
+//   };
+//   fetchRoles();
+// }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -157,6 +173,13 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
       setDescription(data.description || "");
       setMvps(data.mvps || []);
       setStretchGoals(data.stretchGoals || []);
+      setFrontendTimeline(data.timeline?.frontend || []);
+      setBackendTimeline(data.timeline?.backend || []);
+      setThumbnail(data.thumbnail ?? null);
+      // if (Array.isArray(data.rolePreferences) && data.rolePreferences.length > 0) {
+      //   setSelectedRole(data.rolePreferences[0]); // pre-select the same role
+      // }
+
     } catch (error) {
       console.error("Error parsing project data:", error);
     }
@@ -248,6 +271,8 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
         frontend: frontendTimeline,
         backend: backendTimeline,
       },
+      //rolePreferences: selectedRole ? [selectedRole] : [],
+
     };
   
     if (thumbnail) {
@@ -413,12 +438,12 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-blue-900 text-white font-nunito mt-[20px]">
+    <div className="min-h-screen flex flex-col items-center font-nunito mt-auto mb-auto ">
           <NavBar />
       
 
       {/* Fixed Header */}
-      <h2
+      <h2 className="translate-y-[30%]"
         style={{
           padding: "5px",
           fontSize: "30px",
@@ -439,10 +464,10 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
 
       {/* Fixed Form Container */}
       <div
-        className="translate-y-[-50px] flex justify-center"
+        className="mt-auto mb-auto flex justify-center"
         style={{
-          width: "800px",
-          height: "650px",
+          width: "50%",
+          height: "75vh",
           position: "relative",
           zIndex: 10,
           marginTop: "20px",
@@ -1035,7 +1060,28 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
              </div>
            </div>
 
+        {/* <div className="flex justify-between items-center gap-[50px]">
+       
+          <h3 style={{ fontWeight: "bold", color: "#385773" }}>Select Team Role Preference</h3>
+          {roleOptions.map((role) => (
+            <label key={role.id} className="flex items-center gap-[5px]">
+              <input
+              className="mt-[-2px] flex justify-evenly items-center"
+                type="radio"
+                name="rolePreference"
+                value={role.id}
+                checked={selectedRole?.roleId === role.id}
+                onChange={() =>
+                  setSelectedRole({ roleId: role.id, roleName: role.role, xp: 50 })
+                }
+              />
+              {role.role}
+            </label>
+          ))}
+     
 
+
+        </div> */}
            {/* Thumbnail Upload - Full Width */}
       <div className="w-[99%]">
         <label style={{ marginBottom: "8px", display: "block" }}>Upload Project Thumbnail</label>

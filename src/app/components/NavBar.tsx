@@ -10,7 +10,7 @@ import {io} from 'socket.io-client';
 
 
 interface NavBarProps {
-  onApplyFilters?: (filters: { topics: string[]; skills: string[] }) => void;
+  onApplyFilters?: (filters: { topics: string[]; skills: string[]; roles?: string[] }) => void;
   onSearchChange?: (query: string) => void;
   searchInput?: string;
   setSearchInput?: (value: string) => void;
@@ -40,33 +40,6 @@ const [appliedFilters, setAppliedFilters] = useState<{ topics: string[]; skills:
   topics: [],
   skills: [],
 });
-
-useEffect(() => {
-  if (!session?.user?.email) return;
-
-  // socket.on("new-message", async (msg: any) => {
-  //   try {
-  //     const userRes = await fetch(`http://52.15.58.198:3000/users/${msg.senderId}`);
-  //     const user = await userRes.json();
-
-  //     const enriched = {
-  //       id: `msg-${Date.now()}`,
-  //       userId: user.id,
-  //       userName: user.name,
-  //       userImage: user.image,
-  //       projectTitle: msg.projectTitle || null,
-  //       isDM: msg.isDM,
-  //       isNew: true,
-  //     };
-
-  //     setMessageNotifications((prev) => [enriched, ...prev]);
-  //   } catch (err) {
-  //     console.error("❌ Failed to enrich new message:", err);
-  //   }
-  // });
-
-  
-}, [session]);
   
 
   useEffect(() => {
@@ -135,7 +108,9 @@ useEffect(() => {
             {pathname === "/findProjects" && (
               <div className="relative">
                 <button
-                  className="mt-[2px] w-[80px] flex items-center gap-[1px] px-[13px] py-[8px] bg-[#fff] text-[#2e2e2e] rounded-[10px] cursor-pointer shadow border border-gray-300 text-sm border-transparent border-none outline-none ml-[20px]"
+                  className="mt-[2px] w-[80px] flex items-center gap-[1px] px-[13px] py-[8px] bg-[#fff] text-[#2e2e2e] rounded-[10px] cursor-pointer shadow border border-gray-300 text-sm border-transparent border-none outline-none ml-[20px]" style={{
+                    fontFamily: "'Nunito', sans-serif",
+                  }}
                   onClick={() => setShowFilterBox(!showFilterBox)}
                 >
                   Filter

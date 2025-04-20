@@ -118,10 +118,10 @@ const handleRejectJoin = async (userIdToReject: number, projectId: number) => {
      });
      if (!res.ok) throw new Error("Failed to kick user");
      fetchProjectUsers();
-     alert("User removed successfully");
+    
    } catch (err) {
      console.error("Error removing user from project:", err);
-     alert("Failed to remove user");
+     
    }
  };
 
@@ -274,11 +274,11 @@ useEffect(() => {
     // Reset the selected project
     setSelectedProjectId(null);
     
-    alert("Project marked as complete!");
+    
     setShowCompleteConfirm(false);
   } catch (err) {
     console.error("Error:", err);
-    alert("Could not mark project complete");
+  
   }
 };
 
@@ -291,18 +291,18 @@ const handleDelete = async () => {
     });
 
     if (!deleteRes.ok) {
-      alert("Failed to delete the project.");
+      
       return;
     }
 
-    alert("Project deleted successfully.");
+  
     setUserProjects(prev => prev.filter(project => project.id !== selectedProjectId));
     setSelectedProjectId(null);
     setShowDeleteConfirm(false);
 
   } catch (err) {
     console.error("Delete error:", err);
-    alert("An error occurred while deleting the project.");
+   
   }
 };
 
@@ -311,9 +311,9 @@ if (showLoadingPage) {
   }
   if (userProjects.length === 0) {
     return (
-      <div className="w-screen h-screen bg-[#f5f7fa] flex flex-col items-center justify-center text-nunito">
+      <div className="w-screen h-screen bg-[#f5f7fa] flex flex-col items-center justify-center text-nunito mt-auto mb-auto">
         <NavBar />
-        <div className="flex-1 flex items-center justify-center w-full mt-[50px]">
+        <div className="flex-1 flex items-center justify-center w-full mt-auto">
           <p className="text-2xl text-[#6b7280] font-semibold">You are not part of any projects yet. 🛠️</p>
         </div>
       </div>
@@ -321,11 +321,11 @@ if (showLoadingPage) {
   }
   
  return (
-   <div className="w-screen h-full bg-[#f5f7fa] text-nunito">
+   <div className="w-screen h-screen bg-[#f5f7fa] text-nunito mt-auto mb-auto">
      <NavBar />
-     <div className="flex w-screen h-full translate-x-[-8px]">
+     <div className="flex w-screen h-screen translate-x-[-8px] mt-auto mb-auto">
      <div className="w-[250px] mt-[50px] bg-transparent py-[10px] border-2 text-[#385773] flex flex-col gap-[12px] overflow-y-auto px-[10px]">
-      <div className="translate-y-[10px] ">
+      <div className="translate-y-[10px]">
       {userProjects.length === 0 ? (
   <p className="text-center text-sm text-[#6b7280] px-2 mt-[20px]">
     You are not part of any projects yet. 🛠️
@@ -542,15 +542,15 @@ if (showLoadingPage) {
                     method: "DELETE",
                   });
                   if (!res.ok) {
-                    alert("Failed to leave the project.");
+                  
                     return;
                   }
-                  alert("You have left the project.");
+                
                   setUserProjects(prev => prev.filter(p => p.id !== selectedProject.id));
                   setSelectedProjectId(null);
                 } catch (err) {
                   console.error("Leave project error:", err);
-                  alert("An error occurred while leaving the project.");
+              
                 }
               }}
               className="bg-[#af0a0a] hover:bg-[#5c3131] text-[#ffffff] cursor-pointer px-[14px] py-[8px] rounded-[6px] text-[14px] font-medium border-none outline-none"
@@ -564,14 +564,14 @@ if (showLoadingPage) {
 
 
       {view === "dashboard" && selectedProject && !isEditing && (
- <div className="bg-[#ffffff] p-[20px] rounded-[8px] shadow-md border border-[#d1d5db] h-[650px] overflow-hidden">
-  <div className="h-full overflow-y-auto pr-[10px]">
+ <div className="bg-[#ffffff] p-[20px] rounded-[8px] shadow-md border border-[#d1d5db] h-screen overflow-y-scroll">
+  <div className="h-screen overflow-y-auto pr-[10px]">
    {/* Layer 1: Title, Type, GitHub, Description */}
    <div className="mb-[20px]">
      <h2 className="text-[22px] font-bold text-[#111827] mb-[5px]">{selectedProject.title}</h2>
 
 
-     <div className="flex items-center justify-between gap-[10px] mb-[5px]">
+     <div className="flex items-center gap-[10px] mb-[5px]">
        {selectedProject.type && (
          <span className="text-[12px] font-medium text-[#ffffff] bg-[#385773] px-[10px] py-[4px] rounded-[999px]">
            {selectedProject.type}
@@ -759,13 +759,13 @@ if (showLoadingPage) {
     )}
 
            {view === "timeline" && selectedProject && (
-  <div className="bg-white p-[20px] h-[650px] rounded-[8px] shadow-md border border-[#d1d5db] overflow-y-auto">
+  <div className="p-[20px] h-screen rounded-[8px] shadow-md border border-[#d1d5db] overflow-y-auto">
     <ProjectTimeline projectId={selectedProjectId!} isTeamLead={isTeamLead} />
 
   </div>
 )}
         {view === "manage" && selectedProject && userId === selectedProject.team_lead_id && (
-  <div className="bg-white p-[20px] h-[650px] rounded-[8px] shadow-md border border-[#d1d5db] overflow-y-auto">
+  <div className="bg-white p-[20px] h-screen rounded-[8px] shadow-md border border-[#d1d5db] overflow-y-auto">
     <h2 className="text-xl font-bold mb-4 text-[#385773]">Manage Members</h2>
             <div className="flex flex-col gap-[10px] mb-8">
               {projectUsers.map((user) => (

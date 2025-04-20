@@ -297,7 +297,7 @@ export default function AiResumeGenerator() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [showLoadingPage, setShowLoadingPage] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [hasGenerated, setHasGenerated] = useState(false); // 🔥 new state
+  const [hasGenerated, setHasGenerated] = useState(false);
 
   const user = session?.user as any;
   const id = user?.id;
@@ -314,27 +314,27 @@ export default function AiResumeGenerator() {
       try {
         const userRes = await fetch(`http://52.15.58.198:3000/users/${id}`);
         const user = await userRes.json();
-
         let latex = user.generated_resume_latex;
+
         if (typeof latex === "string" && latex.trim().startsWith("{")) {
           try {
             const parsed = JSON.parse(latex);
             latex = parsed.generated_resume_latex || latex;
           } catch (err) {
-            console.warn("⚠️ Failed to parse nested LaTeX. Using raw string.");
+            console.warn("⚠️ Failed to parse nested LaTeX.");
           }
         }
 
         if (latex) {
           setLatexOutput(latex);
-          setHasGenerated(true); // resume exists
+          setHasGenerated(true);
         }
 
         const pdfRes = await fetch(`http://52.15.58.198:3000/recompile/${id}`);
         const blob = await pdfRes.blob();
         setPdfUrl(URL.createObjectURL(blob));
       } catch (err) {
-        console.error("Failed to load saved resume:", err);
+        console.error("Resume load error:", err);
       }
     };
 
@@ -353,7 +353,7 @@ export default function AiResumeGenerator() {
         body: JSON.stringify({ github_username, db_name }),
       });
 
-      if (!res.ok) throw new Error("Failed to generate resume");
+      if (!res.ok) throw new Error("Generate error");
 
       const encodedLatex = res.headers.get("X-Latex-Code") || "";
       const decodedLatex = decodeURIComponent(encodedLatex);
@@ -361,10 +361,10 @@ export default function AiResumeGenerator() {
 
       setLatexOutput(decodedLatex);
       setPdfUrl(URL.createObjectURL(blob));
-      setHasGenerated(true); // 🔥 trigger full UI
+      setHasGenerated(true);
     } catch (err) {
       console.error(err);
-      alert("Something went wrong while generating resume.");
+      alert("Error generating resume.");
     } finally {
       setIsGenerating(false);
     }
@@ -377,11 +377,7 @@ export default function AiResumeGenerator() {
     try {
       const userDataRes = await fetch(`http://52.15.58.198:3000/users/${id}`);
       const userData = await userDataRes.json();
-
-      const updatePayload = {
-        ...userData,
-        generated_resume_latex: latexOutput,
-      };
+      const updatePayload = { ...userData, generated_resume_latex: latexOutput };
 
       const userUpdateRes = await fetch(`http://52.15.58.198:3000/users/${id}`, {
         method: "PUT",
@@ -395,14 +391,13 @@ export default function AiResumeGenerator() {
       }
 
       const recompileRes = await fetch(`http://52.15.58.198:3000/recompile/${id}`);
-      if (!recompileRes.ok) throw new Error("Failed to recompile resume");
+      if (!recompileRes.ok) throw new Error("Recompile failed");
 
       const blob = await recompileRes.blob();
-      const pdfUrl = URL.createObjectURL(blob);
-      setPdfUrl(pdfUrl);
+      setPdfUrl(URL.createObjectURL(blob));
     } catch (err) {
-      console.error("❌ Save or recompile failed:", err);
-      alert("Something went wrong while saving or recompiling.");
+      console.error(err);
+      alert("Save or recompile failed.");
     } finally {
       setIsSaving(false);
     }
@@ -410,34 +405,36 @@ export default function AiResumeGenerator() {
 
   if (showLoadingPage) return <LoadingPage />;
 
-  // 🔥 Show intro cards if resume hasn't been generated
   if (!hasGenerated) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center">
+      <div className="h-screen flex flex-col items-center justify-center bg-[#ffffff] font-nunito">
         <NavBar />
-        <div className="flex gap-[40px] mt-[50px]">
-          {/* JUNO CARD */}
-          <div className="h-[500px] w-[400px] bg-[#385773] text-[#fff] rounded-[20px] font-nunito flex flex-col items-center px-[20px] py-[30px]">
+        <div className="flex flex-col items-center justify-center gap-[40px] mt-[50px]">
+          <div
+            className="bg-[#385773] text-[#ffffff] rounded-[20px] px-[20px] py-[30px] flex flex-col items-center justify-between"
+            style={{ width: "400px", height: "500px" }}
+          >
             <h3 className="text-[20px] mb-[10px] text-center mt-[35px]">
               GENERATE RESUME WITH JUNO
             </h3>
-            <p className="text-center text-sm mb-[20px]">
-              Let our smart assistant create a resume based on your GitHub contributions.
+            <p className="text-center text-[13px] mb-[20px]">
+              Let our smart assistant create a resume based on your GitHub contributions and LinkedIn.
             </p>
             <img
+            className="ml-[20px]"
               src="/images/resumeJuno.png"
               alt="resume"
-              className="w-[280px] h-[250px] object-contain mb-[10px]"
+              style={{ width: "380px", height: "350px", objectFit: "contain", marginBottom: "10px" }}
             />
             <button
-              className="w-[250px] h-[50px] bg-[#fff] text-[#385773] hover:bg-[#dedede] font-nunito text-[15px]
-                        flex items-center justify-center gap-2 rounded-[10px] cursor-pointer border-none outlone-none"
+            className="border-none outline-none w-[250px] h-[50px] bg-[#fff] text-[#385773] rounded-[10px] font-[15px] flex align-center items-center justify-center gap-[8px] cursor-pointer hover:bg-[#c9c9c9] hover:text-[#000]"
               onClick={handleGenerateResume}
               disabled={isGenerating}
+              
             >
               {isGenerating ? (
                 <>
-                  <Loader2 className="mr-2 h-[16px] w-[16px] animate-spin" />
+                  <Loader2 className="w-[16px] h-[16px] animate-spin" />
                   Generating...
                 </>
               ) : (
@@ -445,42 +442,24 @@ export default function AiResumeGenerator() {
               )}
             </button>
           </div>
-
-          {/* MANUAL CARD */}
-          <div className="h-[500px] w-[400px] bg-[#385773] text-[#fff]  rounded-[20px] font-nunito flex flex-col items-center px-[20px] py-[30px]">
-            <h3 className="text-[20px] mb-[10px] text-center mt-[35px]">
-              UPLOAD MANUAL RESUME (Coming soon)
-            </h3>
-            <p className="text-center text-sm mb-[20px]">
-              Or manually upload and edit your own LaTeX resume from scratch.
-            </p>
-            <img
-              src="/images/Createyourown.png"
-              alt="Manual Upload"
-              className="w-[280px] h-[250px] object-contain mb-[10px]"
-            />
-            <button
-              disabled
-              className="w-[250px] h-[50px] bg-white text-black opacity-60 font-nunito text-[15px] rounded-[10px] cursor-not-allowed"
-            >
-              Coming Soon
-            </button>
-          </div>
         </div>
       </div>
     );
   }
 
-  // 🔥 Resume has been generated — show full UI
   return (
-    <div className="h-screen w-full flex flex-col text-[#0f172a] font-nunito overflow-y-scroll">
+    <div className="h-screen w-full flex flex-col text-[#0f172a] font-nunito overflow-y-scroll bg-[#ffffff]">
       <NavBar />
       <div className="flex flex-col px-[24px] md:px-[64px] pt-[32px] gap-[32px]">
         <section className="flex flex-row items-center justify-between mt-[-20px] ml-[-50px]">
-          <img src="/images/resumeJuno.png" alt="resume" className="w-[340px] h-[250px]" />
-          <div className="bg-[#fff] translate-x-[-300px]">
+          <img
+            src="/images/resumeJuno.png"
+            alt="resume"
+            style={{ width: "340px", height: "250px", objectFit: "contain" }}
+          />
+          <div style={{ backgroundColor: "#ffffff", transform: "translateX(-300px)" }}>
             <h2 className="text-[24px] font-bold mt-[60px]">Create Resume with Juno</h2>
-            <p className="text-[#64748b] mt-[5px] text-[13px] max-w-[600px] translate-y-[-20px]">
+            <p className="text-[#64748b] mt-[5px] text-[13px] max-w-[600px]" style={{ transform: "translateY(-20px)" }}>
               Generate a professional resume based on your GitHub contributions and LinkedIn profile.
             </p>
           </div>
@@ -502,7 +481,7 @@ export default function AiResumeGenerator() {
 
         <section className="flex flex-row gap-[32px] h-[calc(100vh-140px)] mt-[-80px]">
           <div className="w-[100%] flex flex-col gap-[10px]">
-            <Card className="bg-[#fff] mb-[10px]">
+            <Card className="bg-[#ffffff] mb-[10px]">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle className="text-[18px]">Your Resume (Editable)</CardTitle>
@@ -528,7 +507,7 @@ export default function AiResumeGenerator() {
             </Card>
 
             <div className="w-[100%] h-full flex flex-col gap-[10px] pr-[8px]">
-              <Card className="bg-[#fff] min-h-[300px] overflow-y-scroll">
+              <Card className="bg-[#ffffff] min-h-[300px] overflow-y-scroll">
                 <CardContent className="p-[20px]">
                   <textarea
                     value={latexOutput}
@@ -541,16 +520,16 @@ export default function AiResumeGenerator() {
 
               <h1>Preview</h1>
               {pdfUrl && (
-                <Card className="bg-[#fff] flex-grow">
+                <Card className="bg-[#ffffff] flex-grow">
                   <CardContent className="p-[10px] h-full">
                     <iframe
                       src={pdfUrl}
-                      className="w-full h-[600px] rounded-md bg-white border-none"
                       style={{
-                        backgroundColor: "white",
+                        width: "100%",
+                        height: "600px",
+                        backgroundColor: "#ffffff",
                         border: "none",
-                        margin: 0,
-                        padding: 0,
+                        borderRadius: "8px",
                       }}
                       title="Resume Preview"
                     />
@@ -564,4 +543,3 @@ export default function AiResumeGenerator() {
     </div>
   );
 }
-

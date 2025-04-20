@@ -254,6 +254,12 @@ const LanguageSelection = () => {
               border: "none",
               cursor: "pointer",
             }}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.backgroundColor = "#cecece")
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.backgroundColor = "#fff")
+            }
           >
             Back
           </button>

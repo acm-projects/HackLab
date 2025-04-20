@@ -27,6 +27,11 @@ interface ExpandedProjectModalProps {
  showJoinButton?: boolean;
  id: number;
  skillIconMap?: { [name: string]: string };
+ rolePreference?: {
+  role_preference_id: number;
+  xp: number;
+}[];
+roleMap?: { [id: number]: string };
 
 }
 
@@ -53,6 +58,9 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
  stretch = [],
  showJoinButton,
  skillIconMap,
+ roleMap,
+ rolePreference,
+
 }) => {
   const renderTags = (
     items: string[],
@@ -127,7 +135,27 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
          <h2 className="text-[28px] font-bold mt-[15px]">{title}</h2>
          {renderTags(topics, "#426c98")}
         {renderTags(skills, "#5888b5", skillIconMap)}
-
+         
+         {/* Role Preferences */}
+{Array.isArray(rolePreference) && rolePreference.length > 0 ? (
+  <div className="mb-[20px]">
+    <h3 className="text-[16px] mb-[6px]" style={{ fontFamily: "'Nunito', sans-serif" }}>
+      Looking for:
+    </h3>
+    <div className="flex flex-wrap gap-[8px]">
+      {rolePreference.map((pref, idx) => (
+        <span
+          key={idx}
+          className="bg-[#df6100] text-[#fff] text-[12px] px-[10px] py-[5px] rounded-[8px] font-semibold"
+        >
+          {roleMap?.[pref.role_preference_id] || "Unknown Role"} 
+        </span>
+      ))}
+    </div>
+  </div>
+) : (
+  <div className="mb-[20px] text-[12px] text-[#6B7280] font-semibold">No roles specified</div>
+)}
 
 
          {/* Team Lead Info */}
@@ -274,7 +302,7 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
                className="border-none cursor-pointer flex translate-x-[800px]"
                onClick={onJoin}
                style={{
-                 padding: "8px 24px",
+                 padding: "8px 35px",
                  fontSize: "14px",
                  borderRadius: "8px",
                  transition: "all 0.2s ease",

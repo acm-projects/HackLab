@@ -228,7 +228,7 @@ const InterestSelection = () => {
       >
         <button
           onClick={() => router.push("/Survey/languages")}
-          className="bg-[#fff] px-[10px] py-[24px] text-[#385773] font-[14px] border-none outline-none cursor-pointer hover:bg-[#cecece] hover:text-[#fff]"
+          className="bg-[#fff] px-[24px] rounded-[10px] py-[10px] text-[#385773] font-[14px] border-none outline-none cursor-pointer hover:bg-[#cecece] "
         >
           Back
         </button>

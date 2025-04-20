@@ -3,10 +3,7 @@ import React, { useRef, useState, useLayoutEffect } from "react";
 
 interface CompletedProjectCardProps {
   title: string;
-  groupLeader: {
-    name: string;
-    image: string;
-  };
+  groupLeader: { name: string; image: string };
   likes: number;
   image: string;
   description: string;
@@ -86,14 +83,12 @@ const CompletedProjectCard: React.FC<CompletedProjectCardProps> = ({
   isCompleted,
   skillIconMap = {},
 }) => {
-  const descriptionWords = description.trim().split(" ");
-  const truncatedDescription =
-    descriptionWords.length > 45 ? descriptionWords.slice(0, 45).join(" ") + "..." : description;
+  const truncatedDescription = description.length > 100 ? description.slice(0, 150) + "..." : description;
 
   return (
     <div
-      className="relative h-[300px] w-[430px] rounded-[15px] border border-black bg-[#ffffff] overflow-hidden flex flex-col mb-[3px] cursor-pointer"
-      style={{ boxShadow: "5px 5px 5px rgb(30 40 50 / 40%)" }}
+      className="relative h-[50vh] w-full rounded-[15px] border border-black bg-[#ffffff] overflow-hidden flex flex-col mb-[3px] cursor-pointer"
+      style={{ boxShadow: "5px 5px 5px rgb(30 40 50 / 40%", fontFamily: "'Nunito', sans-serif", }} 
     >
       {/* Top Image */}
       <div className="h-[55%] w-full">
@@ -101,22 +96,56 @@ const CompletedProjectCard: React.FC<CompletedProjectCardProps> = ({
       </div>
 
       {/* Bottom Content */}
-      <div className="h-560%] w-full px-[15px] py-[10px] flex mt-[-10px] gap-[4px]">
-        <div className="flex flex-col w-1/2 pr-[8px] ml-[10px]">
+      <div className="h-[45%] w-full px-[15px] py-[10px] flex mt-[-10px] gap-[4px]" >
+        {/* Left Section */}
+        <div className="flex flex-col w-[50%] pl-[25px] relative">
           <h2 className="text-[18px] font-bold text-[#000000] mt-[4px] mb-[3px] whitespace-nowrap overflow-hidden text-ellipsis">
             {title}
           </h2>
 
-          <div className="min-h-[28px] overflow-x-auto whitespace-nowrap scrollbar-hide">
+          <div className="min-h-[28px] overflow-x-auto whitespace-nowrap scrollbar-hide" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>
             {topics.length > 0 && <TagRow items={topics.slice(0, 1)} color="#426c98" />}
           </div>
-          <div className="mt-[-5px] min-h-[28px] overflow-x-auto whitespace-nowrap scrollbar-hide">
+          <div className="mt-[-5px] min-h-[28px] overflow-x-auto whitespace-nowrap scrollbar-hide" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>
             {skills.length > 0 && (
               <TagRow items={skills} color="#5888b5" showIcons={true} iconMap={skillIconMap} />
             )}
           </div>
 
-          <div className="absolute bottom-[10px] left-[18px] flex z-10">
+          {/* Former Right Section Now Moved Here */}
+          <div className="flex flex-col gap-[6px] mt-[-10px]" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>
+            <p className="text-[13px] text-[#2e2e2e]" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>
+              Led by: <span className="font-semibold">{groupLeader?.name || "Unknown"}</span>
+            </p>
+            <div className="flex items-center gap-[6px] mt-[-10px]">
+              <div className="flex">
+                {members.slice(0, 3).map((member, idx) => (
+                  <img
+                    key={idx}
+                    src={member.image}
+                    alt={`member-${idx}`}
+                    className="w-[26px] h-[26px] rounded-full border-[1.5px] border-white object-cover"
+                    style={{
+                      marginLeft: idx === 0 ? "0px" : "-8px",
+                      zIndex: members.length - idx,
+                    }}
+                  />
+                ))}
+              </div>
+              <span className="text-[12px] text-[#000]">{totalMembers} members</span>
+            </div>
+          </div>
+
+          {/* Likes + Bookmark */}
+          <div className="absolute bottom-[5px] ml-[-10px] flex z-10">
             <button
               className="flex items-center outline-none border-none bg-transparent"
               onClick={(e) => {
@@ -144,7 +173,7 @@ const CompletedProjectCard: React.FC<CompletedProjectCardProps> = ({
                 e.stopPropagation();
                 onLike();
               }}
-              className="ml-[-5px] flex items-center outline-none border-none bg-transparent"
+              className="flex items-center outline-none border-none bg-transparent"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -165,34 +194,13 @@ const CompletedProjectCard: React.FC<CompletedProjectCardProps> = ({
           </div>
         </div>
 
-        {/* Right Side */}
-        <div className="w-[200px] flex flex-col justify-start mt-[-5px] pr-[20px]">
-          <div className="flex flex-col items-start mb-[-8px]">
-            <p className="text-[13px] text-[#2e2e2e]">
-              Led by: <span className="font-semibold">{groupLeader?.name || "Unknown"}</span>
-            </p>
-          </div>
-
-          <div className="flex items-center gap-[6px]">
-            <div className="flex">
-              {members.slice(0, 3).map((member, idx) => (
-                <img
-                  key={idx}
-                  src={member.image}
-                  alt={`member-${idx}`}
-                  className="w-[26px] h-[26px] rounded-full border-[1.5px] border-white object-cover"
-                  style={{
-                    marginLeft: idx === 0 ? "0px" : "-8px",
-                    zIndex: members.length - idx,
-                  }}
-                />
-              ))}
-            </div>
-            <span className="text-[12px] text-[#000]">{totalMembers} members</span>
-          </div>
-
+        {/* Right Section: Now just the description + completionDate */}
+        <div className="w-[50%] flex flex-col pr-[50px]">
+          <p className="text-[13px] text-[#374151] leading-tight">{truncatedDescription}</p>
           {completionDate && (
-            <span className="ml-[-12px] mt-[45px] text-[11px] text-[#374151] bg-[rgba(255,255,255,0.9)] backdrop-blur-[4px] px-[8px] py-[2px]">
+            <span className="absolute text-[11px] translate-y-[18vh] translate-x-[10vh] text-[#374151] bg-[rgba(255,255,255,0.9)] flex justify-end backdrop-blur-[4px] px-[8px] py-[2px]" style={{
+                  fontFamily: "'Nunito', sans-serif",
+                }}>
               Completed on{" "}
               {new Date(completionDate).toLocaleDateString("en-US", {
                 year: "numeric",

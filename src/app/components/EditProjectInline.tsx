@@ -14,20 +14,66 @@ const EditProjectInline = ({
   const [loading, setLoading] = useState(false);
   const [mvpInput, setMvpInput] = useState("");
   const [stretchGoalInput, setStretchGoalInput] = useState("");
+  const [roleOptions, setRoleOptions] = useState<{ id: number; role: string }[]>([]);
+  const [selectedRole, setSelectedRole] = useState<{ roleId: number; xp: number } | null>(null);
 
   useEffect(() => {
-    const fetchProject = async () => {
+    const fetchProjectData = async () => {
       try {
-        const res = await fetch(`http://52.15.58.198:3000/projects/${projectId}`);
+        const [projectRes, rolePrefRes] = await Promise.all([
+          fetch(`http://52.15.58.198:3000/projects/${projectId}`),
+          fetch(`http://52.15.58.198:3000/projects/${projectId}/teamPreference`)
+        ]);
+  
+        if (!projectRes.ok || !rolePrefRes.ok) {
+          throw new Error('Failed to fetch project data or role preferences.');
+        }
+  
+        const projectData = await projectRes.json();
+        const rolePreferences = await rolePrefRes.json();
+  
+        setProject({ ...projectData, rolePreferences });
+  
+        if (rolePreferences.length > 0) {
+          const pref = rolePreferences[0];
+          setSelectedRole({
+            roleId: pref.role_preference_id,
+            xp: pref.xp,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching project data:", error);
+      }
+    };
+  
+    if (projectId) {
+      fetchProjectData();
+    }
+  }, [projectId]);
+  
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch("http://52.15.58.198:3000/roles");
         const data = await res.json();
-        setProject(data);
+        setRoleOptions(data);
+
+        if (project?.rolePreferences?.length > 0) {
+          const pref = project.rolePreferences[0];
+          setSelectedRole({
+            roleId: pref.role_preference_id,  // ✅ use correct key
+            xp: pref.xp,
+          });
+        }
+        
       } catch (err) {
-        console.error("Failed to load project:", err);
+        console.error("Failed to fetch roles:", err);
       }
     };
 
-    if (projectId) fetchProject();
-  }, [projectId]);
+    if (project) fetchRoles();
+  }, [project]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setProject({ ...project, [e.target.name]: e.target.value });
@@ -52,25 +98,37 @@ const EditProjectInline = ({
       });
 
       if (res.ok) {
-        
+        // ✅ Post role preference separately
+        if (selectedRole) {
+          await fetch(`http://52.15.58.198:3000/projects/${projectId}/teamPreference`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              role_preference_id: selectedRole.roleId,
+              xp: selectedRole.xp,
+            }),
+          });
+        }
+
         onClose();
       } else {
-       
+        console.error("Failed to update project");
       }
     } catch (err) {
       console.error("Submit error:", err);
-      
     } finally {
       setLoading(false);
     }
   };
 
+
   if (!project) return <div className="p-[20px] text-[#374151]">Loading...</div>;
 
   return (
-    <div className="w-[95%] h-[75%] py-[40px] px-[20px] bg-[#fff] border-1 rounded-[20px] flex justify-center overflow-y-auto text-nunito">
+    <div className="w-[95%] h-[75%] py-[40px] px-[20px] bg-[#fff] border-1 rounded-[20px] flex justify-center overflow-y-auto text-nunito" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>
       <div className="w-[90%] max-w-[1000px] bg-white rounded-[10px] shadow-lg px-[40px] py-[20px] mb-[30px]">
-
         <h1 className="text-[28px] font-bold text-[#1f2937] mb-[24px]">Edit Project</h1>
 
         {/* Title */}
@@ -83,7 +141,9 @@ const EditProjectInline = ({
         />
 
         {/* Description */}
-        <label className="block text-sm font-medium text-gray-700 mb-[4px] text-nunito">Description</label>
+        <label className="block text-sm font-medium text-gray-700 mb-[4px] text-nunito" style={{
+      fontFamily: "'Nunito', sans-serif",
+    }}>Description</label>
         <textarea
           name="description"
           value={project.description}
@@ -112,7 +172,7 @@ const EditProjectInline = ({
             placeholder="Enter MVP"
             value={mvpInput}
             onChange={(e) => setMvpInput(e.target.value)}
-            className=" flex-1 px-[12px] py-[10px] border border-[#d1d5db] rounded-[6px]"
+            className="flex-1 px-[12px] py-[10px] border border-[#d1d5db] rounded-[6px]"
           />
           <button
             type="button"
@@ -122,23 +182,24 @@ const EditProjectInline = ({
                 setMvpInput("");
               }
             }}
-            className="px-[25px] py-[10px] bg-[#3b82f6] text-[#fff] translate-x-[25px] rounded-[6px] border-none outline-none cursor-pointer"
+            className="px-[25px] py-[10px] bg-[#3b82f6] text-[#fff] rounded-[6px] border-none outline-none"
           >
             + Add
           </button>
         </div>
-
-        {/* MVP tags */}
         <div className="flex flex-wrap gap-[10px] mb-[24px]">
           {project.mvp.map((mvp: string, index: number) => (
-            <div key={index} className="flex items-center bg-[#e0f2fe] px-[10px] py-[6px] rounded-[20px] text-sm text-[#0369a1]">
+            <div
+              key={index}
+              className="flex items-center bg-[#e0f2fe] px-[10px] py-[6px] rounded-[20px] text-sm text-[#0369a1]"
+            >
               {mvp}
               <button
                 onClick={() => {
                   const updated = project.mvp.filter((_: any, i: number) => i !== index);
                   setProject({ ...project, mvp: updated });
                 }}
-                className="ml-[8px] hover:text-[#dc2626] border-none outline-none bg-transparent cursor-pointer"
+                className="ml-[8px] hover:text-[#dc2626] border-none bg-transparent cursor-pointer"
               >
                 ×
               </button>
@@ -164,23 +225,24 @@ const EditProjectInline = ({
                 setStretchGoalInput("");
               }
             }}
-            className="px-[25px] py-[10px] bg-[#8b5cf6] text-[#fff] translate-x-[25px] rounded-[6px] border-none outline-none cursor-pointer"
+            className="px-[25px] py-[10px] bg-[#8b5cf6] text-[#fff] rounded-[6px] border-none outline-none"
           >
             + Add
           </button>
         </div>
-
-        {/* Stretch Goal tags */}
         <div className="flex flex-wrap gap-[10px] mb-[24px]">
           {project.stretch.map((goal: string, index: number) => (
-            <div key={index} className="flex items-center bg-[#ede9fe] px-[10px] py-[6px] rounded-[20px] text-sm text-[#7c3aed]">
+            <div
+              key={index}
+              className="flex items-center bg-[#ede9fe] px-[10px] py-[6px] rounded-[20px] text-sm text-[#7c3aed]"
+            >
               {goal}
               <button
                 onClick={() => {
                   const updated = project.stretch.filter((_: any, i: number) => i !== index);
                   setProject({ ...project, stretch: updated });
                 }}
-                className="ml-[8px] hover:text-[#dc2626] border-none outline-none bg-transparent cursor-pointer"
+                className="ml-[8px] hover:text-[#dc2626] border-none bg-transparent cursor-pointer"
               >
                 ×
               </button>
@@ -188,16 +250,40 @@ const EditProjectInline = ({
           ))}
         </div>
 
+        {/* Role Preference Selection */}
+        <div className="mb-[24px]">
+          <label className="block text-sm font-medium text-gray-700 mb-[4px]">Team Role Preference</label>
+          <div className="flex flex-col gap-[8px]">
+            {roleOptions.map((role) => (
+              <label key={role.id} className="flex items-center gap-[8px]">
+                <input
+                  type="radio"
+                  name="rolePreference"
+                  value={role.id}
+                  checked={selectedRole?.roleId === role.id}
+                  onChange={() => setSelectedRole({ roleId: role.id, xp: 0 })}
+                />
+                {role.role}
+              </label>
+            ))}
+          </div>
+        </div>
+
         {/* Thumbnail Upload */}
-        <label className="block text-sm font-medium text-[#000] mb-[4px]">Thumbnail</label>
-        <input type="file" accept="image/*" onChange={handleThumbnailChange} className="w-full mb-[24px] border-1 border-[#b7b7b7] p-[10px] rounded-[10px]" />
+        <label className="block text-sm font-medium text-gray-700 mb-[4px]">Thumbnail</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleThumbnailChange}
+          className="w-full mb-[24px] border border-[#b7b7b7] p-[10px] rounded-[10px]"
+        />
 
         {/* Submit Button */}
         <div className="flex justify-end py-[30px] mb-[100px]">
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="py-[10px] px-[18px] bg-[#385773] hover:bg-[#3a4651] text-[#fff] rounded-[6px] text-[15px] font-medium border-none outline-none mb-[50px] translate-x-[25px] cursor-pointer"
+            className="py-[10px] px-[18px] bg-[#385773] hover:bg-[#3a4651] text-[#fff] border-none outline-none rounded-[6px] text-[15px] font-medium"
           >
             {loading ? "Saving..." : "Save Project"}
           </button>

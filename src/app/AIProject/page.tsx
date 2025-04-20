@@ -68,9 +68,9 @@ export default function CreateProjectWithAI() {
   if (generating) return <LoadingGears />;
 
   return (
-    <div className="min-h-screen flex flex-col items-center text-white font-nunito">
-              <NavBar />
-      <form className="mt-[150px]"
+    <div className="min-h-screen flex flex-col items-center font-nunito">
+      <NavBar />
+      <form className="mt-auto mb-auto translate-y-[25px]"
         onSubmit={handleSubmit}
         style={{
           width: "800px",

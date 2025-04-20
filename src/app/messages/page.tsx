@@ -436,10 +436,10 @@ if (showLoadingPage) {
   }
   
 return (
-    <div className="flex h-screen font-nunito bg-[#cfdce6]">
+    <div className="flex h-screen font-nunito bg-[#cfdce6] mt-auto mb-auto">
         {/* <div className="w-screen h-full bg-[#f5f7fa] text-nunito"> */}
              <NavBar />
-             <aside className="w-[220px] h-[91%] bg-[#cfdce6] rounded-r-[23px] text-[#385773] p-[16px] text-[14px] flex flex-col mt-[50px] overflow-y-auto ml-[-10px]">
+             <aside className="w-[220px] h-screen bg-[#cfdce6] rounded-r-[23px] text-[#385773] p-[16px] text-[14px] flex flex-col mt-[50px] overflow-y-auto ml-[-10px]">
 
 
         <div className="mb-[30px]">
