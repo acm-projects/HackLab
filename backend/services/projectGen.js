@@ -22,10 +22,13 @@ async function generateProject(prompt, name) {
     const user = await User.getUserByName(name);
     const userXP = user.xp;
     const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
+    const userSkills = await User.getUserSkills(user.id);
+
+    console.log("These are the users skills: ", userSkills);
 
     //const userPrompt = "A coding project called HackLab that lets you create projects and find other peoples projects to collaborate on. With gamifying features.";
     const context = await getContext();
-    const fullPrompt = `${context}\n\nUser Query: ${userPrompt}\n\nUser XP: ${userXP}`;
+    const fullPrompt = `${context}\n\nUser Query: ${userPrompt}\n\nUser XP: ${userXP}\n\nUsers Skills: ${userSkills}`;
     const result = await model.generateContent(fullPrompt, {response_format: "json"});
     const response = await result.response;
     let text = response.text();

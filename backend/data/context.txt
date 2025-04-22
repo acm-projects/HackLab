@@ -5,7 +5,8 @@ The description must be 5-6 sentences explaining what the project is. This will 
 The title must be very short.
 The type must be one of these choices: Web App, Mobile App, Desktop App. If the user does not mention any of these choose which one you think would be best.
 Please select any technologies from the skills lookup table that you would want to use for the project. Cover everything that the users working on the project will need to finish. Make sure to use the first number and not the name.
-The number after the name is the difficulty. For beginners, try to include less difficult technologies. For pros try to include more difficult technologies. If the User XP is under 100, consider them a beginner. If the User XP is between 100 and 250, condider them intermeddiate. If the User XP is over 250, consider them a pro.
+The number after the skill name is the difficulty. 1 is easy, 2 is intermeddiate, and 3 is hard. For beginners, try to include less difficult technologies. For pros try to include more difficult technologies. I will provide you the User XP. If the User XP is under 100, consider them a beginner. If the User XP is between 100 and 200, condider them intermediate. If the User XP is over 200, consider them a pro.
+I will also provide the skills that the user claims they are comfortable with. Try to incorperate these into the project, BUT ONLY IF THEY ARE RELEVANT.
 However, the skills that are most relative to the project take precedence, use difficulty as a secondary consideration.
 Please select any topic from the topic lookup table. The project will likely use around 1-2 of these topics. Make sure to use the number and not the name.
 The features lists must be helpful to the users working on the project, providing them guidance as they navigate a project that may include technologies they are unfamiliar with.
