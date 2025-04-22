@@ -94,7 +94,7 @@ async function generateResume(githubRepos, userDetails) {
   const octokit = await getOctokitInstance();
 
   // Limit the number of repositories to 3
-  const limitedRepos = githubRepos.slice(0, 3);
+  const limitedRepos = githubRepos;
 
   console.log("Repos to be used in resume:", limitedRepos);
 
