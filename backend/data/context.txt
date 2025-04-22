@@ -14,51 +14,51 @@ The timeline must be split into frontend and backend. If the user follows the ti
 Both front-end and back-end’s end of timeline must have to do with integration. Do not include “week 1” etc. The timeline will just consist of arrays of tasks.
 
 Skills Lookup Table:
-1. JavaScript  
-2. TypeScript  
-3. Python  
-4. Java  
-5. C  
-6. C++  
-7. C#  
-8. Go  
-9. Rust  
-10. Swift  
-11. Kotlin  
-12. PHP  
-13. Ruby  
-14. React  
-15. Vue.js  
-16. Angular  
-17. Svelte  
-18. Next.js  
-19. Tailwind CSS  
-20. Node.js  
-21. Express.js  
-22. Django  
-23. Flask  
-24. FastAPI  
-25. Spring  
-26. PostgreSQL  
-27. MySQL  
-28. MongoDB  
-29. SQLite  
-30. Bootstrap  
-31. Redis  
-32. AWS  
-33. Google Cloud  
-34. Firebase  
-35. Docker  
-36. Kubernetes  
-37. Azure  
-38. Flutter  
-39. Figma  
-40. Jetpack Compose  
-41. Unity  
-42. Unreal Engine  
-43. Godot  
-44. GraphQL  
-45. Socket.io
+1. JavaScript 1  
+2. TypeScript 2  
+3. Python 1  
+4. Java 1  
+5. C 2  
+6. C++ 2  
+7. C# 2  
+8. Go 3  
+9. Rust 3  
+10. Swift 2  
+11. Kotlin 2  
+12. PHP 1  
+13. Ruby 1  
+14. React 1  
+15. Vue.js 1  
+16. Angular 2  
+17. Svelte 2  
+18. Next.js 2  
+19. Tailwind CSS 1  
+20. Node.js 1  
+21. Express.js 2  
+22. Django 2  
+23. Flask 2  
+24. FastAPI 2  
+25. Spring 2  
+26. PostgreSQL 1  
+27. MySQL 1  
+28. MongoDB 2  
+29. SQLite 1  
+30. Bootstrap 1  
+31. Redis 2  
+32. AWS 3  
+33. Google Cloud 3  
+34. Firebase 2  
+35. Docker 3  
+36. Kubernetes 3  
+37. Azure 3  
+38. Flutter 2  
+39. Figma 1  
+40. Jetpack Compose 2  
+41. Unity 2  
+42. Unreal Engine 3  
+43. Godot 3  
+44. GraphQL 2  
+45. Socket.io 2
 
 Topics Lookup Table:
 1. Artificial Intelligence
