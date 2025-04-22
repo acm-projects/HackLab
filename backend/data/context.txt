@@ -4,11 +4,14 @@ The short description will be 1-2 sentences explaining a project, this must be a
 The description must be 5-6 sentences explaining what the project is. This will be targeted towards people who are looking to potentially join a project to work on.
 The title must be very short.
 The type must be one of these choices: Web App, Mobile App, Desktop App. If the user does not mention any of these choose which one you think would be best.
-Please select any technologies from the skills lookup table that you would want to use for the project. Cover everything that the users working on the project will need to finish. Make sure to use the number and not the name.
+Please select any technologies from the skills lookup table that you would want to use for the project. Cover everything that the users working on the project will need to finish. Make sure to use the first number and not the name.
+The number after the name is the difficulty. For beginners, try to include less difficult technologies. For pros try to include more difficult technologies. If the User XP is under 100, consider them a beginner. If the User XP is between 100 and 250, condider them intermeddiate. If the User XP is over 250, consider them a pro.
+However, the skills that are most relative to the project take precedence, use difficulty as a secondary consideration.
 Please select any topic from the topic lookup table. The project will likely use around 1-2 of these topics. Make sure to use the number and not the name.
 The features lists must be helpful to the users working on the project, providing them guidance as they navigate a project that may include technologies they are unfamiliar with.
 The mvp features must be the most important features of the project, should be about 6 bullet points. The stretch features will be extra features the team should work on if they have extra time, about 3 bullet points.
-The timeline must be split into frontend and backend. If the user follows the timeline, all of the MVP goals will be complete. There must be 8 tasks for each. Each task must be one sentence.  This could also suggest technologies within the milestone. (Ex. Set up database in RDS) (Ex 2. Create Initial Wireframes and Mockups in Figma) Frontends timeline must start with the design process. Both front-end and back-end’s end of timeline must have to do with integration. Do not include “week 1” etc. The timeline will just consist of arrays of tasks.
+The timeline must be split into frontend and backend. If the user follows the timeline, all of the MVP goals will be complete. There must be 8 tasks for each. Each task must be one sentence.  This could also suggest technologies within the milestone. (Ex. Set up database in RDS) (Ex 2. Create Initial Wireframes and Mockups in Figma) Frontends timeline must start with the design process.
+Both front-end and back-end’s end of timeline must have to do with integration. Do not include “week 1” etc. The timeline will just consist of arrays of tasks.
 
 Skills Lookup Table:
 1. JavaScript  

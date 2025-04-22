@@ -13,6 +13,11 @@ const User = {
         return rows[0];
     },
 
+    getUserByName: async (name) => {
+        const { rows } = await db.query('SELECT * FROM users WHERE name = $1', [name]);
+        return rows[0];
+    },
+
     updateUser: async (id, userData) => {
         const { name, real_name, email, emailVerified, image, xp, bio, role_preference_id, generated_resume_latex, linkedin_url, school, location } = userData;
         const { rows } = await db.query(

@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs/promises');
 const { imageGen } = require('./imageGen');
+const User = require('../models/user');
 
 dotenv.config();
 
@@ -16,13 +17,15 @@ async function getContext() {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-async function generateProject(prompt) {
+async function generateProject(prompt, name) {
     userPrompt = prompt;
+    const user = await User.getUserByName(name);
+    const userXP = user.xp;
     const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
 
     //const userPrompt = "A coding project called HackLab that lets you create projects and find other peoples projects to collaborate on. With gamifying features.";
     const context = await getContext();
-    const fullPrompt = `${context}\n\nUser Query: ${userPrompt}`;
+    const fullPrompt = `${context}\n\nUser Query: ${userPrompt}\n\nUser XP: ${userXP}`;
     const result = await model.generateContent(fullPrompt, {response_format: "json"});
     const response = await result.response;
     let text = response.text();

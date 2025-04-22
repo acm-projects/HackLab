@@ -161,9 +161,9 @@ router.get('/:id/users', async (req, res) => {
 // Generate a project
 router.post('/generateProject', async (req, res) => {
     try {
-        const { prompt } = req.body;
+        const { prompt, name } = req.body;
         console.log(prompt);
-        const project = await generateProject(prompt);
+        const project = await generateProject(prompt, name);
         res.status(200).json(project);
     } catch (error) {
         console.error(error);
