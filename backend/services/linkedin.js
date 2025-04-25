@@ -1,20 +1,30 @@
-const { spawn } = require('child_process');
-const path = require('path');
-
-const LINKEDIN_EMAIL = process.env.LINKEDIN_EMAIL;
-const LINKEDIN_PASSWORD = process.env.LINKEDIN_PASSWORD;
+const axios = require('axios');
+const dotenv = require('dotenv');
 
 async function scrapeLinkedIn(linkedinUrl) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const response = await fetch(`http://localhost:5000/scrape?linkedin=${encodeURIComponent(linkedinUrl)}`);
-      const data = await response.json();
-      if (data.error) return reject(data.error);
-      resolve(data);
-    } catch (err) {
-      reject("Failed to get LinkedIn data from local scraper: " + err.message);
+  const api_key = process.env.SCRAPER_API_KEY;
+  const url = 'https://api.scrapingdog.com/linkedin';
+
+  const params = {
+    api_key: api_key,
+    type: 'profile',
+    linkId: linkedinUrl.replace("https://www.linkedin.com/in/", ""),
+    private: 'false',
+  };
+
+  try {
+    const response = await axios.get(url, { params });
+    if (response.status === 200) {
+      console.log("linkedin data: ", response.data);
+      return response.data;
+    } else {
+      console.log('Request failed with status code:', response.status);
+      return null;
     }
-  });
+  } catch (error) {
+    console.error('Error making the request:', error.message);
+    return null;
+  }
 }
 
 module.exports = { scrapeLinkedIn };
