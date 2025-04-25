@@ -11,12 +11,15 @@ const router = express.Router();
 
 
 // Create a new project
-router.post('/',upload.single('thumbnail'), async (req, res) => {
+router.post('/', upload.single('thumbnail'), async (req, res) => {
     console.log('Received request to create project');
-    const { accessToken, projectDataString, thumbnail } = req.body; // Extract accessToken and projectData
+    const { accessToken, projectDataString, thumbnail, teamPreferences } = req.body; // Extract accessToken, projectData, and teamPreferences
     const projectData = JSON.parse(projectDataString); // Parse projectData JSON string
     const { title: repoName, short_description: repoDesc } = projectData;
     const image = req.file;
+
+    // teamPreferences is just ids, ex [1,2,3]
+
     try {
         // Create a new repository on GitHub
         console.log('Creating repository on GitHub');
@@ -25,39 +28,48 @@ router.post('/',upload.single('thumbnail'), async (req, res) => {
         // Add repository information to project data
         projectData.github_repo_url = url;
 
-        // store thumbnail link if user uploads a thumbnail link
-        if (thumbnail){
+        // Handle thumbnail
+        if (thumbnail) {
             console.log('Using provided thumbnail link: ' + thumbnail);
             projectData.thumbnail = thumbnail;
-        }
-
-        // store image file if user uploads a thumbnail
-        if (image) {
+        } else if (image) {
             console.log('Uploading image to S3');
             const image_url = await uploadImageToS3(image);
             projectData.thumbnail = image_url;
-        }
-        else if (thumbnail){
-            console.log('Using provided thumbnail link: ' + thumbnail);
-            projectData.thumbnail = thumbnail;
-        }
-        else
-        {
+        } else {
             projectData.thumbnail = "";
         }
 
+        // Convert nested objects to JSON strings
         projectData.mvp = JSON.stringify(projectData.mvp);
         projectData.tech_stack = JSON.stringify(projectData.tech_stack);
         projectData.stretch = JSON.stringify(projectData.stretch);
         projectData.timeline = JSON.stringify(projectData.timeline);
 
-        //create project in database
+        // Create project in the database
         console.log('Creating project in database');
-        console.log(projectData);
         const project = await createProject(projectData);
+
+        // Handle team preferences
+        if (teamPreferences) {
+            const parsedTeamPreferences = JSON.parse(teamPreferences); // Parse teamPreferences JSON string
+            console.log('Adding team preferences:', parsedTeamPreferences);
+
+            for (const role_preference_id of parsedTeamPreferences) {
+                // Validate role_preference_id
+                if (!role_preference_id) {
+                    console.error('Invalid role_preference_id:', role_preference_id);
+                    continue; // Skip invalid preferences
+                }
+
+                // Add team preference to the project with default xp = 0
+                await addTeamPreferenceToProject(project.id, role_preference_id, 0);
+            }
+        }
+
         res.status(201).json(project);
     } catch (error) {
-        console.error(error);
+        console.error('Error creating project:', error);
         res.status(500).send('Server error');
     }
 });
