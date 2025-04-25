@@ -21,15 +21,20 @@ async function generateProject(prompt, name) {
     userPrompt = prompt;
     const user = await User.getUserByName(name);
     const userXP = user.xp;
-    const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const userSkills = await User.getUserSkills(user.id);
 
     console.log("These are the users skills: ", userSkills);
 
-    //const userPrompt = "A coding project called HackLab that lets you create projects and find other peoples projects to collaborate on. With gamifying features.";
     const context = await getContext();
     const fullPrompt = `${context}\n\nUser Query: ${userPrompt}\n\nUser XP: ${userXP}\n\nUsers Skills: ${userSkills}`;
-    const result = await model.generateContent(fullPrompt, {response_format: "json"});
+
+    // Start generating content and image generation in parallel
+    const generateContentPromise = model.generateContent(fullPrompt, { response_format: "json" });
+    const imageGenPromise = imageGen(prompt); // Start image generation asynchronously
+
+    // Wait for the content generation to complete
+    const result = await generateContentPromise;
     const response = await result.response;
     let text = response.text();
     console.log(text);
@@ -44,9 +49,9 @@ async function generateProject(prompt, name) {
     }
 
     let projectData = JSON.parse(text);
-    let imagePrompt = projectData.title;
-    
-    let image_url = await imageGen(imagePrompt);
+
+    // Wait for the image generation to complete
+    const image_url = await imageGenPromise;
 
     projectData.thumbnail = image_url;
 
