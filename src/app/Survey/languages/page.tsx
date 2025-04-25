@@ -120,7 +120,7 @@ const LanguageSelection = () => {
             marginBottom: "20px",
           }}
         >
-          What programming languages do you use?
+          What languages and technologies do you use?
         </h1>
 
         <div ref={dropdownRef} className="flex flex-col justify-center items-center">

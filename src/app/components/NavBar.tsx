@@ -167,7 +167,7 @@ const [appliedFilters, setAppliedFilters] = useState<{ topics: string[]; skills:
         }`}
       >
         <img
-          src="images/nav-bg-image.png"
+          src="images/nav-bg.png"
           alt="Nav Background"
           className="w-full h-full object-cover rounded-br-[40px] ml-[145px]"
         />

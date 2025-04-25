@@ -39,7 +39,7 @@ export default function LandingPage() {
         <div className="flex justify-between items-center h-full"> {/* I took out px 200 px from here */}
           
           {/* Left Side: Grid of Images */}
-          <div className="grid grid-cols-3 grid-rows-2 w-[650px] h-[500px]">
+          <div className="grid grid-cols-3 grid-rows-2 w-[650px] h-[500px] ">
             <div className="relative -translate-y-[50px] translate-x-[50%] animate-fade-in-top"> 
               <img src="/images/img1.jpg" alt="Image 1" className="landing-page-images" />
             </div>
@@ -67,7 +67,7 @@ export default function LandingPage() {
           <div className="justify-center text-center mr-[15%]">
             <h2 className="text-landing-make">Build your vision</h2>
             <h2 className="text-landing-text text-[#7993AA]">Create Projects</h2>
-            <h2 className="text-landing-text text-[#698195]">Let Juno guide you</h2>
+            {/* <h2 className="text-landing-text text-[#698195]">Let Juno guide you</h2> */}
             <h2 className="text-landing-text text-[#385773]">Connect with people</h2>
           </div>
         </div>

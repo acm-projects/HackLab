@@ -8,7 +8,7 @@ import { useSurvey } from "../../contexts/SurveyContext";
 const UserInfo = () => {
   const router = useRouter();
   const [location, setLocation] = useState("");
-  const [status, setStatus] = useState("");
+  
   const [school, setSchool] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [isValidLinkedin, setIsValidLinkedin] = useState(true);
@@ -25,7 +25,7 @@ const UserInfo = () => {
     setIsValidLinkedin(validateLinkedIn(url));
   };
 
-  const isFormValid = location && status && school && isValidLinkedin;
+  const isFormValid = location && school && isValidLinkedin;
 
   return (
     <SurveyLayout step={5} totalSteps={5}>
@@ -81,32 +81,6 @@ const UserInfo = () => {
               />
             </div>
 
-            <div>
-              <label
-                style={{
-                  fontSize: "14px",
-                  color: "#fff",
-                  marginBottom: "4px",
-                  display: "block",
-                }}
-              >
-                Status
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., Senior, Software Engineer"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "10px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid #d1d5db",
-                  color: "#374151",
-                  fontSize: "14px",
-                }}
-              />
-            </div>
 
             <div>
               <label
@@ -206,7 +180,7 @@ const UserInfo = () => {
             onClick={async () => {
               const userInfo = {
                 location,
-                position: status,
+                
                 school,
                 linkedin: linkedin.trim(),
               };

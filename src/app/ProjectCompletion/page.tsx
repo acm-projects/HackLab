@@ -508,7 +508,7 @@ export default function AiResumeGenerator() {
 
             <div className="w-[100%] h-full flex flex-col gap-[10px] pr-[8px]">
               <Card className="bg-[#ffffff] min-h-[300px] overflow-y-scroll">
-                <CardContent className="p-[20px]">
+                <CardContent className="p-[20px] mr-[25px]">
                   <textarea
                     value={latexOutput}
                     onChange={(e) => setLatexOutput(e.target.value)}

@@ -299,20 +299,17 @@ const ExpandedProjectModal: React.FC<ExpandedProjectModalProps> = ({
 
            {showJoinButton && (
              <button
-               className="border-none cursor-pointer flex translate-x-[800px]"
-               onClick={onJoin}
-               style={{
-                 padding: "8px 35px",
-                 fontSize: "14px",
-                 borderRadius: "8px",
-                 transition: "all 0.2s ease",
-                 fontWeight: 500,
-                 backgroundColor: joinRequested ? "#FACC15" : "#385773",
-                 color: joinRequested ? "#000000" : "#FFFFFF",
-               }}
-             >
-               {joinRequested ? "Sent Request" : "Join"}
-             </button>
+             onClick={(e) => {
+               onJoin();
+             }}
+             className={`text-[12px] rounded-[8px] flex translate-x-[90vh] outline-none border-none cursor-pointer translate-y-[-7px] ${
+               joinRequested
+                 ? "bg-[#f0c040] text-[#000] hover:bg-[#e6b832] px-[40px] py-[10px]"
+                 : "bg-[#385773] text-[#fff] hover:bg-[#2e475d] px-[65px] py-[10px] "
+             }`}
+           >
+             {joinRequested ? "Sent Request" : "Join"}
+           </button>
            )}
          </div>
        </div>

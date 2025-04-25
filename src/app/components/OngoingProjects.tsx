@@ -102,7 +102,7 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
 
   return (
     <div
-      className="relative h-[50vh] w-full rounded-[15px] border border-black bg-[#ffffff] overflow-hidden flex flex-col mb-[3px] cursor-pointer"
+      className="relative h-[55vh] w-full rounded-[15px] border border-black bg-[#ffffff] overflow-hidden flex flex-col mb-[3px] cursor-pointer"
       style={{ boxShadow: "5px 5px 5px rgb(30 40 50 / 40%)", fontFamily: "'Nunito', sans-serif" }}
     >
       {/* Top Image */}
@@ -182,7 +182,7 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
 
   <div className="flex justify-between items-end mt-auto pt-[15px] pr-[10px]">
     {/* Like & Bookmark */}
-    <div className="flex gap-[1px] translate-x-[5vh] translate-y-[-0.5vh] items-center">
+    <div className="flex gap-[1px] translate-x-[5vh] translate-y-[-20px] items-center">
       <button
         className="flex items-center outline-none border-none bg-transparent cursor-pointer"
         onClick={(e) => {
@@ -238,7 +238,7 @@ const OngoingProjectCard: React.FC<OngoingProjectCardProps> = ({
           e.stopPropagation();
           onJoin();
         }}
-        className={`text-[12px] rounded-[8px] outline-none border-none cursor-pointer ${
+        className={`text-[12px] rounded-[8px] outline-none border-none cursor-pointer translate-y-[-15px] ${
           joinRequested
             ? "bg-[#f0c040] text-[#000] hover:bg-[#e6b832] px-[40px] py-[10px]"
             : "bg-[#385773] text-[#fff] hover:bg-[#2e475d] px-[65px] py-[10px] "

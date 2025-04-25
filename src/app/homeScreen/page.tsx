@@ -278,7 +278,7 @@ useEffect(() => {
 
         <div className="w-[93%] h-[350px] rounded-[15px] -translate-y-[25%]">
         {/* Top Projects */}
-        <h2 className="text-[36px] font-bold text-[#000] mt-[40px] mb-[40px] text-center flex item-start">Top Projects</h2>
+        <h2 className="text-[36px] font-bold text-[#000] mt-[40px] mb-[40px] text-center flex item-start">Most Liked Projects</h2>
         <div className="grid grid-cols-2 gap-[80px]">
         {topProjects.map((project, index) => (
             <div className="transition-transform duration-300 hover:-translate-y-[4px]" key={index} onClick={() => handleCardClick(index, "top")}>

@@ -340,8 +340,8 @@ if (showLoadingPage) {
       }}
       className={`flex items-center gap-[10px] mt-[10px] px-[15px] py-[10px] rounded-[8px] cursor-pointer transition-colors ${
         selectedProjectId === project.id
-          ? "bg-[#38577381] text-[#fff]"
-          : "hover:bg-[#38577381] text-[#fff]"
+          ? "bg-[#38577331] text-[#fff]"
+          : "hover:bg-[#38577321] text-[#fff]"
       }`}
     >
       <img
@@ -350,7 +350,7 @@ if (showLoadingPage) {
         className="w-[50px] h-[50px] object-cover rounded-[6px] border border-white"
       />
       <span className="text-[14px] font-medium text-[#385773] whitespace-nowrap overflow-hidden text-ellipsis max-w-[130px]">
-        {project.title}
+        <b>{project.title}</b>
       </span>
     </div>
   ))
@@ -366,14 +366,14 @@ if (showLoadingPage) {
 
        <div className="sticky top-[0px] translate-y-[-10px] bg-[#f5f7fa] z-20 py-[10px] flex gap-[10px] items-center justify-between border-b border-[#e5e7eb] px-[5px]">
        <div
-          className={`relative rounded-[8px] h-[40px] flex items-center justify-between px-[15px] bg-[#d1d5db] transition-all duration-300 ease-in-out`}
+          className={`relative rounded-[8px] h-[40px] flex items-center justify-between px-[15px] bg-[#ebebeb] transition-all duration-300 ease-in-out`}
           style={{
             width: isTeamLead ? "340px" : "225px",
           }}
         >
           {/* Sliding Pill Indicator */}
           <div
-            className="absolute top-[4px] left-[4px] h-[32px] bg-[#6b7280] rounded-[6px] transition-transform duration-300 ease-in-out"
+            className="absolute top-[4px] left-[4px] h-[32px] bg-[#fff] rounded-[6px] transition-transform duration-300 ease-in-out"
             style={{
               width: "112px",
               transform:
@@ -391,7 +391,7 @@ if (showLoadingPage) {
         <button
           onClick={() => setView("dashboard")}
           className={`z-10 w-[112px] h-[32px] translate-x-[-7px] hover:text-[#374151] cursor-pointer rounded-[6px] text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
-            view === "dashboard" ? "text-[#fff]" : "text-[#374151]"
+            view === "dashboard" ? "text-[#000]" : "text-[#374151]"
           }`}
         >
           Dashboard
@@ -399,7 +399,7 @@ if (showLoadingPage) {
         <button
         onClick={() => setView("timeline")}
         className={`z-10 w-[112px] h-[32px] rounded-[6px] text-sm font-semibold hover:text-[#374151] cursor-pointer transition-colors duration-200 bg-transparent border-transparent outline-none ${
-          view === "timeline" ? "text-[#fff]" : "text-[#374151]"
+          view === "timeline" ? "text-[#000]" : "text-[#374151]"
         } `}
       >
         Timeline
@@ -409,7 +409,7 @@ if (showLoadingPage) {
           <button
             onClick={() => setView("manage")}
             className={`z-10 w-[112px] h-[32px] translate-x-[5px] rounded-[6px] hover:text-[#374151] cursor-pointer text-sm font-semibold transition-colors duration-200 bg-transparent border-transparent outline-none ${
-              view === "manage" ? "text-[#fff]" : "text-[#374151]"
+              view === "manage" ? "text-[#000]" : "text-[#374151]"
             }`}
           >
             Manage
@@ -582,7 +582,7 @@ if (showLoadingPage) {
             href={selectedProject.github_repo_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-[6px] p-[5px] text-[#fff] hover:text-[#dcdcdc] text-[13px] font-medium underline bg-[#000] rounded-[10px]"
+            className="flex items-center gap-[6px] px-[10px] py-[5px] text-[#fff] hover:text-[#dcdcdc] no-underline text-[13px] font-medium bg-[#000] rounded-[10px]"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

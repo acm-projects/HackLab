@@ -87,7 +87,7 @@ const CompletedProjectCard: React.FC<CompletedProjectCardProps> = ({
 
   return (
     <div
-      className="relative h-[50vh] w-full rounded-[15px] border border-black bg-[#ffffff] overflow-hidden flex flex-col mb-[3px] cursor-pointer"
+      className="relative h-[55vh] w-full rounded-[15px] border border-black bg-[#ffffff] overflow-hidden flex flex-col mb-[3px] cursor-pointer"
       style={{ boxShadow: "5px 5px 5px rgb(30 40 50 / 40%", fontFamily: "'Nunito', sans-serif", }} 
     >
       {/* Top Image */}
@@ -145,7 +145,7 @@ const CompletedProjectCard: React.FC<CompletedProjectCardProps> = ({
           </div>
 
           {/* Likes + Bookmark */}
-          <div className="absolute bottom-[5px] ml-[-10px] flex z-10">
+          <div className="absolute bottom-[12px] ml-[-10px] flex z-10">
             <button
               className="flex items-center outline-none border-none bg-transparent"
               onClick={(e) => {
@@ -198,7 +198,7 @@ const CompletedProjectCard: React.FC<CompletedProjectCardProps> = ({
         <div className="w-[50%] flex flex-col pr-[50px]">
           <p className="text-[13px] text-[#374151] leading-tight">{truncatedDescription}</p>
           {completionDate && (
-            <span className="absolute text-[11px] translate-y-[18vh] translate-x-[10vh] text-[#374151] bg-[rgba(255,255,255,0.9)] flex justify-end backdrop-blur-[4px] px-[8px] py-[2px]" style={{
+            <span className="absolute text-[11px] translate-y-[20vh] translate-x-[10vh] text-[#374151] bg-[rgba(255,255,255,0.9)] flex justify-end backdrop-blur-[4px] px-[8px] py-[2px]" style={{
                   fontFamily: "'Nunito', sans-serif",
                 }}>
               Completed on{" "}
