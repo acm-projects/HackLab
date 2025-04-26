@@ -279,6 +279,7 @@ router.get('/:id/join-requests', async (req, res) => { // get a user's join requ
 router.post('/:id/join-requests/:projectID', async (req, res) => { // add a join request for user
     try {
         const { id, projectID } = req.params;
+        console.log('RECEIVED JOIN REQUEST FOR USER:', id, 'FOR PROJECT:', projectID);
         const newJoinRequest = await User.addUserJoinRequest(id, projectID);
         res.status(201).json(newJoinRequest); // success, send to client
     } catch (error) {
