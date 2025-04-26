@@ -361,14 +361,43 @@ router.post('/:id/generateResume', async (req, res) => {
         if (!githubRepos || !github_username) {
             return res.status(400).send('GitHub link and username are required');
         }
+        //console.log ("linkedin test: ");
+        //const temp = await scrapeLinkedIn(linkedin);
+        //console.log(temp);
 
         // Generate resume
-        let resume = await generateResume(githubRepos, {
+        // let resume = await generateResume(githubRepos, {
+        //     github_username,
+        //     db_name,
+        //     linkedin,
+        //     ...(linkedin ? await scrapeLinkedIn(linkedin) : {})
+        // });
+        let linkedinData = [];
+        try {
+            const scrapedData = await scrapeLinkedIn(linkedin);
+            linkedinData = Array.isArray(scrapedData) ? scrapedData : [];
+        } catch (error) {
+            console.error('Error scraping LinkedIn:', error);
+            linkedinData = [];
+        }
+
+        // Prepare user details with fallbacks
+        const userDetails = {
             github_username,
             db_name,
             linkedin,
-            ...(linkedin ? await scrapeLinkedIn(linkedin) : {})
-        });
+            fullName: (linkedinData[0]?.fullName) || db_name,
+            experience: JSON.stringify(linkedinData[0]?.experience) || [],
+            education: JSON.stringify(linkedinData[0]?.education) || [],
+            public_identifier: linkedinData[0]?.public_identifier || '',
+            // Add other necessary fields with fallbacks
+            headline: linkedinData[0]?.headline || ''
+        };
+
+        console.log('Generated userDetails:', userDetails);
+
+        // Generate resume
+        let resume = await generateResume(githubRepos, userDetails);
 
         if (resume.startsWith('```latex')) {
             resume = resume.replace(/^```latex\s*/, '').replace(/\s*```$/, '');
