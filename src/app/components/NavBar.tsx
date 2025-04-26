@@ -69,7 +69,7 @@ const [appliedFilters, setAppliedFilters] = useState<{ topics: string[]; skills:
 
       <div className={`h-[60px] bg-[#385773] flex items-center justify-start transition-all duration-500 ${isMenuOpen ? "pl-[200px]" : "pl-4"} `} style={{boxShadow: "10px 0 30px rgba(0,0,0,0.3)" }}>
         <button
-          className="bg-[#385773] text-primary border-transparent border-none outline-none cursor-pointer font-nunito text-md px-[35px] py-[16px] text-center z-50 ml-[-10px]"
+          className="bg-[#385773] text-primary border-transparent border-none outline-none cursor-pointer font-nunito text-md px-[35px] py-[16px] text-center z-50 ml-[-9px]"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px] text-white">
@@ -81,10 +81,10 @@ const [appliedFilters, setAppliedFilters] = useState<{ topics: string[]; skills:
         {showSearch ? (
           <div className="flex flex-1 justify-start">
             {!isMenuOpen && (
-            <span className="text-[#fff] text-[35px] font-bold ml-[25px] font-nunito flex justify-start items-start" >HackLab</span>
+              <img src="/images/logo.png" alt="hacklab" className="text-hacklab-title font-nunito h-[60px] object-fill"/>
             
           )}
-            <div className="bg-[#ffffff] text-[#38577368] border-none outline-none font-nunito rounded-[10px] ml-[20px] text-md px-[20px] py-[7px] text-center flex items-center justify-start mt-[1px] w-[500px] h-[30px]">
+            <div className="bg-[#ffffff] text-[#38577368] border-none outline-none font-nunito rounded-[10px] ml-[20px] text-md px-[20px] py-[7px] text-center flex items-center justify-start mt-[8px] w-[500px] h-[30px]">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-[25px] mr-2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
@@ -108,7 +108,7 @@ const [appliedFilters, setAppliedFilters] = useState<{ topics: string[]; skills:
             {pathname === "/findProjects" && (
               <div className="relative">
                 <button
-                  className="mt-[2px] w-[80px] flex items-center gap-[1px] px-[13px] py-[8px] bg-[#fff] text-[#2e2e2e] rounded-[10px] cursor-pointer shadow border border-gray-300 text-sm border-transparent border-none outline-none ml-[20px]" style={{
+                  className="mt-[9px] w-[80px] flex items-center gap-[1px] px-[13px] py-[8px] bg-[#fff] text-[#2e2e2e] rounded-[10px] cursor-pointer shadow border border-gray-300 text-sm border-transparent border-none outline-none ml-[20px]" style={{
                     fontFamily: "'Nunito', sans-serif",
                   }}
                   onClick={() => setShowFilterBox(!showFilterBox)}
@@ -145,7 +145,7 @@ const [appliedFilters, setAppliedFilters] = useState<{ topics: string[]; skills:
           </div>
         ) : (
           !isMenuOpen && (
-            <span className="text-[#fff] text-[35px] font-bold ml-[10px] font-nunito flex justify-start items-start" >HackLab</span>
+            <img src="/images/logo.png" alt="hacklab" className="text-hacklab-title font-nunito h-[60px] object-fill"/>
             
           )
         )}
@@ -184,7 +184,7 @@ const [appliedFilters, setAppliedFilters] = useState<{ topics: string[]; skills:
             fontFamily: "'Nunito', sans-serif",
           }}
         >
-          HackLab
+          <img src="/images/logo.png" alt="hacklab" className="text-hacklab-title font-nunito h-[50px] object-fill"/>
         </button>
         
         <div className="w-full flex flex-col mt-[130px] space-y-4 items-start px-[30px]">

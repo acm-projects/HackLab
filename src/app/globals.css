@@ -111,11 +111,11 @@ body {
 }
 
 .text-landing-make {
-  @apply text-[30px] font-[500] text-[#122435];
+  @apply text-[35px] font-[300] text-[#122435];
 }
 
 .text-landing-text {
-  @apply text-[30px] font-[500];
+  @apply text-[35px] font-[300];
 }
 
 .landing-page-images {

@@ -47,23 +47,8 @@ export default function ManualProject() {
   const [topicMap, setTopicMap] = useState<{ [id: number]: string }>({});
   const [reverseSkillMap, setReverseSkillMap] = useState<{ [skill: string]: number }>({});
 const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number }>({});
-//const [roleOptions, setRoleOptions] = useState<{ id: number; role: string }[]>([]);
-//const [selectedRole, setSelectedRole] = useState<{ roleId: number; roleName: string; xp: number } | null>(null);
-
-
-
-// useEffect(() => {
-//   const fetchRoles = async () => {
-//     try {
-//       const res = await fetch("http://52.15.58.198:3000/roles");
-//       const data = await res.json();
-//       setRoleOptions(data);
-//     } catch (err) {
-//       console.error("❌ Failed to fetch roles", err);
-//     }
-//   };
-//   fetchRoles();
-// }, []);
+const [roleOptions, setRoleOptions] = useState<{ id: number; role: string }[]>([]);
+const [selectedRoles, setSelectedRoles] = useState<number[]>([]); // <-- New state
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -132,6 +117,19 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
     };
     
     fetchSkillsAndTopics();
+  }, []);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch("http://52.15.58.198:3000/roles");
+        const data = await res.json();
+        setRoleOptions(data);
+      } catch (err) {
+        console.error("Failed to fetch roles", err);
+      }
+    };
+    fetchRoles();
   }, []);
 
   useEffect(() => {
@@ -262,7 +260,7 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
       id: Date.now(),
       projectName,
       projectType,
-      techToBeUsed: selectedTechs.map((t) => t.name),  // ✅ Fix here
+      techToBeUsed: selectedTechs.map((t) => t.name),
       interests: selectedInterests.map((i) => i.name),
       description,
       mvps,
@@ -271,9 +269,9 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
         frontend: frontendTimeline,
         backend: backendTimeline,
       },
-      //rolePreferences: selectedRole ? [selectedRole] : [],
-
+      teamPreferences: selectedRoles, // <-- Add this line
     };
+    
   
     if (thumbnail) {
       // If it's a File (user-uploaded), convert to base64
@@ -1060,28 +1058,26 @@ const [reverseTopicMap, setReverseTopicMap] = useState<{ [topic: string]: number
              </div>
            </div>
 
-        {/* <div className="flex justify-between items-center gap-[50px]">
-       
-          <h3 style={{ fontWeight: "bold", color: "#385773" }}>Select Team Role Preference</h3>
-          {roleOptions.map((role) => (
-            <label key={role.id} className="flex items-center gap-[5px]">
-              <input
-              className="mt-[-2px] flex justify-evenly items-center"
-                type="radio"
-                name="rolePreference"
-                value={role.id}
-                checked={selectedRole?.roleId === role.id}
-                onChange={() =>
-                  setSelectedRole({ roleId: role.id, roleName: role.role, xp: 50 })
-                }
-              />
-              {role.role}
-            </label>
-          ))}
-     
+           <div className="flex flex-col gap-4">
+  <h3 className="font-bold text-[#385773]">Select Preferred Roles</h3>
+  {roleOptions.map((role) => (
+    <label key={role.id} className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={selectedRoles.includes(role.id)}
+        onChange={(e) => {
+          if (e.target.checked) {
+            setSelectedRoles((prev) => [...prev, role.id]);
+          } else {
+            setSelectedRoles((prev) => prev.filter((id) => id !== role.id));
+          }
+        }}
+      />
+      {role.role}
+    </label>
+  ))}
+</div>
 
-
-        </div> */}
            {/* Thumbnail Upload - Full Width */}
       <div className="w-[99%]">
         <label style={{ marginBottom: "8px", display: "block" }}>Upload Project Thumbnail</label>

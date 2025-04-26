@@ -109,7 +109,13 @@ export default function ReviewPage() {
           team_lead_id: userId,
         })
       );
-
+      if (projectData.teamPreferences && projectData.teamPreferences.length > 0) {
+        if (projectData.teamPreferences && projectData.teamPreferences.length > 0) {
+          formData.append("teamPreferences", JSON.stringify(projectData.teamPreferences));
+        }
+        
+      }
+      
       if (projectData.thumbnail) {
         if (typeof projectData.thumbnail === "string" && projectData.thumbnail.startsWith("http")) {
           formData.append("thumbnail", projectData.thumbnail);
@@ -205,17 +211,6 @@ export default function ReviewPage() {
         }
       }
 
-      // if (Array.isArray(projectData.rolePreferences) && projectData.rolePreferences.length > 0) {
-      //   const selectedPref = projectData.rolePreferences[0];
-      //   await fetch(`http://52.15.58.198:3000/projects/${specificProjectId}/teamPreference`, {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify({
-      //       roleId: selectedPref.roleId,
-      //       xp: selectedPref.xp,
-      //     }),
-      //   });
-      // }
     } catch (error) {
       console.error("Error during project creation:", error);
     } finally {
@@ -342,16 +337,20 @@ export default function ReviewPage() {
         </div>
       )}
     
-    {/* {Array.isArray(projectData.rolePreferences) && projectData.rolePreferences.length > 0 && (
+    {projectData.teamPreferences && projectData.teamPreferences.length > 0 && (
   <div className="mb-4">
     <h3 className="text-lg font-bold mb-2">Team Role Preferences:</h3>
     <ul className="list-disc pl-5">
-      {projectData.rolePreferences.map((pref, index) => (
-        <li key={index}>{pref.roleName}</li>
+      {projectData.teamPreferences.map((id, index) => (
+        <li key={index}>
+          Role ID: {id}
+          {/* You can show prettier names if you fetch /roles again */}
+        </li>
       ))}
     </ul>
   </div>
-)} */}
+)}
+
 
 
 
@@ -388,6 +387,5 @@ export default function ReviewPage() {
 );
 
 }
-
 
 

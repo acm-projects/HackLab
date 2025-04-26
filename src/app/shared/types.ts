@@ -13,9 +13,5 @@ export interface ProjectData {
   };
   thumbnail?: string;
   source?: string;
-  // rolePreferences?: {
-  //   roleId: number;
-  //   roleName: string;
-  //   xp: number;
-  // }[];
+  teamPreferences?: number[]; // <-- Add this (array of selected role IDs)
 }

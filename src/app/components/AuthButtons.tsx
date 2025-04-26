@@ -28,11 +28,11 @@ export default function AuthButtons() {
       {!session ? (
         <button
           onClick={() => signIn("github", { prompt: "login" })}
-          className="bg-[#385773] text-primary font-nunito rounded-[10px] text-md px-[20px] py-[10px] text-center
-                     flex items-center gap-2 me-2 mb-2 border-transparent border-none outline-none cursor-pointer transition-transform duration-200 hover:scale-105"
+          className="bg-[#385773] text-primary font-nunito rounded-[10px] text-md px-[7px] py-[0px] text-center
+                     flex items-center gap-2 me-2 mb-2 border-transparent font-nunito border-none outline-none cursor-pointer transition-transform duration-200 hover:scale-105"
         >
-          <FaGithub className="w-[18px] h-[18px] text-white" />
-          &nbsp; Sign In with GitHub
+          <FaGithub className="w-[13px] h-[13px] text-white" />
+          <p className="text-[11px]"> &nbsp; Sign In with GitHub</p>
         </button>
       ) : (
         <button
