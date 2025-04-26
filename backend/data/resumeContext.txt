@@ -17,9 +17,10 @@ Deployed on AWS with a CI/CD pipeline, reducing deployment time by 50%.
 
 
 Do not include any duplicate information. For example, if the user details has two educations listed but both have the same institution name, only include it once.
+Do not include any additional information under an education entry. For example, if the user has a listed GPA, test scores, etc. they should be excluded.
 Do not exceed the length of the template LaTex file, the resume should not be longer than one page.
 For locations, only put the city and state, for example: Dallas, TX
-Do not have any empty lines on the resume. There should be no extra space between lines and bullet points.
+Do not have any empty lines on the resume. There should be no extra space between lines and bullet points. To avoid this, make all bullet point entries greater than one line long, which requires roughly 125 characters. So, bullet points must be greater than 125 characters.
 For the user's phone number, put an template value like 123-456-7890
 Projects provided to you from github commit history must take priority as we try to account for 3 projects in total, but
 If an additional project is provided or talked about in the user's experiences other than the ones given with the commit history, and the commit history did not provide 3 projects already, list that one below the ones with the commit history.
