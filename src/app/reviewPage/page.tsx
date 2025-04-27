@@ -768,7 +768,7 @@ export default function ReviewPage() {
     
     {projectData.teamPreferences && projectData.teamPreferences.length > 0 && (
   <div className="mb-4">
-    <h3 className="text-lg font-bold mb-2">Team Role Preferences:</h3>
+    <h3 className="text-lg font-bold mb-2">Developers needed:</h3>
     <ul className="list-disc pl-5">
       {projectData.teamPreferences.map((id, index) => (
         <li key={index}>

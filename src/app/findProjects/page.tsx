@@ -177,7 +177,7 @@ const FindProjects = () => {
             };
           })
         );
-
+        enrichedProjects.sort((a, b) => b.id - a.id);
         setProjects(enrichedProjects);
         setIsLiked(enrichedProjects.map((p) => likedProjectIds.includes(p.id)));
         setIsBookmarked(enrichedProjects.map((p) => bookmarkedProjectIds.includes(p.id)));
@@ -195,7 +195,7 @@ const FindProjects = () => {
     const topicMatch = filters.topics.length === 0 || filters.topics.some((t) => project.topics.includes(t));
     const skillMatch = filters.skills.length === 0 || filters.skills.some((s) => project.skills.includes(s));
     
-    // ✅ New role match check
+   
     const roleNames = project.rolePreference?.map(pref => roleMap[pref.role_preference_id]) || [];
     const roleMatch = filters.roles?.length === 0 || filters.roles?.some((r) => roleNames.includes(r));
   
@@ -203,47 +203,51 @@ const FindProjects = () => {
   });
   
 
- const handleLike = async (index: number) => {
-   const project = projects[index];
-   const projectId = project.id;
-   const liked = isLiked[index];
+  const handleLike = async (index: number) => {
+    const project = projects[index];
+    const projectId = project.id;
+    const liked = isLiked[index];
     try {
-     if (liked) {
-       await fetch(`http://52.15.58.198:3000/users/${currentUserId}/liked-projects/${projectId}`, {
-         method: "DELETE",
-       });
+      if (liked) {
+        // Unlike
+        await fetch(`http://52.15.58.198:3000/users/${currentUserId}/liked-projects/${projectId}`, {
+          method: "DELETE",
+        });
         setIsLiked((prev) => {
-         const copy = [...prev];
-         copy[index] = false;
-         return copy;
-       });
+          const copy = [...prev];
+          copy[index] = false;
+          return copy;
+        });
         setProjects((prev) => {
-         const copy = [...prev];
-         copy[index] = { ...copy[index], likes: copy[index].likes - 1 };
-         return copy;
-       });
-     } else {
-      
-       await fetch(`http://52.15.58.198:3000/users/${currentUserId}/liked-projects/${projectId}`, {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({ user_id: currentUserId, project_id: projectId }),
-       });
+          const copy = [...prev];
+          copy[index] = { ...copy[index], likes: copy[index].likes - 1 };
+          return copy;
+        });
+      } else {
+        // Like
+        await fetch(`http://52.15.58.198:3000/users/${currentUserId}/liked-projects`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ project_id: projectId }),
+        });
         setIsLiked((prev) => {
-         const copy = [...prev];
-         copy[index] = true;
-         return copy;
-       });
+          const copy = [...prev];
+          copy[index] = true;
+          return copy;
+        });
         setProjects((prev) => {
-         const copy = [...prev];
-         copy[index] = { ...copy[index], likes: copy[index].likes + 1 };
-         return copy;
-       });
-     }
-   } catch (err) {
-     console.error("❌ Error toggling like:", err);
-   }
- };
+          const copy = [...prev];
+          copy[index] = { ...copy[index], likes: copy[index].likes + 1 };
+          return copy;
+        });
+      }
+    } catch (err) {
+      console.error("❌ Failed to like/unlike project:", err);
+    }
+  };
+  
 
 
  const handleBookmark = async (index: number) => {
@@ -401,3 +405,4 @@ const FindProjects = () => {
 
 
 export default FindProjects;
+

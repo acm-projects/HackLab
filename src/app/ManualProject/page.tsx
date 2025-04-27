@@ -1058,10 +1058,10 @@ const [selectedRoles, setSelectedRoles] = useState<number[]>([]); // <-- New sta
              </div>
            </div>
 
-           <div className="flex flex-col gap-4">
-  <h3 className="font-bold text-[#385773]">Select Preferred Roles</h3>
+           <div className="flex gap-[20px]">
+  <h3 className="font-bold text-[#385773]">Looking for:</h3>
   {roleOptions.map((role) => (
-    <label key={role.id} className="flex items-center gap-2">
+    <label key={role.id} className="flex items-center gap-[10px]">
       <input
         type="checkbox"
         checked={selectedRoles.includes(role.id)}
