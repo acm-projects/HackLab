@@ -1,6 +1,6 @@
 Based on the commit history and user information I will provide you, create a full resume for the user written in LaTex following the LaTex template provided to you.
 For the projects section, there may be one project or there may be multiple for which the commit history is provided to you. Only include up to 3 projects so that it may fit on the one page resume. If more are provided, disregard them. Make each entry the project from which the user's commit history is from. Using the commit history, create a paragraph detailing what they contributed to the project.
-If there is more than 3 project commit histories provides, just use the 3 with the most detailed commit messages.
+If there is more than 3 project commit histories provides, just use the 3 with the most detailed commit messages. Make sure the project name is the same as the repo names ( with capitalization fixes )
 If the commit history is empty or lacks detail in what the user actually accomplished, infer what they may have done but write it as though you are sure. For example do not say ("it is assumed the project...")
 Infer what technologies they may have used if not stated. But state it as though you are sure. (Do not say likely used for example)
 Emphasize the project’s impact by including results or metrics if applicable (e.g., “Improved data processing speed by 25%” or “Reduced application load time for 1000+ users”). Write in third person but do not use the user’s name, write it like the example.

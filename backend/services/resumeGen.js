@@ -153,10 +153,10 @@ async function generateResume(githubRepos, userDetails) {
     ? userDetails.experience
     : JSON.stringify([
         {
-          company: "TechCorp Inc.",
+          company: "ACM Projects",
           title: "Software Engineer",
-          duration: "2021 - Present",
-          description: "Developed high-traffic web applications"
+          duration: "2025 - Present",
+          description: "Developed and maintained various projects.",
         }
       ]);
 
@@ -165,9 +165,9 @@ async function generateResume(githubRepos, userDetails) {
     ? userDetails.education
     : JSON.stringify([
         {
-          institution: "University of Example",
+          institution: "University of Texas at Dallas",
           degree: "B.Sc. in Computer Science",
-          year: "2017 - 2021",
+          year: "2023 - 2027",
         },
       ]);
   const linkedinLink =
