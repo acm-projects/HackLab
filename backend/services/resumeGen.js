@@ -148,7 +148,7 @@ async function generateResume(githubReposWithDates, userDetails) {
 
   const commitHistoryText = JSON.stringify(flattenedCommitHistories);
 
-  console.log("All Commit Histories with Dates:", commitHistorytext);
+  console.log("All Commit Histories with Dates:", commitHistoryText);
 
   // Continue with the rest of the generateResume logic...
   const context = await getContext();
