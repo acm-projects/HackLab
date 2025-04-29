@@ -14,7 +14,6 @@ Designed a responsive UI using React and Tailwind CSS, improving user engagement
 Implemented WebSockets for real-time messaging, handling 10,000+ messages daily.
 Deployed on AWS with a CI/CD pipeline, reducing deployment time by 50%.
 
-
 Do not include any duplicate information. For example, if the user details has two educations listed but both have the same institution name, only include it once.
 Do not include any additional information under an education entry. For example, if the user has a listed GPA, test scores, etc. they should be excluded.
 Do not exceed the length of the template LaTex file, the resume should not be longer than one page.
@@ -24,8 +23,8 @@ Do not have any empty lines on the resume. There should be no extra space betwee
 For the user's phone number, put an template value like 123-456-7890
 Projects provided to you from github commit history must take priority as we try to account for 3 projects in total, but
 If an additional project is provided or talked about in the user's experiences other than the ones given with the commit history, and the commit history did not provide 3 projects already, list that one below the ones with the commit history.
-If no date for the project is available, do not write N/A. Instead use April 2025 as the default. never leave anything as N/A, just make up a value.
 Otherwise, if no additional projects are mentioned, just only include the ones with the commit history. Also do not add a 3rd project if it will cause the resume to go over 1 page.
+The creation date and completed date will be provided for you. Just use the month & year. Ex. (January 2025 -- April 2025) If they month and year is the same just include it once. Ex. (April 2025) If no date for the project is available, do not write N/A. Instead use April 2025 as the default. never leave anything as N/A, just make up a value.
 THIS IS VERY IMPORTANT, ANY TIME YOU INCLUDE A PERCENTAGE (%), YOU MUST PUT A FORWARD SLASH BEFORE IT (\%).
 THIS IS VERY IMPORTANT, ANY TIME YOU INCLUDE AN AMPERSAND (&), YOU MUST PUT A FORWARD SLASH BEFORE IT (\&). MAKE SURE ANY SPECIAL CHARACTERS ARE ALWAYS PROPERLY ESCAPED.
 Here is the template LaTex file to replace with user data. DO NOT CHANGE ANY OF THE CODE BEFORE "\begin{document}". LEAVE EVERYTHING BEFORE THAT THE SAME:

@@ -90,116 +90,86 @@ async function fetchFullCommitHistory(octokit, owner, repo) {
   }
 };
 
-async function generateResume(githubRepos, userDetails) {
+async function generateResume(githubReposWithDates, userDetails) {
   const octokit = await getOctokitInstance();
 
   // Limit the number of repositories to 3
-  const limitedRepos = githubRepos;
+  const limitedRepos = githubReposWithDates;
 
-  //console.log("Repos to be used in resume:", limitedRepos);
+  console.log("Repos to be used in resume:", limitedRepos);
 
   // Fetch commit histories in parallel
   const allCommitHistories = await Promise.all(
-    limitedRepos.map(async (github) => {
-      try {
-        //console.log("Fetching commit history for:", github);
+      limitedRepos.map(async ({ repo, creation_date, completed_date }) => {
+          try {
+              console.log("Fetching commit history for:", repo);
 
-        const { owner, repo } = extractOwnerAndRepo(github);
+              const { owner, repo: repoName } = extractOwnerAndRepo(repo);
 
-        // Fetch the full commit history
-        const fullCommitHistory = await fetchFullCommitHistory(octokit, owner, repo);
+              // Fetch the full commit history
+              const fullCommitHistory = await fetchFullCommitHistory(octokit, owner, repoName);
 
-        // Filter commits by the user's GitHub name
-        const filteredCommits = fullCommitHistory
-          .filter(commit => {
-            const authorName = commit.commit.author?.name?.toLowerCase();
-            const expectedUsername = userDetails.db_name.toLowerCase();
+              // Filter commits by the user's GitHub name
+              const filteredCommits = fullCommitHistory
+                  .filter(commit => {
+                      const authorName = commit.commit.author?.name?.toLowerCase();
+                      const expectedUsername = userDetails.db_name.toLowerCase();
 
-            // Log the author name and expected username for debugging
-            //console.log(`Author Name: ${authorName}, Expected Username: ${expectedUsername}`);
+                      return authorName === expectedUsername;
+                  })
+                  .map(commit => ({
+                      repo: repoName, // Include the repository name for context
+                      author: commit.commit.author.name,
+                      message: commit.commit.message,
+                  }));
 
-            return authorName === expectedUsername;
-          })
-          .map(commit => ({
-            repo: repo, // Include the repository name for context
-            author: commit.commit.author.name,
-            message: commit.commit.message,
-          }));
+              console.log("Filtered commit history for repo:", repoName, filteredCommits);
 
-        console.log("Filtered commit history for repo:", repo, filteredCommits);
-
-        return filteredCommits;
-      } catch (error) {
-        console.error(`Failed to fetch commit history for repository ${github}:`, error.message);
-        return []; // Return an empty array if the request fails
-      }
-    })
+              return {
+                  repo: repo,
+                  creation_date, // Changed from start_date to creation_date
+                  completed_date,
+                  commits: filteredCommits,
+              };
+          } catch (error) {
+              console.error(`Failed to fetch commit history for repository ${repo}:`, error.message);
+              return {
+                  repo: repo,
+                  creation_date, // Changed from start_date to creation_date
+                  completed_date,
+                  commits: [],
+              }; // Return an empty array if the request fails
+          }
+      })
   );
 
   // Flatten the array of arrays into a single array
   const flattenedCommitHistories = allCommitHistories.flat();
 
-  //console.log("All Commit Histories:", flattenedCommitHistories);
+  console.log("All Commit Histories with Dates:", flattenedCommitHistories);
 
   const commitHistoryText = JSON.stringify(flattenedCommitHistories);
-  //console.log(commitHistoryText);
 
   // Continue with the rest of the generateResume logic...
-  // Extract details from new API structure
-  const name = userDetails.fullName || "Unknown Name"; // fullName is available directly
-  
-  // Format experience from new structure
-  const experiences = userDetails.experience?.length
-    ? userDetails.experience
-    : JSON.stringify([
-        {
-          company: "ACM Projects",
-          title: "Software Engineer",
-          duration: "2025 - Present",
-          description: "Developed and maintained various projects.",
-        }
-      ]);
-
-  // Education - empty in example but maintaining structure
-  const education = userDetails.education?.length
-    ? userDetails.education
-    : JSON.stringify([
-        {
-          institution: "University of Texas at Dallas",
-          degree: "B.Sc. in Computer Science",
-          year: "2023 - 2027",
-        },
-      ]);
-  const linkedinLink =
-    userDetails.linkedin || `linkedin.com/in/${userDetails.github_username}`;
-  const user = await User.getUserById(await Chat.getUserID(userDetails.db_name));
-  const email =
-    user?.email || `${userDetails.github_username}@gmail.com`; // fallback in case it's undefined
-  // Construct AI prompt
-
-  console.log('Name: ', name);
-  console.log('Email: ', email)
-  console.log('Education: ', education)
-  console.log('Experiences: ', experiences)
   const context = await getContext();
   const fullPrompt = `
-    ${context}
+      ${context}
 
-    ## User Details
-    - **Name:** ${name}
-    - **Email:** ${email}
-    - **Linkedin link:** ${linkedinLink}
-    - **GitHub link:** github.com/${userDetails.github_username}
-    - **Education:** ${education}
-    - **Experiences:** ${experiences}
+      ## User Details
+      - **Name:** ${userDetails.fullName}
+      - **Email:** ${userDetails.email || `${userDetails.github_username}@gmail.com`}
+      - **Linkedin link:** ${userDetails.linkedin}
+      - **GitHub link:** github.com/${userDetails.github_username}
+      - **Education:** ${userDetails.education}
+      - **Experiences:** ${userDetails.experience}
 
-    ## Project Contribution
-    - **Commit History:** ${commitHistoryText}
+      ## Project Contribution
+      - **Commit History with Dates:** ${commitHistoryText}
   `;
 
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
   const result = await model.generateContent(fullPrompt, {
-    response_format: "text",
+      response_format: "text",
   });
   const latexResume = await result.response.text();
 

@@ -324,28 +324,32 @@ router.get('/:id/resume', async (req, res) => {
 */
 router.post('/:id/generateResume', async (req, res) => {
     try {
-        // linkedin is linkedin url, github is repo url, and username is username
         const { github_username, db_name } = req.body;
 
-        /// Get an array of project IDs associated with the user
+        // Get an array of project IDs associated with the user
         const projectIDs = await User.getUserCompletedProjectIDs(req.params.id);
 
-        console.log('this is the projectIDs: ' + projectIDs);
+        console.log('This is the projectIDs:', projectIDs);
 
         if (!projectIDs || projectIDs.length === 0) {
             return res.status(404).send('No projects found for this user');
         }
 
-        //change to get github link for each project
-        const githubRepos = [];
+        // Fetch GitHub links and project dates
+        const githubReposWithDates = [];
         for (const id of projectIDs) {
             const githubLink = await getGithubById(id);
-            if (githubLink) {
-                githubRepos.push(githubLink);
+            const project = await getProjectById(id); // Fetch project details, including creation_date and completed_date
+            if (githubLink && project) {
+                githubReposWithDates.push({
+                    repo: githubLink,
+                    creation_date: project.creation_date, // Changed from start_date to creation_date
+                    completed_date: project.completed_date,
+                });
             }
         }
 
-        if (githubRepos.length === 0) {
+        if (githubReposWithDates.length === 0) {
             return res.status(404).send('No GitHub links found for this user');
         }
 
@@ -354,25 +358,17 @@ router.post('/:id/generateResume', async (req, res) => {
             return res.status(404).send('LinkedIn link not found for this user');
         }
 
-        console.log('this is the github_username: ' + github_username);
-        console.log('this is the db_name: ' + db_name);
-        console.log('this is the github: ' + githubRepos);
-        console.log('this is the linkedin: ' + linkedin);
+        console.log('This is the github_username:', github_username);
+        console.log('This is the db_name:', db_name);
+        console.log('This is the githubReposWithDates:', githubReposWithDates);
+        console.log('This is the linkedin:', linkedin);
+
         // Input validation
-        if (!githubRepos || !github_username) {
+        if (!githubReposWithDates || !github_username) {
             return res.status(400).send('GitHub link and username are required');
         }
-        //console.log ("linkedin test: ");
-        //const temp = await scrapeLinkedIn(linkedin);
-        //console.log(temp);
 
-        // Generate resume
-        // let resume = await generateResume(githubRepos, {
-        //     github_username,
-        //     db_name,
-        //     linkedin,
-        //     ...(linkedin ? await scrapeLinkedIn(linkedin) : {})
-        // });
+        // Scrape LinkedIn data
         let linkedinData = [];
         try {
             const scrapedData = await scrapeLinkedIn(linkedin);
@@ -387,18 +383,17 @@ router.post('/:id/generateResume', async (req, res) => {
             github_username,
             db_name,
             linkedin,
-            fullName: (linkedinData[0]?.fullName) || db_name,
+            fullName: linkedinData[0]?.fullName || db_name,
             experience: JSON.stringify(linkedinData[0]?.experience) || [],
             education: JSON.stringify(linkedinData[0]?.education) || [],
             public_identifier: linkedinData[0]?.public_identifier || '',
-            // Add other necessary fields with fallbacks
-            headline: linkedinData[0]?.headline || ''
+            headline: linkedinData[0]?.headline || '',
         };
 
         console.log('Generated userDetails:', userDetails);
 
         // Generate resume
-        let resume = await generateResume(githubRepos, userDetails);
+        let resume = await generateResume(githubReposWithDates, userDetails);
 
         if (resume.startsWith('```latex')) {
             resume = resume.replace(/^```latex\s*/, '').replace(/\s*```$/, '');
@@ -407,25 +402,13 @@ router.post('/:id/generateResume', async (req, res) => {
         // Save to user table
         await User.saveResumeData(db_name, resume, linkedin);
 
-        
         try {
-            const { latexContent } = resume;
-        
-            // Set the response headers for PDF
-            //res.setHeader('Content-Type', 'application/pdf');
-            //res.setHeader('Content-Disposition', 'inline; filename="resume.pdf"');
-        
-            // Compile LaTeX and stream the PDF to the response
             console.log('Compiling LaTeX to PDF...');
             await compileLatexToPdfStream(resume, res);
-          } catch (error) {
+        } catch (error) {
             console.error('Error generating PDF:', error);
             res.status(500).send('Failed to generate PDF');
-          }
-        
-
-        // Send the resume as a response
-        //res.type('text/plain').send(resume);
+        }
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
