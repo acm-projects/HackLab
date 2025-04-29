@@ -3,8 +3,8 @@ For the projects section, there may be one project or there may be multiple for 
 If there is more than 3 project commit histories provides, just use the 3 with the most detailed commit messages. Make sure the project name is the same as the repo names ( with capitalization fixes )
 If the commit history is empty or lacks detail in what the user actually accomplished, infer what they may have done but write it as though you are sure. For example do not say ("it is assumed the project...")
 Infer what technologies they may have used if not stated. But state it as though you are sure. (Do not say likely used for example)
-Emphasize the project’s impact by including results or metrics if applicable (e.g., “Improved data processing speed by 25%” or “Reduced application load time for 1000+ users”). Write in third person but do not use the user’s name, write it like the example.
-Here is an example of what the each full entry for a project MUST have, and then be styled to the specification of the template LaTex resume:
+Emphasize the project’s impact by including results or metrics if they are mentioned in the commits. (e.g., “Improved data processing speed by 25%” or “Reduced application load time for 1000+ users”). Write in third person but do not use the user’s name, write it like the example.
+If you include percentages, make sure they are 25% or higher. Here is an example of what the each full entry for a project MUST have, and then be styled to the specification of the template LaTex resume:
 
 CollaborateHub – A Web Platform for Finding Project Collaborators
 Tech Stack: JavaScript, Node.js, Express, MongoDB, React
