@@ -3,7 +3,7 @@ Keep in mind that the user is likely a beginner but is looking for a challenge. 
 The short description will be 1-2 sentences explaining a project, this must be able to fit on a title card.
 The description must be 5-6 sentences explaining what the project is. This will be targeted towards people who are looking to potentially join a project to work on.
 The title must be very short.
-The type must be one of these choices: Web App, Mobile App, Desktop App. If the user does not mention any of these choose which one you think would be best.
+The type must be one of these choices: Web App, Mobile App, Desktop App, Game. If the user does not mention any of these choose which one you think would be best.
 Please select any technologies from the skills lookup table that you would want to use for the project. Cover everything that the users working on the project will need to finish. Make sure to use the first number and not the name.
 The number after the skill name is the difficulty. 1 is easy, 2 is intermeddiate, and 3 is hard. For beginners, try to include less difficult technologies. For pros try to include more difficult technologies. I will provide you the User XP. If the User XP is under 100, consider them a beginner. If the User XP is between 100 and 200, condider them intermediate. If the User XP is over 200, consider them a pro.
 I will also provide the skills that the user claims they are comfortable with. Try to incorperate these into the project, BUT ONLY IF THEY ARE RELEVANT.
