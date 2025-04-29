@@ -344,7 +344,7 @@ router.post('/:id/generateResume', async (req, res) => {
                 githubReposWithDates.push({
                     repo: githubLink,
                     creation_date: project.creation_date, // Changed from start_date to creation_date
-                    completed_date: project.completed_date,
+                    completion_date: project.completion_date,
                 });
             }
         }

@@ -100,7 +100,7 @@ async function generateResume(githubReposWithDates, userDetails) {
 
   // Fetch commit histories in parallel
   const allCommitHistories = await Promise.all(
-      limitedRepos.map(async ({ repo, creation_date, completed_date }) => {
+      limitedRepos.map(async ({ repo, creation_date, completion_date }) => {
           try {
               console.log("Fetching commit history for:", repo);
 
@@ -128,7 +128,7 @@ async function generateResume(githubReposWithDates, userDetails) {
               return {
                   repo: repo,
                   creation_date, // Changed from start_date to creation_date
-                  completed_date,
+                  completion_date,
                   commits: filteredCommits,
               };
           } catch (error) {
@@ -136,7 +136,7 @@ async function generateResume(githubReposWithDates, userDetails) {
               return {
                   repo: repo,
                   creation_date, // Changed from start_date to creation_date
-                  completed_date,
+                  completion_date,
                   commits: [],
               }; // Return an empty array if the request fails
           }
@@ -146,9 +146,9 @@ async function generateResume(githubReposWithDates, userDetails) {
   // Flatten the array of arrays into a single array
   const flattenedCommitHistories = allCommitHistories.flat();
 
-  console.log("All Commit Histories with Dates:", flattenedCommitHistories);
-
   const commitHistoryText = JSON.stringify(flattenedCommitHistories);
+
+  console.log("All Commit Histories with Dates:", commitHistorytext);
 
   // Continue with the rest of the generateResume logic...
   const context = await getContext();
