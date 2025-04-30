@@ -177,7 +177,7 @@ const FindProjects = () => {
             };
           })
         );
-        enrichedProjects.sort((a, b) => b.id - a.id);
+        enrichedProjects.sort((a, b) => b.id - a.id); // this freaking solved the FILTERED PROJECTS THING TOOOOOOOOOOOOOOOOO
         setProjects(enrichedProjects);
         setIsLiked(enrichedProjects.map((p) => likedProjectIds.includes(p.id)));
         setIsBookmarked(enrichedProjects.map((p) => bookmarkedProjectIds.includes(p.id)));
@@ -194,8 +194,6 @@ const FindProjects = () => {
     const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase());
     const topicMatch = filters.topics.length === 0 || filters.topics.some((t) => project.topics.includes(t));
     const skillMatch = filters.skills.length === 0 || filters.skills.some((s) => project.skills.includes(s));
-    
-   
     const roleNames = project.rolePreference?.map(pref => roleMap[pref.role_preference_id]) || [];
     const roleMatch = filters.roles?.length === 0 || filters.roles?.some((r) => roleNames.includes(r));
   

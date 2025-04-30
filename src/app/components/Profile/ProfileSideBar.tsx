@@ -65,7 +65,7 @@ const ProfileSidebar: React.FC<ProfileInfoProps> = ({
           <div className="flex-1">
             <p className="text-[18px] font-[700] text-[#111827] mb-[4px]">{name}</p>
             <div className="text-[12px] font-[500] text-[#111827] mb-[6px]">
-              Level <span className="font-[700]">{level}</span>
+              Level <span className="font-[700]">3</span>
             </div>
 
             <div className="relative h-[10px] w-full bg-[#D1D5DB] rounded-full overflow-hidden">
@@ -76,7 +76,7 @@ const ProfileSidebar: React.FC<ProfileInfoProps> = ({
             </div>
 
             <p className="text-[12px] text-right font-[500] text-[#111827] mt-[2px]">
-              {level * 25}/250
+              {level * 15}/100
             </p>
           </div>
         </div>
@@ -100,7 +100,7 @@ const ProfileSidebar: React.FC<ProfileInfoProps> = ({
 
       {/* Topics */}
       <div className="mt-[10px]">
-        <p className="text-[18px] font-[600] mb-[12px]">Topics</p>
+        <p className="text-[18px] font-[600] mb-[12px]">Interests</p>
         <div className="flex flex-wrap gap-[6px] mb-[24px]">
           {topics.slice(0, 5).map((topic, idx) => (
             <span
@@ -113,7 +113,7 @@ const ProfileSidebar: React.FC<ProfileInfoProps> = ({
         </div>
 
         {/* Roles */}
-        <p className="text-[18px] font-[600] mb-[12px]">Roles</p>
+        <p className="text-[18px] font-[600] mb-[12px]">Role</p>
         <div className="flex flex-wrap gap-[6px] mb-[24px]">
           {roles.map((role, idx) => (
             <span

@@ -54,7 +54,7 @@ const Graphs: React.FC<GraphsProps> = ({ topProjects, topLanguages }) => {
       {/* Top Completed Projects */}
       <div className="flex-1 text-center min-w-[300px]">
         <h3 className="font-bold text-gray-800 text-[16px] mb-[40px] mt-[-15px]">
-          Top Projects
+          Most Liked Projects
         </h3>
         {chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height={150}>
@@ -81,7 +81,7 @@ const Graphs: React.FC<GraphsProps> = ({ topProjects, topLanguages }) => {
       {/* Top Languages */}
       <div className="flex-1 text-center min-w-[300px]">
         <h3 className="font-bold text-gray-800 text-[16px] mb-[16px] mt-[-15px]">
-          Top Languages
+          Top Skills
         </h3>
         {sortedLanguageData.length > 0 ? (
           <ResponsiveContainer width="100%" height={200}>
@@ -101,7 +101,7 @@ const Graphs: React.FC<GraphsProps> = ({ topProjects, topLanguages }) => {
                 fillOpacity={0.6}
               />
               <Tooltip content={<CustomRadarTooltip />} />
-              <Legend />
+             
             </RadarChart>
           </ResponsiveContainer>
         ) : (

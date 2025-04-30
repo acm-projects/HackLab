@@ -68,6 +68,7 @@ const [appliedFilters, setAppliedFilters] = useState<{ topics: string[]; skills:
       {/* Background image behind navbar on the left side */}
 
       <div className={`h-[60px] bg-[#385773] flex items-center justify-start transition-all duration-500 ${isMenuOpen ? "pl-[200px]" : "pl-4"} `} style={{boxShadow: "10px 0 30px rgba(0,0,0,0.3)" }}>
+        
         <button
           className="bg-[#385773] text-primary border-transparent border-none outline-none cursor-pointer font-nunito text-md px-[35px] py-[16px] text-center z-50 ml-[-9px]"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -77,6 +78,7 @@ const [appliedFilters, setAppliedFilters] = useState<{ topics: string[]; skills:
           </svg>
           
         </button>
+        
 
         {showSearch ? (
           <div className="flex flex-1 justify-start">
@@ -149,6 +151,18 @@ const [appliedFilters, setAppliedFilters] = useState<{ topics: string[]; skills:
             
           )
         )}
+        <div className="flex items-center ml-auto mr-[40px] gap-[10px]">
+  {session?.user?.image && (
+    <img
+      src={session.user.image}
+      alt="Profile"
+      className="w-[25px] h-[25px] rounded-full object-cover border-2 border-white"
+    />
+  )}
+  <p className="text-[#fff] font-semibold text-[16px]" style={{ fontFamily: "'Nunito', sans-serif" }}>
+    {session?.user?.name || "User"}
+  </p>
+</div>
       </div>
 
 
